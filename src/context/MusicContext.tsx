@@ -89,10 +89,43 @@ export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     fetchSchedule();
   }, []);
 
-  const getCurrentSundaySchedule = (): ScheduleEntry | null => {
-    const currentIndex = new Date().getDate() % schedule.length; // Rotação automática baseada na data
-    return schedule[currentIndex] || null;
+  const getSundaysOfCurrentMonth = (): string[] => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const sundays: string[] = [];
+    
+    const date = new Date(currentYear, currentMonth, 1);
+    
+    while (date.getDay() !== 0) {
+      date.setDate(date.getDate() + 1);
+    }
+  
+    while (date.getMonth() === currentMonth) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      sundays.push(`${day}-${month}-${year}`);
+      date.setDate(date.getDate() + 7);
+    }
+  
+    return sundays;
   };
+
+  const getCurrentSundaySchedule = (): ScheduleEntry | null => {
+    const sundays = getSundaysOfCurrentMonth();
+    const today = new Date();
+    const currentSundayIndex = sundays.findIndex(sunday => {
+      const [day, month, year] = sunday.split('-');
+      const sundayDate = new Date(`${year}-${month}-${day}`);
+      return today <= sundayDate;
+    });
+  
+    // Use the next Sunday or the last one if no future Sundays are found in the current month
+    const index = currentSundayIndex !== -1 ? currentSundayIndex : sundays.length - 1;
+  
+    return schedule[index % schedule.length] || null;
+  };  
 
   const addMusicLink = async (musicLink: MusicLink) => {
     const newDoc = await addDoc(collection(db, "musicLinks"), {
