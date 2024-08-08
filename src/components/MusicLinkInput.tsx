@@ -20,8 +20,12 @@ const InputContainer = styled.div`
   }
 
   button {
-    width: 150px;
+    width: 100px;
     cursor: pointer;
+
+    img {
+      width: 20px;
+    }
   }
 `;
 
@@ -52,7 +56,9 @@ const MusicLinkInput: React.FC = () => {
         onChange={(e) => setLink(e.target.value)}
         placeholder="Link da música"
       />
-      <Button onClick={handleAddLink}>Add</Button>
+      <Button onClick={handleAddLink}>
+        Adicionar
+      </Button>
     </InputContainer>
   );
 };

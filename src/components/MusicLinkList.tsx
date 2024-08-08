@@ -2,6 +2,8 @@ import React from 'react';
 import { useMusicContext } from '../context/hooks/useMusicContext';
 import styled from 'styled-components';
 import Button from './Buttons';
+import AddLink from '../assets/imgs/add_link.png'
+import Delete from '../assets/imgs/delete.png'
 
 const ListContainer = styled.ul`
   width: 100%;
@@ -27,15 +29,27 @@ const ListContainer = styled.ul`
       }
 
       li {
+        width: 620px;
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 16px;
       }
     }
 
-    button {
-      cursor: pointer;
-      margin: 2px;
+    div {
+      width: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      button {
+        cursor: pointer;
+        margin: 2px;
+      }
+
+      img {
+        width: 20px;
+      }
     }
 `
 
@@ -56,8 +70,12 @@ const MusicLinkList: React.FC = () => {
           </li>
 
           <div>
-            <Button onClick={() => goToYoutube(musicLink.link)}>Ir Youtube</Button>
-            <Button onClick={() => removeMusicLink(index)}>x</Button>
+            <Button onClick={() => goToYoutube(musicLink.link)}>
+              <img src={AddLink} alt="addLink" />
+            </Button>
+            <Button onClick={() => removeMusicLink(index)}>
+              <img src={Delete} alt="delete" />
+            </Button>
           </div>
 
         </div>
