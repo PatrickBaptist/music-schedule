@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMusicContext } from '../context/hooks/useMusicContext';
+import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
 import styled from 'styled-components';
 import Button from './Buttons';
 import AddLink from '../assets/imgs/add_link.png'
@@ -54,7 +54,7 @@ const ListContainer = styled.ul`
 `
 
 const MusicLinkList: React.FC = () => {
-  const { musicLinks, removeMusicLink } = useMusicContext();
+  const { musicLinks, removeMusicLink } = useMusicLinksContext();
 
   const goToYoutube = (link: string): void => {
     window.open(link, '_blank', 'noopener,noreferrer');

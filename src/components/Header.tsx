@@ -27,8 +27,8 @@ const ContainerLogo = styled.div`
   padding: 0 40px;
 
   @media(max-width: 759px) {
-        justify-content: space-around;
-        padding: 0;
+        justify-content: space-between;
+        padding: 0 10px;
       }
 
   img {

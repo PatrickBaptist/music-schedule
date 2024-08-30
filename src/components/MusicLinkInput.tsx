@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMusicContext } from '../context/hooks/useMusicContext';
+import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
 import styled from 'styled-components';
 import Button from './Buttons';
 
@@ -32,7 +32,7 @@ const InputContainer = styled.div`
 const MusicLinkInput: React.FC = () => {
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
-  const { addMusicLink } = useMusicContext();
+  const { addMusicLink } = useMusicLinksContext();
 
   const handleAddLink = () => {
     if (link && name) {

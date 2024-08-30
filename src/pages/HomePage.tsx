@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MusicLinkInput from '../components/MusicLinkInput';
 import MusicLinkList from '../components/MusicLinkList';
-import { useMusicContext } from '../context/hooks/useMusicContext';
 import styled from 'styled-components'
 import Header from '../components/Header';
+import { createSchedules } from '../context/ScaleContext';
+
+type Schedule = {
+  date: string;
+  teclas: string;
+  batera: string;
+  bass: string;
+  guita: string;
+};
 
 const Container = styled.div`
   width: 100%;
@@ -79,18 +87,40 @@ const ContainerHome = styled.div`
     }
 `
 
-const getNextSunday = (): string => {
-  const today = new Date();
-  const nextSunday = new Date(today.setDate(today.getDate() + (7 - today.getDay())));
-  const day = String(nextSunday.getDate()).padStart(2, '0');
-  const month = String(nextSunday.getMonth() + 1).padStart(2, '0');
-  const year = nextSunday.getFullYear();
-  return `${day}-${month}-${year}`;
-};
-
 const HomePage: React.FC = () => {
-  const { getCurrentSundaySchedule } = useMusicContext();
-  const currentSundaySchedule = getCurrentSundaySchedule();
+
+  const [schedules, setSchedules] = useState<{ [key: string]: Schedule[] } | null>(null);
+  const [nextSundaySchedule, setNextSundaySchedule] = useState<Schedule | null>(null);
+
+  schedules;
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const data = await createSchedules();
+        setSchedules(data);
+
+        const today = new Date();
+        for (const month in data) {
+          const currentMonthSchedules = data[month as keyof typeof data];
+          
+          for (let i = 0; i < currentMonthSchedules.length; i++) {
+            const scheduleDate = new Date(currentMonthSchedules[i].date);
+            
+            if (scheduleDate > today) {
+              setNextSundaySchedule(currentMonthSchedules[i]);
+              return;
+            }
+          }
+        }
+        setNextSundaySchedule(null); // Caso não encontre uma próxima escala
+      } catch (error) {
+        console.error("Erro ao buscar schedules:", error);
+      }
+    };
+
+    fetchSchedules();
+  }, []);
 
   return (
     <Container>
@@ -104,17 +134,17 @@ const HomePage: React.FC = () => {
 
         <div className='container-escala'>
           <h1>Escala de músicos</h1>
-          {currentSundaySchedule ? (
+          {nextSundaySchedule ? (
           <div className='content'>
-            <p><strong>{getNextSunday()}</strong></p>
-            <p><strong>Teclas: </strong>{currentSundaySchedule.teclas}</p>
-            <p><strong>Batera: </strong>{currentSundaySchedule.batera}</p>
-            <p><strong>Bass: </strong>{currentSundaySchedule.bass}</p>
-            <p><strong>Guita: </strong>{currentSundaySchedule.guita}</p>
+            <h2>Próximo domingo</h2>
+            <p><strong>Teclas:</strong> {nextSundaySchedule.teclas}</p>
+            <p><strong>Batera:</strong> {nextSundaySchedule.batera}</p>
+            <p><strong>Bass:</strong> {nextSundaySchedule.bass}</p>
+            <p><strong>Guita:</strong> {nextSundaySchedule.guita}</p>
           </div>
-          ) : (
-          <p>Não há escala disponível para o próximo domingo.</p>
-          )}
+        ) : (
+          <p>Não há escala disponível.</p>
+        )}
         </div>
       </ContainerHome>
     </Container>

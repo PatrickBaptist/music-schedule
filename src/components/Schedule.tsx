@@ -1,173 +1,154 @@
 import React, { useEffect, useState } from 'react';
+import { createSchedules } from '../context/ScaleContext';
 import styled from 'styled-components';
-import { useMusicContext } from '../context/hooks/useMusicContext';
+
+type MonthName = "Janeiro" | "Fevereiro" | "Março" | "Abril" | "Maio" | "Junho" | "Julho" | "Agosto" | "Setembro" | "Outubro" | "Novembro" | "Dezembro";
+
+interface MusicianSchedule {
+  date: string;
+  teclas: string;
+  batera: string;
+  bass: string;
+  guita: string;
+}
+
+export type MonthlySchedules = Record<MonthName, MusicianSchedule[]>;
 
 const ScheduleContainer = styled.div`
   width: 100%;
   max-width: 1600px;
   height: 100vh;
+  margin-top: 80px;
+  padding: 35px 0;
+  background-color: #cde8ff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #cde8ff;
   box-sizing: border-box;
-  margin-top: 80px;
   overflow-y: auto;
-  padding: 35px 0;
 
   &::-webkit-scrollbar {
-      width: 10px;
-      background-color: #fff;
-      border-radius: 1em;
-    }
+    width: 10px;
+    background-color: #fff;
+    border-radius: 1em;
+  }
 
-    &::-webkit-scrollbar-button {
-      display: none;
-    }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 
-    &::-webkit-scrollbar-thumb {
-      background-color: #7fc3ff;
-      border-radius: 1em;
-    }
-`
+  &::-webkit-scrollbar-thumb {
+    background-color: #7fc3ff;
+    border-radius: 1em;
+  }
+`;
 
 const ScheduleContent = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  span {
     width: 100%;
     display: flex;
-    align-items: center;
+    gap: 0 10px;
+    overflow-x: auto;
 
-    span {
-      width: 100%;
-      display: flex;
-      gap: 0 10px;
-      overflow-x: auto;
+    &::-webkit-scrollbar {
+    width: 10px;
+    background-color: #fff;
+    border-radius: 1em;
+  }
 
-      &::-webkit-scrollbar {
-      width: 10px;
-      background-color: #fff;
-      border-radius: 1em;
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #7fc3ff;
+    border-radius: 1em;
+  }
+
+    @media (max-width: 670px) {
+      display: grid;
+      grid-template-columns: 200px 200px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow-x: hidden;
     }
-
-    &::-webkit-scrollbar-button {
-      display: none;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: #7fc3ff;
-      border-radius: 1em;
-    }
-
-      @media(max-width: 670px) {
-        display: grid;
-        grid-template-columns: 200px 200px;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-
-        overflow-x: hidden;
-      }      
-    }
-`
+  }
+`;
 
 const SeeScale = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #b6d8f7;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #b6d8f7;
+  
+  h3 {
+    font-size: 18px;
+  }
 
-    h3 {
-      font-size: 18px;
-    }
+  p {
+    font-size: 16px;
+  }
+`;
 
-    p {
-      font-size: 16px;
-    }
-`
+const getCurrentMonthName = (): MonthName => {
+  const monthNames: MonthName[] = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+  const today = new Date();
+  const currentMonthIndex = today.getMonth();
+  const nextMonthIndex = (currentMonthIndex + 1) % 12;
+
+  // Obtendo o último dia do mês atual
+  const lastDayOfMonth = new Date(today.getFullYear(), currentMonthIndex + 1, 0);
+  const daysLeftInMonth = lastDayOfMonth.getDate() - today.getDate();
+
+  // Se faltam 7 dias ou menos para o final do mês, mostre o próximo mês
+  if (daysLeftInMonth <= 7) {
+    return monthNames[nextMonthIndex];
+  } else {
+    return monthNames[currentMonthIndex];
+  }
+};
 
 const Schedule: React.FC = () => {
-  const { schedule } = useMusicContext();
-  const [sundays, setSundays] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  const [monthlySchedules, setMonthlySchedules] = useState<MusicianSchedule[]>([]);
+  const currentMonth = getCurrentMonthName();
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const getSundaysOfCurrentMonth = (): string[] => {
-      const today = new Date();
-      const currentMonth = today.getMonth();
-      const currentYear = today.getFullYear();
-      const sundays: string[] = [];
-
-      const date = new Date(currentYear, currentMonth, 1);
-
-      while (date.getDay() !== 0) {
-        date.setDate(date.getDate() + 1);
-      }
-
-      while (date.getMonth() === currentMonth) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        sundays.push(`${day}-${month}-${year}`);
-        date.setDate(date.getDate() + 7);
-      }
-
-      return sundays;
-    };
-
-    const updateSundays = () => {
-      setSundays(getSundaysOfCurrentMonth());
-    };
-
-    const getStoredIndex = () => {
-      const storedIndex = localStorage.getItem('lastScaleIndex');
-      return storedIndex ? parseInt(storedIndex, 10) : 0;
-    };
-
-    const updateIndex = (index: number) => {
-      localStorage.setItem('lastScaleIndex', index.toString());
-      setCurrentIndex(index);
-    };
-
-    const checkAndUpdateIndex = () => {
-      const storedIndex = getStoredIndex();
-      const currentMonth = new Date().getMonth();
-      const lastUpdateMonth = parseInt(localStorage.getItem('lastUpdateMonth') || '0', 10);
-
-      if (currentMonth !== lastUpdateMonth) {
-        updateIndex((storedIndex + sundays.length) % schedule.length);
-        localStorage.setItem('lastUpdateMonth', currentMonth.toString());
-      } else {
-        setCurrentIndex(storedIndex);
+    const fetchSchedules = async () => {
+      try {
+        const schedules: MonthlySchedules = await createSchedules();
+        setMonthlySchedules(schedules[currentMonth] || []);
+      } catch (error) {
+        console.error("Erro ao buscar schedules:", error);
       }
     };
 
-    updateSundays();
-    checkAndUpdateIndex();
-
-    const intervalId = setInterval(updateSundays, 86400000);
-
-    return () => clearInterval(intervalId);
-  }, [schedule.length, sundays.length]);
+    fetchSchedules();
+  }, [currentMonth]);
 
   return (
     <ScheduleContainer>
-      <h1>Escala de músicos</h1>
+      <h1>Escala de {currentMonth} {currentYear}</h1>
       <ScheduleContent>
         <span>
-        {sundays.map((sunday, index) => (
+        {monthlySchedules.map((musician, index) => (
           <SeeScale key={index}>
-            <h3>{sunday}</h3>
-            {schedule[index] ? (
-              <>
-                <p><strong>Teclas: </strong>{schedule[(currentIndex + index) % schedule.length]?.teclas}</p>
-                <p><strong>Batera: </strong>{schedule[(currentIndex + index) % schedule.length]?.batera}</p>
-                <p><strong>Bass: </strong>{schedule[(currentIndex + index) % schedule.length]?.bass}</p>
-                <p><strong>Guita: </strong>{schedule[(currentIndex + index) % schedule.length]?.guita}</p>
-              </>
-            ) : (
-              <p>Não há escala disponível para este domingo.</p>
-            )}
+            <h3>{musician.date}</h3>
+            <p><strong>Teclas: </strong>{musician.teclas}</p>
+            <p><strong>Batera: </strong>{musician.batera}</p>
+            <p><strong>Bass: </strong>{musician.bass}</p>
+            <p><strong>Guita: </strong>{musician.guita}</p>
           </SeeScale>
         ))}
         </span>
