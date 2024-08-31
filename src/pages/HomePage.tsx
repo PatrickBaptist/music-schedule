@@ -4,6 +4,7 @@ import MusicLinkList from '../components/MusicLinkList';
 import styled from 'styled-components'
 import Header from '../components/Header';
 import { createSchedules } from '../context/ScaleContext';
+import Footer from '../components/Footer';
 
 type Schedule = {
   date: string;
@@ -39,21 +40,6 @@ const ContainerHome = styled.div`
 
     p {
         font-size: 20px;
-    }
-
-    &::-webkit-scrollbar {
-      width: 10px;
-      background-color: #fff;
-      border-radius: 1em;
-    }
-
-    &::-webkit-scrollbar-button {
-      display: none;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: #7fc3ff;
-      border-radius: 1em;
     }
 
     .container-escala {
@@ -146,6 +132,7 @@ const HomePage: React.FC = () => {
           <p>Não há escala disponível.</p>
         )}
         </div>
+      <Footer />
       </ContainerHome>
     </Container>
   );

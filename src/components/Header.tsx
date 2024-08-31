@@ -26,16 +26,20 @@ const ContainerLogo = styled.div`
   justify-content: space-between;
   padding: 0 40px;
 
-  @media(max-width: 759px) {
-        justify-content: space-between;
-        padding: 0 10px;
-      }
+  div {
+    display: flex;
+    gap: 15px;
+  }
 
   img {
     width: 140px;
     height: 70px;
     object-fit: cover;
     filter: drop-shadow(2px 3px 5px #949494);
+  }
+
+  @media(max-width: 759px) {
+    padding: 0 10px;
   }
 `
 
@@ -55,11 +59,18 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
     }
   };
 
+  const handleClicklist = () => {
+    navigate('/listMusic')
+  };
+
   return (
     <HeaderContainer>
         <ContainerLogo>
-          <img src={Logo} alt="logo da igreja" />
+          <a href="/"><img src={Logo} alt="logo da igreja" /></a>
+          <div>
           <Button onClick={handleClick}>{children}</Button>
+          <Button onClick={handleClicklist}>Sugest. Music</Button>
+          </div>
         </ContainerLogo> 
     </HeaderContainer>
   );

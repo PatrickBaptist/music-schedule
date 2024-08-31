@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createSchedules } from '../context/ScaleContext';
 import styled from 'styled-components';
+import Footer from './Footer';
 
 type MonthName = "Janeiro" | "Fevereiro" | "Março" | "Abril" | "Maio" | "Junho" | "Julho" | "Agosto" | "Setembro" | "Outubro" | "Novembro" | "Dezembro";
 
@@ -17,57 +18,47 @@ export type MonthlySchedules = Record<MonthName, MusicianSchedule[]>;
 const ScheduleContainer = styled.div`
   width: 100%;
   max-width: 1600px;
-  height: 100vh;
-  margin-top: 80px;
-  padding: 35px 0;
+  height: 100%;
   background-color: #cde8ff;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow: hidden;
+`;
 
+const ScheduleContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+  overflow: auto;
+  
   &::-webkit-scrollbar {
     width: 10px;
     background-color: #fff;
     border-radius: 1em;
   }
-
+    
   &::-webkit-scrollbar-button {
     display: none;
   }
-
+      
   &::-webkit-scrollbar-thumb {
     background-color: #7fc3ff;
     border-radius: 1em;
   }
-`;
 
-const ScheduleContent = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
+  h1 {
+    margin-top: 100px;
+  }
 
   span {
     width: 100%;
     display: flex;
     gap: 0 10px;
-    overflow-x: auto;
-
-    &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #fff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #7fc3ff;
-    border-radius: 1em;
-  }
 
     @media (max-width: 670px) {
       display: grid;
@@ -122,7 +113,6 @@ const Schedule: React.FC = () => {
 
   const [monthlySchedules, setMonthlySchedules] = useState<MusicianSchedule[]>([]);
   const currentMonth = getCurrentMonthName();
-  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -139,8 +129,8 @@ const Schedule: React.FC = () => {
 
   return (
     <ScheduleContainer>
-      <h1>Escala de {currentMonth} {currentYear}</h1>
       <ScheduleContent>
+        <h1>Escala de {currentMonth}</h1>
         <span>
         {monthlySchedules.map((musician, index) => (
           <SeeScale key={index}>
@@ -152,7 +142,9 @@ const Schedule: React.FC = () => {
           </SeeScale>
         ))}
         </span>
-      </ScheduleContent>
+      </ScheduleContent>     
+
+      <Footer /> 
     </ScheduleContainer>
   );
 };

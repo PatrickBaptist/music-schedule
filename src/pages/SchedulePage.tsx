@@ -3,7 +3,7 @@ import Schedule from '../components/Schedule';
 import styled from 'styled-components';
 import Header from '../components/Header';
 
-const Container = styled.div`
+const ContainerSchedule = styled.div`
   width: 100%;
   max-width: 1600px;
   height: 100vh;
@@ -15,13 +15,14 @@ const Container = styled.div`
 
 const SchedulePage: React.FC = () => {
   return (
-    <Container>
+    <ContainerSchedule>
       <Header>
         Voltar
       </Header>
       
       <Schedule />
-    </Container>
+
+    </ContainerSchedule>
   );
 };
 
