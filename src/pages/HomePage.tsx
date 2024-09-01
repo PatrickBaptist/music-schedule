@@ -8,6 +8,8 @@ import { Container, ContainerHome } from './pageStyle/HomePage';
 
 type Schedule = {
   date: string;
+  vocal1: string;
+  vocal2: string;
   teclas: string;
   batera: string;
   bass: string;
@@ -40,7 +42,7 @@ const HomePage: React.FC = () => {
             }
           }
         }
-        setNextSundaySchedule(null); // Caso não encontre uma próxima escala
+        setNextSundaySchedule(null);
       } catch (error) {
         console.error("Erro ao buscar schedules:", error);
       }
@@ -64,6 +66,8 @@ const HomePage: React.FC = () => {
           {nextSundaySchedule ? (
           <div className='content'>
             <h2>Próximo domingo</h2>
+            <p><strong>Vocal:</strong> {nextSundaySchedule.vocal1}</p>
+            <p><strong>Vocal:</strong> {nextSundaySchedule.vocal2}</p>
             <p><strong>Teclas:</strong> {nextSundaySchedule.teclas}</p>
             <p><strong>Batera:</strong> {nextSundaySchedule.batera}</p>
             <p><strong>Bass:</strong> {nextSundaySchedule.bass}</p>

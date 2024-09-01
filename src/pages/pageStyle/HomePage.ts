@@ -45,15 +45,13 @@ export const ContainerHome = styled.div`
         }
       
         .content {
-          width: 100%;
-          height: 100%;
           display: flex;
           flex-direction: column;
-          align-items: center;
 
           p {
             padding: 0;
             margin: 5px;
+            padding-left: 25px;
           }
         }
     }

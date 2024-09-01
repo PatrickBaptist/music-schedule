@@ -7,6 +7,8 @@ type MonthName = "Janeiro" | "Fevereiro" | "Março" | "Abril" | "Maio" | "Junho"
 
 interface MusicianSchedule {
   date: string;
+  vocal1: string;
+  vocal2: string;
   teclas: string;
   batera: string;
   bass: string;
@@ -62,6 +64,8 @@ const Schedule: React.FC = () => {
         {monthlySchedules.map((musician, index) => (
           <SeeScale key={index}>
             <h3>{musician.date}</h3>
+            <p><strong>Vocal: </strong>{musician.vocal1}</p>
+            <p><strong>Vocal: </strong>{musician.vocal2}</p>
             <p><strong>Teclas: </strong>{musician.teclas}</p>
             <p><strong>Batera: </strong>{musician.batera}</p>
             <p><strong>Bass: </strong>{musician.bass}</p>

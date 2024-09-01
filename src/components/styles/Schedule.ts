@@ -60,15 +60,16 @@ export const SeeScale = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   background-color: #b6d8f7;
   
   h3 {
     font-size: 18px;
+    padding-left: 15px;
   }
 
   p {
     font-size: 16px;
+    padding-left: 15px;
   }
 `;

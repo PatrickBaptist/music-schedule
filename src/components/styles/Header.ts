@@ -25,9 +25,41 @@ export const ContainerLogo = styled.div`
   div {
     display: flex;
     gap: 15px;
+
+    .hamburguer {
+      width: 50px;
+      height: 50px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      cursor: pointer;
+      border: none;
+
+      @media(max-width: 550px) {
+        display: flex;
+      }
+    }
+      
+      .menu {
+        width: 40px;
+        height: 40px;
+      }
+
+      .closeMenu {
+        width: 30px;
+        height: 30px;
+      }
+
+      .hideButton {
+
+        @media (max-width: 550px) {
+          display: none;
+      }
+    }
   }
 
-  img {
+  .logo {
     width: 140px;
     height: 70px;
     object-fit: cover;
