@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ContainerMenu = styled.div<{ openMenu: boolean }>`
+export const ContainerMenu = styled.div<{ $openMenu: boolean }>`
     width: 100vw;
     max-width: 1600px;
     position: fixed;
@@ -8,9 +8,9 @@ export const ContainerMenu = styled.div<{ openMenu: boolean }>`
     box-shadow: 0px 5px 5px -5px #000;
     margin-top: 80px;
     transition: transform 0.5s ease-in-out, opacity 1s ease-in-out;
-    transform: ${({ openMenu }) => (openMenu ? 'translateY(0)' : 'translateY(-100%)')};
-    opacity: ${({ openMenu }) => (openMenu ? '1' : '0')};
-    pointer-events: ${({ openMenu }) => (openMenu ? 'auto' : 'none')};
+    transform: ${({ $openMenu }) => ($openMenu ? 'translateY(0)' : 'translateY(-100%)')};
+    opacity: ${({ $openMenu }) => ($openMenu ? '1' : '0')};
+    pointer-events: ${({ $openMenu }) => ($openMenu ? 'auto' : 'none')};
 `
 
 export const ContentMenu = styled.div`

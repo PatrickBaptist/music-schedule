@@ -42,13 +42,13 @@ export const ContainerLogo = styled.div`
     }
       
       .menu {
-        width: 40px;
-        height: 40px;
+        width: 25px;
+        height: 25px;
       }
 
       .closeMenu {
-        width: 30px;
-        height: 30px;
+        width: 15px;
+        height: 15px;
       }
 
       .hideButton {

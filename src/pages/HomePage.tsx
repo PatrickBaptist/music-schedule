@@ -30,14 +30,28 @@ const HomePage: React.FC = () => {
         setSchedules(data);
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Encontre o próximo domingo
+        const nextSunday = new Date(today);
+        nextSunday.setDate(today.getDate() + ((7 - today.getDay()) % 7));
+        
+        // Verifique se o próximo domingo é hoje
+        if (nextSunday <= today) {
+          nextSunday.setDate(nextSunday.getDate() + 7);
+        }
+
+        // Formate a data para comparação
+        const nextSundayStr = nextSunday.toLocaleDateString('pt-BR');
+
         for (const month in data) {
           const currentMonthSchedules = data[month as keyof typeof data];
-          
-          for (let i = 0; i < currentMonthSchedules.length; i++) {
-            const scheduleDate = new Date(currentMonthSchedules[i].date);
-            
-            if (scheduleDate > today) {
-              setNextSundaySchedule(currentMonthSchedules[i]);
+          currentMonthSchedules.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+          // Encontre a escala do próximo domingo
+          for (const schedule of currentMonthSchedules) {
+            if (schedule.date === nextSundayStr) {
+              setNextSundaySchedule(schedule);
               return;
             }
           }
@@ -49,6 +63,9 @@ const HomePage: React.FC = () => {
     };
 
     fetchSchedules();
+    const interval = setInterval(fetchSchedules, 1000 * 60 * 60 * 24); // Atualize a cada 24 horas
+
+    return () => clearInterval(interval);
   }, []);
 
   return (

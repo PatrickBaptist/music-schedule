@@ -27,7 +27,7 @@ export const ListContainer = styled.ul`
         width: 620px;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 16px;
+        font-size: 18px;
       }
     }
 

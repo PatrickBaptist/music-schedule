@@ -34,10 +34,10 @@ const schedules = {
     ],
     Setembro: [
       { date: "01/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.2"], guita: musicians["guita.2"], vocal1: musicians["vocal.3"], vocal2: musicians["vocal.2"] },
-      { date: "08/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.3"], guita: musicians["guita.3"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.4"] },
-      { date: "15/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.1"], guita: musicians["guita.1"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.2"] },
-      { date: "22/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.2"], guita: musicians["guita.2"], vocal1: musicians["vocal.3"], vocal2: musicians["vocal.4"] },
-      { date: "29/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.3"], guita: musicians["guita.3"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.2"] }
+      { date: "08/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.3"], guita: musicians["guita.3"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.2"] },
+      { date: "15/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.1"], guita: musicians["guita.1"], vocal1: musicians["vocal.5"], vocal2: musicians["vocal.8"] },
+      { date: "22/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.2"], guita: musicians["guita.2"], vocal1: musicians["vocal.9"], vocal2: musicians[""] },
+      { date: "29/09/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.3"], guita: musicians["guita.3"], vocal1: musicians["vocal.3"], vocal2: musicians["vocal.4"] }
     ],
     Outubro: [
       { date: "06/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.1"], bass: musicians["bass.1"], guita: musicians["guita.1"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.4"] },
