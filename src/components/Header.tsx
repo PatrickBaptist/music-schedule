@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
   }
 
   return (
-    <HeaderContainer>
+    <HeaderContainer $openMenu={openMenu}>
         <ContainerLogo>
           <a href="/"><img src={Logo} alt="logo da igreja" className='logo'/></a>
           <div>

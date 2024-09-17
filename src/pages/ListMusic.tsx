@@ -97,24 +97,24 @@ const ListMusic: React.FC = () => {
         <ContentMusic>
             <div>
                 <h2>Celebração</h2>
-                <span>
+                <ul>
                 {listCelebration.map((celebration, index) => (
-                    <ul key={index}>
+                    <span key={index}>
                         <li>{celebration.song}</li>  
-                    </ul>
+                    </span>
                 ))}
-                </span>
+                </ul>
             </div>
 
             <div>
                 <h2>Adoração</h2>
-                <span>
+                <ul>
                 {listWorship.map((worship, index) => (
-                    <ul key={index}>
+                    <span key={index}>
                         <li>{worship.song}</li>  
-                    </ul>
+                    </span>
                 ))}
-                </span>
+                </ul>
             </div>
 
         </ContentMusic>

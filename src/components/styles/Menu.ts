@@ -8,8 +8,7 @@ export const ContainerMenu = styled.div<{ $openMenu: boolean }>`
     box-shadow: 0px 5px 5px -5px #000;
     margin-top: 80px;
     transition: transform 0.5s ease-in-out, opacity 1s ease-in-out;
-    transform: ${({ $openMenu }) => ($openMenu ? 'translateY(0)' : 'translateY(-100%)')};
-    opacity: ${({ $openMenu }) => ($openMenu ? '1' : '0')};
+    transform: ${({ $openMenu }) => ($openMenu ? 'translateY(0)' : 'translateY(-200%)')};
     pointer-events: ${({ $openMenu }) => ($openMenu ? 'auto' : 'none')};
 `
 

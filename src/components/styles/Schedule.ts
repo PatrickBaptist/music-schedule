@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const ScheduleContainer = styled.div`
   width: 100%;
-  max-width: 1600px;
   height: 100%;
   background-color: #cde8ff;
   display: flex;
@@ -14,6 +13,7 @@ export const ScheduleContainer = styled.div`
 
 export const ScheduleContent = styled.div`
   width: 100%;
+  max-width: 1600px;
   height: 100%;
   display: flex;
   flex-direction: column;

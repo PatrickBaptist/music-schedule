@@ -2,9 +2,9 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   width: 100%;
-  max-width: 1600px;
   height: 100vh;
   display: flex;
+  align-items: center;
   flex-direction: column;
   background-color: #cde8ff;
   box-sizing: border-box;

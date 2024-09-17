@@ -1,17 +1,18 @@
 import styled from 'styled-components';
 
-export const HeaderContainer = styled.div`
+export const HeaderContainer = styled.div<{ $openMenu: boolean }>`
   width: 100%;
   height: 80px;
   display: flex;
   align-items: center;
   background-color: #7fc3ff;
-  box-shadow: 0px 0px 5px #000;
+  box-shadow: ${({ $openMenu }) => ($openMenu ? 'none' : '0px 0px 5px #000')};
+  transition: box-shadow 0.5s ease-in-out;
   position: fixed;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  z-index: 3;
+  z-index: 300;
 `
 
 export const ContainerLogo = styled.div`
