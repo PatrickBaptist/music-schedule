@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import { createSchedules } from '../context/ScaleContext';
 import Footer from '../components/Footer';
 import { Container, ContainerHome } from './pageStyle/HomePage';
+import EditLink from '../assets/imgs/edit.png'
 
 type Schedule = {
   date: string;
@@ -20,6 +21,7 @@ const HomePage: React.FC = () => {
 
   const [schedules, setSchedules] = useState<{ [key: string]: Schedule[] } | null>(null);
   const [nextSundaySchedule, setNextSundaySchedule] = useState<Schedule | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   schedules;
 
@@ -74,8 +76,25 @@ const HomePage: React.FC = () => {
         Escala
       </Header>
       <ContainerHome>
+
+        <div className='content-louvores'>
         <h1>Louvores</h1>
-        <MusicLinkInput />
+         <button className='btn-write' onClick={() => setIsModalOpen(true)}>
+            <img src={EditLink} alt="editLink" />
+         </button>
+        </div>
+
+          {isModalOpen && (
+            <div className="modal">
+              <div className="modal-content">
+                <div className='btn-close'>
+                  <button className="close-modal" onClick={() => setIsModalOpen(false)}>X</button>
+                </div>
+                <MusicLinkInput />
+              </div>
+            </div>
+          )}
+
         <MusicLinkList />
 
         <div className='container-escala'>
@@ -94,7 +113,7 @@ const HomePage: React.FC = () => {
           <p>Não há escala disponível.</p>
         )}
         </div>
-      <Footer />
+        <Footer />
       </ContainerHome>
     </Container>
   );

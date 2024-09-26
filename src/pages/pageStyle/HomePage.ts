@@ -55,4 +55,65 @@ export const ContainerHome = styled.div`
           }
         }
     }
+
+    .content-louvores {
+      display: flex;
+      height: 50px;
+      align-items: center;
+      justify-content: center;
+      margin: 25px 0;
+
+      h1 {
+        margin-right: 10px;
+      }
+
+      .btn-write{
+        width: 20px;
+        border: none;
+        background-color: none;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: rotate(10deg);
+        }
+      }
+
+      img {
+        width: 20px;
+      }
+    }
+
+    .modal {
+      width: 100vw;
+      height: 100dvh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2024;
+      background-color: rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .btn-close {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        margin-bottom: 10px;
+
+        .close-modal {
+          cursor: pointer;
+        }
+      }
+    }
 `
