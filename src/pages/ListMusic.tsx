@@ -98,11 +98,11 @@ const [showCelebration, setShowCelebration] = useState(true);
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
             <Button onClick={() => setShowCelebration(true)}>
-            Mostrar Celebração
+            Celebração
             </Button>
 
             <Button onClick={() => setShowCelebration(false)}>
-            Mostrar Adoração
+            Adoração
             </Button>
         </div>
 
