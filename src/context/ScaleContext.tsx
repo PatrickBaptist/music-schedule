@@ -41,8 +41,8 @@ const schedules = {
     ],
     Outubro: [
       { date: "06/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.3"], guita: musicians["guita.1"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.4"] },
-      { date: "13/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.2"], guita: musicians["guita.2"], vocal1: musicians["vocal.3"], vocal2: musicians["vocal.2"] },
-      { date: "20/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.3"], guita: musicians["guita.3"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.4"] },
+      { date: "13/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.2"], guita: musicians["guita.2"], vocal1: musicians["vocal.3"], vocal2: musicians["vocal.2"] },
+      { date: "20/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.3"], guita: musicians["guita.3"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.4"] },
       { date: "27/10/2024", teclas: musicians["teclas.1"], batera: musicians["batera.1"], bass: musicians["bass.1"], guita: musicians["guita.4"], vocal1: musicians["vocal.1"], vocal2: musicians["vocal.2"] }
     ],
     Novembro: [

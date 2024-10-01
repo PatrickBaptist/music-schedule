@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const ScheduleContainer = styled.div`
   width: 100%;
   height: 100%;
-  background-color: #cde8ff;
+  background-color: #06141b;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,11 +61,12 @@ export const SeeScale = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #b6d8f7;
+  background-color: #000;
   
   h3 {
     font-size: 18px;
     padding-left: 15px;
+    color: #C0392B;
   }
 
   p {

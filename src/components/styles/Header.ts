@@ -5,7 +5,7 @@ export const HeaderContainer = styled.div<{ $openMenu: boolean }>`
   height: 80px;
   display: flex;
   align-items: center;
-  background-color: #7fc3ff;
+  background-color: #000;
   box-shadow: ${({ $openMenu }) => ($openMenu ? 'none' : '0px 0px 5px #000')};
   transition: box-shadow 0.5s ease-in-out;
   position: fixed;
@@ -53,7 +53,6 @@ export const ContainerLogo = styled.div`
       }
 
       .hideButton {
-
         @media (max-width: 550px) {
           display: none;
       }

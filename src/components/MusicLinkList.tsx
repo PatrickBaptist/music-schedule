@@ -63,10 +63,10 @@ const MusicLinkList: React.FC = () => {
           </li>
 
           <div className='container-btn'>
-            <Button onClick={() => openLinkVideo({ url: musicLink.link })}>
+            <Button onClick={() => openLinkVideo({ url: musicLink.link })} style={{backgroundColor: '#2ECC71'}}>
               <img src={AddLink} alt="addLink" />
             </Button>
-            <Button onClick={() => removeMusicLink(index)}>
+            <Button onClick={() => removeMusicLink(index)} style={{backgroundColor: '#C0392B'}}>
               <img src={Delete} alt="delete" />
             </Button>
           </div>

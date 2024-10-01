@@ -6,7 +6,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: #cde8ff;
+  background-color: #06141b;
   box-sizing: border-box;
   overflow: hidden;
 `
@@ -36,7 +36,7 @@ export const ContainerHome = styled.div`
       align-items: center;
       justify-content: center;
       margin-top: 30px;
-      background-color: #b6d8f7;
+      background-color: #000;
       border-top: 1px solid #949494;
       padding-bottom: 25px;
 

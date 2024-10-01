@@ -6,7 +6,7 @@ export const ContainerMusic = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #cde8ff;
+  background-color: #000;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -23,21 +23,6 @@ export const ContentMusic = styled.div`
     justify-content: space-around;
     overflow: auto;
 
-    &::-webkit-scrollbar {
-        width: 10px;
-        background-color: #fff;
-        border-radius: 1em;
-    }
-
-    &::-webkit-scrollbar-button {
-        display: none;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: #7fc3ff;
-        border-radius: 1em;
-    }
-
     div {
         width: 100%;
         height: 600px;
@@ -53,7 +38,7 @@ export const ContentMusic = styled.div`
             flex-direction: column;
             align-items: center;
             overflow-y: auto;
-            background-color: #b6d8f7;
+            background-color: #000;
             list-style: none;
 
             span {
@@ -75,7 +60,7 @@ export const ContentMusic = styled.div`
             }
 
             &::-webkit-scrollbar-thumb {
-                background-color: #7fc3ff;
+                background-color: #00FFFF;
                 border-radius: 1em;
             }
 

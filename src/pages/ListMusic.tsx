@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ContainerMusic, ContentMusic } from './pageStyle/ListMusic';
+import Button from '../components/Buttons';
 
 const listCelebration = [
     {song: "Mil graus"},
@@ -84,8 +85,9 @@ const listWorship = [
     { song: "Volte a sonhar" }
 ];
 
-
 const ListMusic: React.FC = () => {
+
+const [showCelebration, setShowCelebration] = useState(true);
 
   return (
       
@@ -94,29 +96,40 @@ const ListMusic: React.FC = () => {
 
         <h1>Sugestões de músicas</h1>
 
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
+            <Button onClick={() => setShowCelebration(true)}>
+            Mostrar Celebração
+            </Button>
+
+            <Button onClick={() => setShowCelebration(false)}>
+            Mostrar Adoração
+            </Button>
+        </div>
+
         <ContentMusic>
-            <div>
-                <h2>Celebração</h2>
-                <ul>
-                {listCelebration.map((celebration, index) => (
-                    <span key={index}>
-                        <li>{celebration.song}</li>  
-                    </span>
-                ))}
-                </ul>
-            </div>
-
-            <div>
-                <h2>Adoração</h2>
-                <ul>
-                {listWorship.map((worship, index) => (
-                    <span key={index}>
-                        <li>{worship.song}</li>  
-                    </span>
-                ))}
-                </ul>
-            </div>
-
+        {showCelebration ? (
+          <div>
+            <h2>Celebração</h2>
+            <ul>
+              {listCelebration.map((celebration, index) => (
+                <span key={index}>
+                  <li>{celebration.song}</li>
+                </span>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div>
+            <h2>Adoração</h2>
+            <ul>
+              {listWorship.map((worship, index) => (
+                <span key={index}>
+                  <li>{worship.song}</li>
+                </span>
+              ))}
+            </ul>
+          </div>
+        )}
         </ContentMusic>
 
             <Footer />
