@@ -26,17 +26,17 @@ export const NavMenu = styled.div`
 
     ul {
         width: 100%;
+        height: 170px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 30px;
         list-style-type: none;
         box-sizing: border-box;
-        padding: 0;
         
         li {
             font-weight: bold;
+            margin-bottom: 40px;
             cursor: pointer;
             transition: transform 2s;
 

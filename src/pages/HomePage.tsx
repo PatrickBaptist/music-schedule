@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
   const [nextSundaySchedule, setNextSundaySchedule] = useState<Schedule | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  schedules;
+  schedules
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -34,15 +34,11 @@ const HomePage: React.FC = () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Encontre o próximo domingo
+        const day = today.getDay();
+        const daysUntilSunday = (7 - day) % 7; // Calcula os dias até o próximo domingo
         const nextSunday = new Date(today);
-        nextSunday.setDate(today.getDate() + ((7 - today.getDay()) % 7));
+        nextSunday.setDate(today.getDate() + daysUntilSunday);
         
-        // Verifique se o próximo domingo é hoje
-        if (nextSunday <= today) {
-          nextSunday.setDate(nextSunday.getDate() + 7);
-        }
-
         // Formate a data para comparação
         const nextSundayStr = nextSunday.toLocaleDateString('pt-BR');
 
@@ -63,6 +59,7 @@ const HomePage: React.FC = () => {
         console.error("Erro ao buscar schedules:", error);
       }
     };
+
 
     fetchSchedules();
     const interval = setInterval(fetchSchedules, 1000 * 60 * 60 * 24); // Atualize a cada 24 horas

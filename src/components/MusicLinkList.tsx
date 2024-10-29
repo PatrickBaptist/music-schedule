@@ -3,6 +3,7 @@ import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
 import Button from './Buttons';
 import AddLink from '../assets/imgs/add_link.png'
 import Delete from '../assets/imgs/delete.png'
+import Loading from '../assets/Loading.gif'
 import { ContainerVd, ContentVd, ListContainer } from '../components/styles/MusicLinkList'
 
 type Video = {
@@ -12,25 +13,23 @@ type Video = {
 const MusicLinkList: React.FC = () => {
   const { musicLinks, removeMusicLink } = useMusicLinksContext();
   const [ openVideo, setOpenVideo ] = useState(false)
-  const [ currentVideo, setCurrentVideo ] = useState<Video | null>(null);
+  const [ currentVideo, setCurrentVideo ] = useState<Video | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const handleVideoClick = () => {
     setOpenVideo(false)
+    setLoading(false)
   }
   
   const openLinkVideo = (videoUrl: Video) => {
-    setCurrentVideo(videoUrl);
-    setOpenVideo(true);
-  };
-
-  /*const goToYoutube = (link: string): void => {
-    window.open(link, '_blank', 'noopener,noreferrer');
-  }*/
+    setCurrentVideo(videoUrl)
+    setLoading(true)
+    setOpenVideo(true)
+  }
 
     const convertToEmbedUrl = (url: string): string => {
       try {
         const parsedUrl = new URL(url);
-        
         let videoId: string | null = null;
     
         // Verifica se a URL é do formato short do YouTube
@@ -63,7 +62,7 @@ const MusicLinkList: React.FC = () => {
           </li>
 
           <div className='container-btn'>
-            <Button onClick={() => openLinkVideo({ url: musicLink.link })} style={{backgroundColor: '#2ECC71'}}>
+            <Button onClick={() => openLinkVideo({ url: musicLink.link })} style={{backgroundColor: '#2EBEF2'}}>
               <img src={AddLink} alt="addLink" />
             </Button>
             <Button onClick={() => removeMusicLink(index)} style={{backgroundColor: '#C0392B'}}>
@@ -74,12 +73,20 @@ const MusicLinkList: React.FC = () => {
           {openVideo && currentVideo && (
             <ContainerVd onClick={handleVideoClick}>
                 <ContentVd>
+
+                {loading && 
+                  <div className="loading-screen">
+                    <img src={Loading} alt="Loading" style={{width: '150px'}}/>
+                  </div>
+                }
+
                   <iframe 
                     width="560"
                     height="315" 
                     src={convertToEmbedUrl(currentVideo.url)}
                     title="YouTube video player" 
-                    style={{ border: 'none' }}
+                    style={{ border: 'none', display: loading ? 'none' : 'block' }}
+                    onLoad={() => setLoading(false)}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen 

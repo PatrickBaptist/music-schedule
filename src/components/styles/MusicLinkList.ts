@@ -64,6 +64,15 @@ export const ContentVd = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .loading-screen {
+      width: 560px;
+      height: 315px;
+      background-color: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 `
 
 export const CloseButton = styled.button`
@@ -92,6 +101,4 @@ export const CloseButton = styled.button`
     width: 45px;
     height: 45px;
   }
-
-  
 `;
