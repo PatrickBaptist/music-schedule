@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState} from 'react';
 import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
 import Button from './Buttons';
 import AddLink from '../assets/imgs/add_link.png'
@@ -37,10 +37,10 @@ const MusicLinkList: React.FC = () => {
   }
   
   const openLinkVideo = (videoUrl: Video) => {
-    setCurrentVideo(videoUrl)
-    setLoading(true)
-    setOpenVideo(true)
-  }
+    setCurrentVideo(videoUrl);
+    setLoading(true);
+    setOpenVideo(true);
+  }  
 
     const convertToEmbedUrl = (url: string): string => {
       try {
@@ -83,6 +83,7 @@ const MusicLinkList: React.FC = () => {
         const updatedLink = { name, link, letter, cifra };
         updateMusicLink(editIndex, updatedLink);
         setIsEditing(false);
+        setEditIndex(null);
       }
     };
   

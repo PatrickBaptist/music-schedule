@@ -28,15 +28,15 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   }, []);
 
   const handleAddLink = () => {
-    if (name.trim) {
+    if (name.trim()) {
       addMusicLink({ 
-        link: link.trim() || null,
         name: name.trim(),
-        letter: letter.trim() || null,
-        cifra: cifra.trim() || null
+        link: link.trim() || "",
+        letter: letter.trim() || "",
+        cifra: cifra.trim() || ""
      });
-      setLink('');
       setName('');
+      setLink('');
       setLetter('');
       setCifra('');
 
