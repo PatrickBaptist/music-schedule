@@ -1,17 +1,20 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { db } from '../firebaseConfig';
-import { collection, getDocs, query, orderBy, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 interface MusicLink {
   id?: string;
-  link: string;
+  link: string | null;
   name: string;
+  letter: string | null;
+  cifra: string | null;
 }
 
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
   addMusicLink: (musicLink: MusicLink) => void;
   removeMusicLink: (index: number) => void;
+  updateMusicLink: (index: number, updatedLink: MusicLink) => void;
 }
 
 export const MusicLinksContext = createContext<MusicLinksContextProps | undefined>(undefined);
@@ -40,8 +43,10 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const addMusicLink = async (musicLink: MusicLink) => {
     const newDoc = await addDoc(collection(db, "musicLinks"), {
-      link: musicLink.link,
       name: musicLink.name,
+      link: musicLink.link || null,
+      letter: musicLink.letter || null,
+      cifra: musicLink.cifra || null
     });
     setMusicLinks([...musicLinks, { ...musicLink, id: newDoc.id }]);
   };
@@ -54,8 +59,25 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
+  const updateMusicLink = async (index: number, updatedLink: MusicLink) => {
+    const linkToUpdate = musicLinks[index];
+    if (linkToUpdate.id) {
+      const linkRef = doc(db, 'musicLinks', linkToUpdate.id);
+      await updateDoc(linkRef, {
+        link: updatedLink.link,
+        name: updatedLink.name,
+        letter: updatedLink.letter,
+        cifra: updatedLink.cifra,
+      });
+
+      const updatedMusicLinks = [...musicLinks];
+      updatedMusicLinks[index] = { ...updatedMusicLinks[index], ...updatedLink };
+      setMusicLinks(updatedMusicLinks);
+    }
+  };
+
   return (
-    <MusicLinksContext.Provider value={{ musicLinks, addMusicLink, removeMusicLink }}>
+    <MusicLinksContext.Provider value={{ musicLinks, addMusicLink, removeMusicLink, updateMusicLink }}>
       {children}
     </MusicLinksContext.Provider>
   );

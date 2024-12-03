@@ -4,6 +4,7 @@ import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyCgHCu1LzT99svscYVMgwqhiRLATLxFgHg",
   authDomain: "louvor-manancial.firebaseapp.com",
+  databaseURL: "https://louvor-manancial-default-rtdb.firebaseio.com/",
   projectId: "louvor-manancial",
   storageBucket: "louvor-manancial.appspot.com",
   messagingSenderId: "784323602460",

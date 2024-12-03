@@ -48,10 +48,15 @@ export const ContainerHome = styled.div`
           display: flex;
           flex-direction: column;
 
+          strong {
+            color: white;
+          }
+
           p {
             padding: 0;
             margin: 5px;
             padding-left: 25px;
+            font-size: 20px;
           }
         }
     }
@@ -110,6 +115,10 @@ export const ContainerHome = styled.div`
         align-items: center;
         justify-content: end;
         margin-bottom: 10px;
+
+        button {
+          background-color: #ffc107;
+        }
 
         .close-modal {
           cursor: pointer;

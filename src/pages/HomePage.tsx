@@ -84,10 +84,7 @@ const HomePage: React.FC = () => {
           {isModalOpen && (
             <div className="modal">
               <div className="modal-content">
-                <div className='btn-close'>
-                  <button className="close-modal" onClick={() => setIsModalOpen(false)}>X</button>
-                </div>
-                <MusicLinkInput />
+                <MusicLinkInput setIsModalOpen={setIsModalOpen}/>
               </div>
             </div>
           )}
