@@ -96,7 +96,7 @@ const MusicLinkList: React.FC = () => {
       {musicLinks.map((musicLink, index) => (
         <div key={index} className='container-list'>
 
-          {activeMenuIndex !== index && <span>{musicLink.name}</span>}
+          {activeMenuIndex !== index && <span className='span-music'>{musicLink.name}</span>}
           {activeMenuIndex !== index && <span className='span-name'>{musicLink.cifra}</span>}
 
           <div className='container-btn'>

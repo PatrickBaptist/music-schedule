@@ -41,7 +41,7 @@ export const NavMenu = styled.div`
             transition: transform 2s;
 
             &:hover {
-                color: aliceblue;
+                color: white;
             }
         }
     }

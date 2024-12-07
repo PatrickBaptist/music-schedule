@@ -20,18 +20,18 @@ export const ListContainer = styled.ul`
         width: 100%;
       }
 
-      span {
+      .span-music {
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 18px;
+        margin-right: 8px;
       }
 
       .span-name{
         font-weight: bold;
         font-size: 20px;
         color: white;
-        margin-left: 30px;
       }
     }
 
