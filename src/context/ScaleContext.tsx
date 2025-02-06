@@ -27,9 +27,9 @@ const schedules = {
   ],
   Fevereiro: [
     { date: "02/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.4"], guita: musicians["guita.3"], vocal1: musicians["vocal.9"], vocal2: musicians[""] },
-    { date: "09/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.1"], guita: musicians["guita.1"], vocal1: musicians["vocal.9"], vocal2: musicians[""] },
-    { date: "16/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.2"], guita: musicians["guita.4"], vocal1: musicians["vocal.9"], vocal2: musicians[""] },
-    { date: "23/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.1"], guita: musicians["guita.3"], vocal1: musicians["vocal.9"], vocal2: musicians[""] }
+    { date: "09/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.4"], guita: musicians["guita.3"], vocal1: musicians["vocal.9"], vocal2: musicians[""] },
+    { date: "16/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.3"], bass: musicians["bass.1"], guita: musicians["guita.1"], vocal1: musicians["vocal.9"], vocal2: musicians[""] },
+    { date: "23/02/2025", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.2"], guita: musicians["guita.4"], vocal1: musicians["vocal.9"], vocal2: musicians[""] }
   ],
   Março: [
     { date: "02/03/2025", teclas: musicians["teclas.1"], batera: musicians["batera.2"], bass: musicians["bass.4"], guita: musicians["guita.3"], vocal1: musicians["vocal.3"], vocal2: musicians["vocal.4"] },
