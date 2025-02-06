@@ -35,18 +35,16 @@ const HomePage: React.FC = () => {
         today.setHours(0, 0, 0, 0);
 
         const day = today.getDay();
-        const daysUntilSunday = (7 - day) % 7; // Calcula os dias até o próximo domingo
+        const daysUntilSunday = (7 - day) % 7;
         const nextSunday = new Date(today);
         nextSunday.setDate(today.getDate() + daysUntilSunday);
         
-        // Formate a data para comparação
         const nextSundayStr = nextSunday.toLocaleDateString('pt-BR');
 
         for (const month in data) {
           const currentMonthSchedules = data[month as keyof typeof data];
           currentMonthSchedules.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-          // Encontre a escala do próximo domingo
           for (const schedule of currentMonthSchedules) {
             if (schedule.date === nextSundayStr) {
               setNextSundaySchedule(schedule);
@@ -62,7 +60,7 @@ const HomePage: React.FC = () => {
 
 
     fetchSchedules();
-    const interval = setInterval(fetchSchedules, 1000 * 60 * 60 * 24); // Atualize a cada 24 horas
+    const interval = setInterval(fetchSchedules, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
   }, []);

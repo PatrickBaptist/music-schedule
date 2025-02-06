@@ -10,11 +10,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      // Simule um tempo de espera
-      await new Promise(resolve => setTimeout(resolve, 1000)); // ajuste o tempo conforme necessário
-      // Aguarde um pouco para a transição de fade
-      await new Promise(resolve => setTimeout(resolve, 500)); // tempo da animação de fade
-      setLoading(false); // Desative o carregamento após o fade
+      await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setLoading(false);
     };
 
     loadData();

@@ -2,14 +2,14 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCgHCu1LzT99svscYVMgwqhiRLATLxFgHg",
-  authDomain: "louvor-manancial.firebaseapp.com",
-  databaseURL: "https://louvor-manancial-default-rtdb.firebaseio.com/",
-  projectId: "louvor-manancial",
-  storageBucket: "louvor-manancial.appspot.com",
-  messagingSenderId: "784323602460",
-  appId: "1:784323602460:web:dd0c25a22c7e618b8497d9",
-  measurementId: "G-FBZB57Z2V4"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
