@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage';
 import SchedulePage from './pages/SchedulePage';
 import ListMusic from './pages/ListMusic';
 import LoadingScreen from './components/LoadingScreen';
-import ScheduleForm from './pages/alterSchedule';
+import ScheduleForm from './pages/AlterSchedule';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true)

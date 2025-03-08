@@ -15,6 +15,18 @@ interface MusicianSchedule {
   guita: string;
 }
 
+interface Sunday {
+  date: string;
+  músicos: {
+    vocal1?: string;
+    vocal2?: string;
+    teclas?: string;
+    batera?: string;
+    bass?: string;
+    guita?: string;
+  };
+}
+
 const getFormattedMonth = (): string => {
   const today = new Date();
   const currentMonth = today.getMonth() + 1; // getMonth() retorna de 0 a 11, então somamos 1
@@ -54,7 +66,7 @@ const Schedule: React.FC = () => {
             return;
           }
 
-          const schedules: MusicianSchedule[] = data.sundays.map((sunday: any) => ({
+          const schedules: MusicianSchedule[] = data.sundays.map((sunday: Sunday) => ({
             date: new Date(sunday.date).toLocaleDateString("pt-BR"),
             vocal1: sunday.músicos?.vocal1 || "Não definido",
             vocal2: sunday.músicos?.vocal2 || "Não definido",
