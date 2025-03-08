@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import SchedulePage from './pages/SchedulePage';
 import ListMusic from './pages/ListMusic';
 import LoadingScreen from './components/LoadingScreen';
+import ScheduleForm from './pages/alterSchedule';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true)
@@ -28,6 +29,7 @@ const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/listMusic" element={<ListMusic />} />
+            <Route path="/alter" element={<ScheduleForm />} />
           </Routes>
         )}
     </>

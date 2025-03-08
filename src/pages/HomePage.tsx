@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import MusicLinkInput from '../components/MusicLinkInput';
 import MusicLinkList from '../components/MusicLinkList';
 import Header from '../components/Header';
-import { createSchedules } from '../context/ScaleContext';
 import Footer from '../components/Footer';
 import { Container, ContainerHome } from './pageStyle/HomePage';
 import EditLink from '../assets/imgs/edit.png'
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 type Schedule = {
   date: string;
@@ -25,12 +26,40 @@ const HomePage: React.FC = () => {
 
   schedules
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      try {
-        const data = await createSchedules();
-        setSchedules(data);
+  const getFormattedMonth = (): string => {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // getMonth() retorna de 0 a 11, então somamos 1
+    const year = today.getFullYear();
+  
+    // Formatação do mês e ano no formato MM-YYYY
+    const formattedMonth = currentMonth.toString().padStart(2, "0"); // Garante que o mês tenha 2 dígitos
+    return `${formattedMonth}-${year}`;
+  };
 
+  const fetchSchedulesFromFirebase = async () => {
+    try {
+      const month = getFormattedMonth(); // Nome do mês atual
+      const docRef = doc(db, 'schedules', month);
+      const snapshot = await getDoc(docRef);
+      
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const sundays = data?.sundays || [];
+        
+        // Organizar as escalas de acordo com a data
+        const schedulesByMonth: { [key: string]: Schedule[] } = {};
+
+        sundays.forEach((sunday: any) => {
+          const date = new Date(sunday.date).toLocaleDateString('pt-BR');
+          if (!schedulesByMonth[date]) {
+            schedulesByMonth[date] = [];
+          }
+          schedulesByMonth[date].push(sunday.músicos); // Adiciona a escala do domingo
+        });
+
+        setSchedules(schedulesByMonth);
+
+        // Determinar o próximo domingo
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -38,29 +67,22 @@ const HomePage: React.FC = () => {
         const daysUntilSunday = (7 - day) % 7;
         const nextSunday = new Date(today);
         nextSunday.setDate(today.getDate() + daysUntilSunday);
-        
+
         const nextSundayStr = nextSunday.toLocaleDateString('pt-BR');
-
-        for (const month in data) {
-          const currentMonthSchedules = data[month as keyof typeof data];
-          currentMonthSchedules.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-          for (const schedule of currentMonthSchedules) {
-            if (schedule.date === nextSundayStr) {
-              setNextSundaySchedule(schedule);
-              return;
-            }
-          }
-        }
-        setNextSundaySchedule(null);
-      } catch (error) {
-        console.error("Erro ao buscar schedules:", error);
+        const nextSchedule = schedulesByMonth[nextSundayStr]?.[0]; // Pega a primeira escala do próximo domingo
+        
+        setNextSundaySchedule(nextSchedule || null);
+      } else {
+        console.log("Documento não encontrado!");
       }
-    };
+    } catch (error) {
+      console.error("Erro ao buscar schedules:", error);
+    }
+  };
 
-
-    fetchSchedules();
-    const interval = setInterval(fetchSchedules, 1000 * 60 * 60 * 24);
+  useEffect(() => {
+    fetchSchedulesFromFirebase();
+    const interval = setInterval(fetchSchedulesFromFirebase, 1000 * 60 * 60 * 24);
 
     return () => clearInterval(interval);
   }, []);

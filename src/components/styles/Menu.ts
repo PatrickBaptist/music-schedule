@@ -20,19 +20,22 @@ export const ContentMenu = styled.div`
 
 export const NavMenu = styled.div`
     width: 100%;
+    height: 170px;
     display: flex;
     align-items: center;
     justify-content: center;
 
     ul {
         width: 100%;
-        height: 170px;
+        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         list-style-type: none;
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
         
         li {
             font-weight: bold;
