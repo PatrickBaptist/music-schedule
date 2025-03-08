@@ -11,6 +11,7 @@ import {
   DarkButton,
   FormGroup,
 } from "./pageStyle/AlterSchedule";
+import { useNavigate } from "react-router-dom";
 
 interface Schedule {
   date: string;
@@ -35,6 +36,7 @@ const ScheduleForm: React.FC = () => {
   const [vocal1, setVocal1] = useState("");
   const [vocal2, setVocal2] = useState("");
   const [sundays, setSundays] = useState<Date[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const sundaysList = getSundaysOfMonth(
@@ -254,6 +256,9 @@ const ScheduleForm: React.FC = () => {
         </FormGroup>
         <DarkButton type="submit">Salvar Escala</DarkButton>
       </DarkForm>
+        <DarkButton onClick={() => {
+                            navigate("/")
+                        }}>Voltar</DarkButton>
     </DarkWrapper>
   );
 };

@@ -20,7 +20,7 @@ export const ContentMenu = styled.div`
 
 export const NavMenu = styled.div`
     width: 100%;
-    height: 170px;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,7 +39,7 @@ export const NavMenu = styled.div`
         
         li {
             font-weight: bold;
-            margin-bottom: 40px;
+            margin: 10px 0 40px 0;
             cursor: pointer;
             transition: transform 2s;
 
