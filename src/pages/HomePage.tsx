@@ -10,21 +10,21 @@ import { db } from '../firebaseConfig';
 
 type Schedule = {
   date: string;
-  vocal1: string;
-  vocal2: string;
-  teclas: string;
-  batera: string;
-  bass: string;
-  guita: string;
+  músicos:{
+    teclas: string;
+    batera: string;
+    bass: string;
+    guita: string;
+    vocal1: string;
+    vocal2: string;
+  };
 };
 
 const HomePage: React.FC = () => {
 
-  const [schedules, setSchedules] = useState<{ [key: string]: Schedule[] } | null>(null);
+  const [, setSchedules] = useState<{ [key: string]: Schedule[] } | null>(null);
   const [nextSundaySchedule, setNextSundaySchedule] = useState<Schedule | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  schedules
 
   const getFormattedMonth = (): string => {
     const today = new Date();
@@ -36,7 +36,9 @@ const HomePage: React.FC = () => {
     return `${formattedMonth}-${year}`;
   };
 
-  const fetchSchedulesFromFirebase = async () => {
+  useEffect(() => {
+
+    const fetchSchedulesFromFirebase = async () => {
     try {
       const month = getFormattedMonth(); // Nome do mês atual
       const docRef = doc(db, 'schedules', month);
@@ -44,17 +46,17 @@ const HomePage: React.FC = () => {
       
       if (snapshot.exists()) {
         const data = snapshot.data();
-        const sundays = data?.sundays || [];
+        const sundays: Schedule[] = data?.sundays || [];
         
         // Organizar as escalas de acordo com a data
         const schedulesByMonth: { [key: string]: Schedule[] } = {};
 
-        sundays.forEach((sunday: any) => {
+        sundays.forEach((sunday: Schedule) =>{
           const date = new Date(sunday.date).toLocaleDateString('pt-BR');
           if (!schedulesByMonth[date]) {
             schedulesByMonth[date] = [];
           }
-          schedulesByMonth[date].push(sunday.músicos); // Adiciona a escala do domingo
+          schedulesByMonth[date].push(sunday) // Adiciona a escala do domingo
         });
 
         setSchedules(schedulesByMonth);
@@ -71,7 +73,7 @@ const HomePage: React.FC = () => {
         const nextSundayStr = nextSunday.toLocaleDateString('pt-BR');
         const nextSchedule = schedulesByMonth[nextSundayStr]?.[0]; // Pega a primeira escala do próximo domingo
         
-        setNextSundaySchedule(nextSchedule || null);
+        setNextSundaySchedule(nextSchedule);
       } else {
         console.log("Documento não encontrado!");
       }
@@ -79,8 +81,7 @@ const HomePage: React.FC = () => {
       console.error("Erro ao buscar schedules:", error);
     }
   };
-
-  useEffect(() => {
+  
     fetchSchedulesFromFirebase();
     const interval = setInterval(fetchSchedulesFromFirebase, 1000 * 60 * 60 * 24);
 
@@ -116,12 +117,12 @@ const HomePage: React.FC = () => {
           {nextSundaySchedule ? (
           <div className='content'>
             <h2>Próximo domingo</h2>
-            <p><strong>Vocal:</strong> {nextSundaySchedule.vocal1}</p>
-            <p><strong>Vocal:</strong> {nextSundaySchedule.vocal2}</p>
-            <p><strong>Teclas:</strong> {nextSundaySchedule.teclas}</p>
-            <p><strong>Batera:</strong> {nextSundaySchedule.batera}</p>
-            <p><strong>Bass:</strong> {nextSundaySchedule.bass}</p>
-            <p><strong>Guita:</strong> {nextSundaySchedule.guita}</p>
+            <p><strong>Vocal:</strong> {nextSundaySchedule.músicos.vocal1}</p>
+            <p><strong>Vocal:</strong> {nextSundaySchedule.músicos.vocal2}</p>
+            <p><strong>Teclas:</strong> {nextSundaySchedule.músicos.teclas}</p>
+            <p><strong>Batera:</strong> {nextSundaySchedule.músicos.batera}</p>
+            <p><strong>Bass:</strong> {nextSundaySchedule.músicos.bass}</p>
+            <p><strong>Guita:</strong> {nextSundaySchedule.músicos.guita}</p>
           </div>
         ) : (
           <p>Não há escala disponível.</p>

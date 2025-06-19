@@ -70,8 +70,9 @@ const ScheduleForm: React.FC = () => {
 
       if (docSnap.exists()) {
         const existingData = docSnap.data();
+        const formatDate = (d: string) => new Date(d).toISOString().slice(0, 10);
         const foundSchedule = existingData.sundays?.find(
-          (s: Schedule) => s.date === date
+          (s: Schedule) => formatDate(s.date) === formatDate(date)
         );
 
         if (foundSchedule) {

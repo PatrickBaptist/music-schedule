@@ -19,7 +19,7 @@ export const InputContainer = styled.div`
   button {
     width: 100px;
     cursor: pointer;
-    background-color: #28a745;
+    background-color:#007BFF;
 
     img {
       width: 20px;

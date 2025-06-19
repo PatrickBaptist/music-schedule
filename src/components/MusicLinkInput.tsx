@@ -20,6 +20,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [name, setName] = useState('');
   const [letter, setLetter] = useState('');
   const [cifra, setCifra] = useState('');
+  const [order, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,17 +29,20 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   }, []);
 
   const handleAddLink = () => {
+    setIsModalOpen(false)
     if (name.trim()) {
       addMusicLink({ 
         name: name.trim(),
         link: link.trim() || "",
         letter: letter.trim() || "",
-        cifra: cifra.trim() || ""
+        cifra: cifra.trim() || "",
+        order: order
      });
       setName('');
       setLink('');
       setLetter('');
       setCifra('');
+      setOrder(1);
 
       nameInputRef.current?.focus();
     }
@@ -56,8 +60,9 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Ex.: 1 - Grande é o Senhor"
+        placeholder="Ex.: Grande é o Senhor"
         ref={nameInputRef}
+        onKeyDown={handleKeyPress}
       />
       <input
         type="text"
@@ -93,7 +98,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       <Button onClick={handleAddLink}>
         Adicionar
       </Button>
-      <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#ffc107' }}>
+      <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
         Cancelar
       </Button>
     </InputContainer>

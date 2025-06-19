@@ -55,7 +55,7 @@ const Schedule: React.FC = () => {
 
         const docRef = doc(db, "schedules", month);
         const snapshot = await getDoc(docRef);
-        
+
         if (snapshot.exists()) {
           console.log(`Documento encontrado para o mês de ${month}`);
 

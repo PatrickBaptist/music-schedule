@@ -30,6 +30,7 @@ const MusicLinkList: React.FC = () => {
   const [link, setLink] = useState('');
   const [letter, setLetter] = useState('');
   const [cifra, setCifra] = useState('');
+  const [order, setOrder] = useState(1);
 
   const handleVideoClick = () => {
     setOpenVideo(false)
@@ -73,6 +74,7 @@ const MusicLinkList: React.FC = () => {
       setLink(musicLink.link || '');
       setLetter(musicLink.letter || '');
       setCifra(musicLink.cifra || '');
+      setOrder(musicLink.order || 1);
       setEditIndex(index);
       setIsEditing(true);
       setActiveMenuIndex(null);
@@ -80,7 +82,7 @@ const MusicLinkList: React.FC = () => {
   
     const handleSaveEdit = () => {
       if (editIndex !== null) {
-        const updatedLink = { name, link, letter, cifra };
+        const updatedLink = { name, link, letter, cifra, order };
         updateMusicLink(editIndex, updatedLink);
         setIsEditing(false);
         setEditIndex(null);
@@ -90,6 +92,12 @@ const MusicLinkList: React.FC = () => {
     const handleCancelEdit = () => {
       setIsEditing(false);
     };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          handleSaveEdit();
+        }
+      }
     
   return (
     <ListContainer>
@@ -176,18 +184,28 @@ const MusicLinkList: React.FC = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Nome da música"
+                    onKeyDown={handleKeyPress}
                   />
                   <input
                     type="text"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="Link da música"
+                    onKeyDown={handleKeyPress}
                   />
                   <input
                     type="text"
                     value={letter}
                     onChange={(e) => setLetter(e.target.value)}
                     placeholder="Link da música"
+                    onKeyDown={handleKeyPress}
+                  />
+                  <input
+                    type="number"
+                    value={order}
+                    onChange={(e) => setOrder(Number(e.target.value))}
+                    placeholder="Ordem da música"
+                    onKeyDown={handleKeyPress}
                   />
 
                   <SelectContainer>
@@ -206,10 +224,10 @@ const MusicLinkList: React.FC = () => {
                     </select>
                   </SelectContainer>
 
-                  <Button onClick={handleSaveEdit} style={{ backgroundColor: '#28a745' }}>
+                  <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF' }}>
                     Salvar
                   </Button>
-                  <Button onClick={handleCancelEdit} style={{ backgroundColor: '#ffc107' }}>
+                  <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e' }}>
                     Cancelar
                   </Button>
                 </div>
