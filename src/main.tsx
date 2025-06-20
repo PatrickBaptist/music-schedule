@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import GlobalStyle from './globalStyles';
-import { MusicLinksProvider } from './context/MusicLinksContext';
+import { MusicLinksProvider } from './services/MusicLinksService';
 import Notification from '../src/components/Notification'
 import { UserStore } from './context/openMenuContext';
 import Menu from './components/Menu';

@@ -18,7 +18,7 @@ export interface MusicLinksContextProps {
   updateMusicLink: (index: number, updatedLink: MusicLink) => void;
 }
 
-export const MusicLinksContext = createContext<MusicLinksContextProps | undefined>(undefined);
+export const MusicLinksService = createContext<MusicLinksContextProps | undefined>(undefined);
 
 export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [musicLinks, setMusicLinks] = useState<MusicLink[]>([]);
@@ -135,8 +135,8 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
 };
 
   return (
-    <MusicLinksContext.Provider value={{ musicLinks, addMusicLink, removeMusicLink, updateMusicLink }}>
+    <MusicLinksService.Provider value={{ musicLinks, addMusicLink, removeMusicLink, updateMusicLink }}>
       {children}
-    </MusicLinksContext.Provider>
+    </MusicLinksService.Provider>
   );
 };

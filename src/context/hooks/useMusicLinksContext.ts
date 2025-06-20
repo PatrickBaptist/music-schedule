@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { MusicLinksContext, MusicLinksContextProps } from '../MusicLinksContext';
+import { MusicLinksService, MusicLinksContextProps } from '../../services/MusicLinksService';
 
 export const useMusicLinksContext = (): MusicLinksContextProps => {
-  const context = useContext(MusicLinksContext);
+  const context = useContext(MusicLinksService);
   if (!context) {
     throw new Error('useMusicLinksContext must be used within a MusicLinksProvider');
   }

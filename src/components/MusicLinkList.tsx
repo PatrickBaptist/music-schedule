@@ -200,6 +200,7 @@ const MusicLinkList: React.FC = () => {
                     placeholder="Link da música"
                     onKeyDown={handleKeyPress}
                   />
+                  <label htmlFor="cifra" style={{ width: '100%', fontSize: '14px', fontWeight: 'bold', textAlign: 'left' }}>Ordem da música</label>
                   <input
                     type="number"
                     value={order}
