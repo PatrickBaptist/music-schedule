@@ -81,7 +81,6 @@ const HomePage: React.FC = () => {
       console.error("Erro ao buscar schedules:", error);
     }
   };
-  
     fetchSchedulesFromFirebase();
     const interval = setInterval(fetchSchedulesFromFirebase, 1000 * 60 * 60 * 24);
 
