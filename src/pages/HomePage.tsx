@@ -95,10 +95,10 @@ const HomePage: React.FC = () => {
       <ContainerHome>
 
         <div className='content-louvores'>
-        <h1>Louvores</h1>
-         <button className='btn-write' onClick={() => setIsModalOpen(true)}>
-            <img src={EditLink} alt="editLink" />
-         </button>
+          <h1>Louvores</h1>
+          <button className='btn-write' onClick={() => setIsModalOpen(true)}>
+              <img src={EditLink} alt="editLink" />
+          </button>
         </div>
 
           {isModalOpen && (

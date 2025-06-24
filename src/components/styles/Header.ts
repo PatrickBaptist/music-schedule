@@ -30,16 +30,12 @@ export const ContainerLogo = styled.div`
     .hamburguer {
       width: 50px;
       height: 50px;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       background-color: transparent;
       cursor: pointer;
       border: none;
-
-      @media(max-width: 550px) {
-        display: flex;
-      }
     }
       
       .menu {
