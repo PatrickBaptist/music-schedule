@@ -17,6 +17,7 @@ interface Schedule {
   date: string;
   músicos: {
     teclas: string;
+    violao: string;
     batera: string;
     bass: string;
     guita: string;
@@ -30,6 +31,7 @@ const ScheduleForm: React.FC = () => {
   const [DarkSelectedYear, setDarkSelectedYear] = useState<number>(new Date().getFullYear()); // Ano atual
   const [date, setDate] = useState("");
   const [teclas, setTeclas] = useState("");
+  const [violao, setViolao] = useState("");
   const [batera, setBatera] = useState("");
   const [bass, setBass] = useState("");
   const [guita, setGuita] = useState("");
@@ -77,6 +79,7 @@ const ScheduleForm: React.FC = () => {
 
         if (foundSchedule) {
           setTeclas(foundSchedule.músicos.teclas);
+          setViolao(foundSchedule.músicos.violao);
           setBatera(foundSchedule.músicos.batera);
           setBass(foundSchedule.músicos.bass);
           setGuita(foundSchedule.músicos.guita);
@@ -84,6 +87,7 @@ const ScheduleForm: React.FC = () => {
           setVocal2(foundSchedule.músicos.vocal2);
         } else {
           setTeclas("");
+          setViolao("");
           setBatera("");
           setBass("");
           setGuita("");
@@ -119,12 +123,12 @@ const ScheduleForm: React.FC = () => {
         if (sundayIndex >= 0) {
           updatedSundays[sundayIndex] = {
             date,
-            músicos: { teclas, batera, bass, guita, vocal1, vocal2 },
+            músicos: { teclas, violao, batera, bass, guita, vocal1, vocal2 },
           };
         } else {
           updatedSundays.push({
             date,
-            músicos: { teclas, batera, bass, guita, vocal1, vocal2 },
+            músicos: { teclas, violao, batera, bass, guita, vocal1, vocal2 },
           });
         }
 
@@ -134,20 +138,12 @@ const ScheduleForm: React.FC = () => {
         // Se o documento não existir, cria um novo com os domingos e a escala
         await setDoc(docRef, {
           sundays: [
-            { date, músicos: { teclas, batera, bass, guita, vocal1, vocal2 } },
+            { date, músicos: { teclas, violao, batera, bass, guita, vocal1, vocal2 } },
           ],
         });
       }
 
       alert("Escala salva com sucesso!");
-      // Limpar campos após o envio
-      setDate("");
-      setTeclas("");
-      setBatera("");
-      setBass("");
-      setGuita("");
-      setVocal1("");
-      setVocal2("");
     } catch (error) {
       alert("Erro ao salvar a escala!");
     }
@@ -207,6 +203,15 @@ const ScheduleForm: React.FC = () => {
             type="text"
             value={teclas}
             onChange={(e) => setTeclas(e.target.value)}
+            required
+          />
+        </FormGroup>
+        <FormGroup>
+          <DarkLabel>Violão:</DarkLabel>
+          <DarkInput
+            type="text"
+            value={violao}
+            onChange={(e) => setViolao(e.target.value)}
             required
           />
         </FormGroup>

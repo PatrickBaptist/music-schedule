@@ -10,6 +10,7 @@ interface MusicianSchedule {
   vocal1: string;
   vocal2: string;
   teclas: string;
+  violao: string;
   batera: string;
   bass: string;
   guita: string;
@@ -21,6 +22,7 @@ interface Sunday {
     vocal1?: string;
     vocal2?: string;
     teclas?: string;
+    violao?: string;
     batera?: string;
     bass?: string;
     guita?: string;
@@ -71,6 +73,7 @@ const Schedule: React.FC = () => {
             vocal1: sunday.músicos?.vocal1 || "Não definido",
             vocal2: sunday.músicos?.vocal2 || "Não definido",
             teclas: sunday.músicos?.teclas || "Não definido",
+            violao: sunday.músicos?.violao || "Não definido",
             batera: sunday.músicos?.batera || "Não definido",
             bass: sunday.músicos?.bass || "Não definido",
             guita: sunday.músicos?.guita || "Não definido"
@@ -110,6 +113,7 @@ const Schedule: React.FC = () => {
                   <p><strong>Vocal: </strong>{musician.vocal1}</p>
                   <p><strong>Vocal: </strong>{musician.vocal2}</p>
                   <p><strong>Teclas: </strong>{musician.teclas}</p>
+                  <p><strong>Violão: </strong>{musician.violao}</p>
                   <p><strong>Batera: </strong>{musician.batera}</p>
                   <p><strong>Bass: </strong>{musician.bass}</p>
                   <p><strong>Guita: </strong>{musician.guita}</p>

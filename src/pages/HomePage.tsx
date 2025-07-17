@@ -12,6 +12,7 @@ type Schedule = {
   date: string;
   músicos:{
     teclas: string;
+    violao: string;
     batera: string;
     bass: string;
     guita: string;
@@ -119,6 +120,7 @@ const HomePage: React.FC = () => {
             <p><strong>Vocal:</strong> {nextSundaySchedule.músicos.vocal1}</p>
             <p><strong>Vocal:</strong> {nextSundaySchedule.músicos.vocal2}</p>
             <p><strong>Teclas:</strong> {nextSundaySchedule.músicos.teclas}</p>
+            <p><strong>Violão:</strong> {nextSundaySchedule.músicos.violao}</p>
             <p><strong>Batera:</strong> {nextSundaySchedule.músicos.batera}</p>
             <p><strong>Bass:</strong> {nextSundaySchedule.músicos.bass}</p>
             <p><strong>Guita:</strong> {nextSundaySchedule.músicos.guita}</p>
