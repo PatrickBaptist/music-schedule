@@ -12,9 +12,7 @@ const Menu: React.FC = () => {
     };
 
     return (
-        <ContainerMenu 
-        $openMenu={openMenu}
-        >
+        <ContainerMenu $openMenu={openMenu}>
             <ContentMenu>
                 <NavMenu>
                     <ul>

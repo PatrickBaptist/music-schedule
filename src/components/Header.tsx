@@ -22,10 +22,10 @@ const Header: React.FC<HeaderProps> = () => {
         <ContainerLogo>
           <a href="/"><img src={Logo} alt="logo da igreja" className='logo'/></a>
           <div>
-            <button onClick={handleMenuClick} className='hamburguer'>
+            <button onClick={handleMenuClick} className='hamburguer' aria-label="Menu">
               <img 
                   src={openMenu ? ClosedMenu : Menu} 
-                  alt="Hamburguer" 
+                  alt="Menu Icon" 
                   className={openMenu ? 'closeMenu' : 'menu'}
               />            
             </button>

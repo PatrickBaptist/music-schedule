@@ -6,59 +6,102 @@ export const ListContainer = styled.ul`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 10px;
+  padding: 0 8px;
   box-sizing: border-box;
 
     .container-list {
-      width: 60%;
+      width: 100%;
       display: flex;
       align-items: center;
-      font-weight: bold;
-      box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 5px;
 
-      @media(max-width: 900px) {
+      .container-card {
         width: 100%;
+        max-width: 800px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        gap: 8px;
+      }
+
+      .card {
+        width: 100%;
+        min-width: 300px;
+        background-color: #161b22;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 16px;
+        border-radius: 12px;
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+        position: relative;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
       }
 
       .span-music {
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 18px;
-        margin-right: 8px;
+        font-weight: bold;
+        font-size: 14px;
+        color: #58a6ff;
+        display: inline-block;
+
+        @media (max-width: 700px) {
+          width: 200px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
 
-      .span-name{
+      .span-name {
         font-weight: bold;
         font-size: 20px;
         color: white;
       }
-    }
 
-    .container-btn {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      
-      button {
-        cursor: pointer;
-        margin: 2px;
+      .span-order {
+        font-weight: bold;
+        font-size: 20px;
+        color:#c9d1d9;
       }
 
-      img {
-        width: 20px;
+      .span-cifra {
+        font-weight: bold;
+        font-size: 18px;
+        color: white;
       }
-    }
 
-    .menu-buttons {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
+      .music-btns {
+        width: 100%;
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
 
-      @media(max-width: 520px) {
-        justify-content: center;
+      .menu-buttons {
+        display: flex;
+        gap: 6px;
+      }
+
+      .delete-icon {
+        @media (max-width: 400px) {
+          display: none;
+        }
+      }
+
+      .delete-icon-edit {
+        @media (min-width: 400px) {
+          display: none;
+        }
       }
     }
 

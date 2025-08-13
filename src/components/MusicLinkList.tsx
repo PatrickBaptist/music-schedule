@@ -1,9 +1,8 @@
 import React, { useState} from 'react';
 import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
 import Button from './Buttons';
-import AddLink from '../assets/imgs/add_link.png'
-import Delete from '../assets/imgs/delete.png'
 import Loading from '../assets/Loading.gif'
+import Delete from '../assets/imgs/delete.png'
 import { ContainerVd, ContentVd, ListContainer, SelectContainer } from '../components/styles/MusicLinkList'
 
 type Video = {
@@ -21,16 +20,16 @@ const MusicLinkList: React.FC = () => {
   const { musicLinks, removeMusicLink, updateMusicLink } = useMusicLinksContext();
   const [ openVideo, setOpenVideo ] = useState(false)
   const [ currentVideo, setCurrentVideo ] = useState<Video | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [ loading, setLoading ] = useState(false)
+  const [ loadingCards, setLoadingCards ] = useState<{ [key: string]: boolean }>({});
+  const [ isEditing, setIsEditing ] = useState<boolean>(false);
+  const [ editIndex, setEditIndex ] = useState<string | null>(null);
 
   const [name, setName] = useState('');
   const [link, setLink] = useState('');
   const [letter, setLetter] = useState('');
   const [cifra, setCifra] = useState('');
-  const [order, setOrder] = useState(1);
+  const [order, setOrder] = useState(0);
 
   const handleVideoClick = () => {
     setOpenVideo(false)
@@ -41,51 +40,39 @@ const MusicLinkList: React.FC = () => {
     setCurrentVideo(videoUrl);
     setLoading(true);
     setOpenVideo(true);
-  }  
-
-    const convertToEmbedUrl = (url: string): string => {
-      try {
-        const parsedUrl = new URL(url);
-        let videoId: string | null = null;
-    
-        // Verifica se a URL é do formato short do YouTube
-        if (parsedUrl.hostname === 'youtu.be') {
-          videoId = parsedUrl.pathname.substring(1); // Remove o '/'
-        } else if (parsedUrl.hostname === 'www.youtube.com' && parsedUrl.searchParams.has('v')) {
-          // Verifica se a URL é do formato completo do YouTube
-          videoId = parsedUrl.searchParams.get('v');
-        }
-    
-        if (videoId) {
-          return `https://www.youtube.com/embed/${videoId}`;
-        } else {
-          console.error('ID do vídeo não encontrado na URL.');
-          return '';
-        }
-      } catch (error) {
-        console.error('Erro ao converter URL:', error);
-        return '';
-      }
-    }
+  }
 
     const handleEditClick = (index: number) => {
       const musicLink = musicLinks[index];
-      setName(musicLink.name);
-      setLink(musicLink.link || '');
-      setLetter(musicLink.letter || '');
-      setCifra(musicLink.cifra || '');
-      setOrder(musicLink.order || 1);
-      setEditIndex(index);
-      setIsEditing(true);
-      setActiveMenuIndex(null);
+
+        setName(musicLink.name);
+        setLink(musicLink.link || '');
+        setLetter(musicLink.letter || '');
+        setCifra(musicLink.cifra || '');
+        setOrder(musicLink.order || 0);
+        setEditIndex(musicLink.id!);
+        setIsEditing(true);
+
     };
+
+  const handleDelete = async (id: string) => {
+    setLoadingCards(prev => ({ ...prev, [id]: true }));
+
+    await removeMusicLink(id);
+
+    setLoadingCards(prev => ({ ...prev, [id]: false }));
+  };
   
-    const handleSaveEdit = () => {
-      if (editIndex !== null) {
+    const handleSaveEdit = async () => {
+      if (editIndex) {
+        setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
         const updatedLink = { name, link, letter, cifra, order };
-        updateMusicLink(editIndex, updatedLink);
         setIsEditing(false);
         setEditIndex(null);
+
+        await updateMusicLink(editIndex, updatedLink);
+
+        setLoadingCards(prev => ({ ...prev, [editIndex]: false }));
       }
     };
   
@@ -104,78 +91,76 @@ const MusicLinkList: React.FC = () => {
       {musicLinks.map((musicLink, index) => (
         <div key={index} className='container-list'>
 
-          {activeMenuIndex !== index && <span className='span-music'>{musicLink.name}</span>}
-          {activeMenuIndex !== index && <span className='span-name'>{musicLink.cifra}</span>}
+          <div className='container-card'>
+            <div className='card'>
 
-          <div className='container-btn'>
-
-            {activeMenuIndex === index && (
-              <div className='menu-buttons'>
-                {musicLink.link && (
-                    <Button
-                      onClick={() => openLinkVideo({ url: musicLink.link || '' })}
-                      style={{ backgroundColor: '#2EBEF2' }}
-                    >
-                      <img src={AddLink} alt="addLink" />
-                    </Button>              
-                )}
+              {loadingCards[musicLink.id!] ? (
                 
-                {musicLink.letter && (
-                    <Button 
-                      style={{ backgroundColor: '#2ef248' }}
-                      onClick={() => {
-                        if (musicLink.letter) {
-                          window.open(musicLink.letter, '_blank')
-                        }
-                      }}
-                    >
-                      Letra
-                                           
-                    </Button>
-                )}
-                  <>
-                    <Button
-                      style={{ backgroundColor: '#e6e6e6' }}
-                      onClick={() => handleEditClick(index)}
-                    >
-                      Edit
-                    </Button>
-
-                    <Button
-                      onClick={() => {
-                        removeMusicLink(index)
-                        setActiveMenuIndex(null)
-                      }}
-                      style={{ backgroundColor: '#C0392B' }}
-                    >
-                      <img src={Delete} alt="delete" />
-                    </Button>
-
-                    <Button
-                      aria-label="Fechar Menu"
-                      onClick={() => setActiveMenuIndex(null)}
-                      style={{ backgroundColor: '#007BFF' }}
-                    >
-                      X
-                    </Button>
-                  </>
+                  <p style={{ color: '#fff' }}>
+                    Aguarde..
+                  </p>
                 
+              ) : (
+              <>
+              
+              <span className='span-order'>{musicLink.order}</span>
+              
+              <div className='music-btns'>
+
+                <span className='span-music'>{musicLink.name}</span>
+
+                <div className='menu-buttons'>
+                  {musicLink.link && (
+                      <Button
+                        onClick={() => openLinkVideo({ url: musicLink.link || '' })}
+                        style={{ backgroundColor: '#a371f7', color: 'white' }}
+                      >
+                        Vídeo
+                      </Button>              
+                  )}
+                  
+                  {musicLink.letter && (
+                      <Button 
+                        style={{ backgroundColor: '#3fb950', color: 'white' }}
+                        onClick={() => {
+                          if (musicLink.letter) {
+                            window.open(musicLink.letter, '_blank')
+                          }
+                        }}
+                      >
+                        Letra               
+                      </Button>
+                  )}
+                    <>
+                      <Button
+                        style={{ backgroundColor: '#2f81f7', color: 'white' }}
+                        onClick={() => handleEditClick(index)}
+                      >
+                        Editar
+                      </Button>
+                    </>
+                </div>
               </div>
-            )}
 
-          {activeMenuIndex !== index && 
+              <div>
+                {musicLink.cifra && <span className='span-cifra'>{musicLink.cifra}</span>}
+              </div>
+
+              </>
+              )}
+            </div>
             <Button
-            aria-label="Abrir menu"
-            onClick={() => setActiveMenuIndex(index)}
-            style={{ backgroundColor: '#007BFF' }}
-            >
-              Abrir menu
+              className='delete-icon'
+              onClick={() => {
+                handleDelete(musicLink.id!)
+              }}
+              style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', borderRadius: 'none', border: 'none' }}
+              >
+              <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
             </Button>
-          }
-          
           </div>
 
-          {isEditing && editIndex === index && (
+          {isEditing && (
             <div className="edit-form">
               <div className='edit-content'>
                 <div className="input-container">
@@ -183,7 +168,7 @@ const MusicLinkList: React.FC = () => {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Nome da música"
+                    placeholder="Nome da música"  
                     onKeyDown={handleKeyPress}
                   />
                   <input
@@ -197,12 +182,12 @@ const MusicLinkList: React.FC = () => {
                     type="text"
                     value={letter}
                     onChange={(e) => setLetter(e.target.value)}
-                    placeholder="Link da música"
+                    placeholder="Link da letra"
                     onKeyDown={handleKeyPress}
                   />
                   <label htmlFor="cifra" style={{ width: '100%', fontSize: '14px', fontWeight: 'bold', textAlign: 'left' }}>Ordem da música</label>
                   <input
-                    type="number"
+                    type="text"
                     value={order}
                     onChange={(e) => setOrder(Number(e.target.value))}
                     placeholder="Ordem da música"
@@ -231,6 +216,15 @@ const MusicLinkList: React.FC = () => {
                   <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e' }}>
                     Cancelar
                   </Button>
+                  <Button
+                    className='delete-icon-edit'
+                    onClick={() => {
+                      removeMusicLink(musicLink.id!)
+                    }}
+                    style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', borderRadius: 'none', border: 'none' }}
+                    >
+                    <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -249,7 +243,7 @@ const MusicLinkList: React.FC = () => {
                   <iframe 
                     width="560"
                     height="315" 
-                    src={convertToEmbedUrl(currentVideo.url)}
+                    src={(currentVideo.url)}
                     title="YouTube video player" 
                     style={{ border: 'none', display: loading ? 'none' : 'block' }}
                     onLoad={() => setLoading(false)}

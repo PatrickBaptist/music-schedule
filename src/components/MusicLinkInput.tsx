@@ -20,7 +20,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [name, setName] = useState('');
   const [letter, setLetter] = useState('');
   const [cifra, setCifra] = useState('');
-  const [order, setOrder] = useState(1);
+  const [, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,7 +36,6 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         link: link.trim() || "",
         letter: letter.trim() || "",
         cifra: cifra.trim() || "",
-        order: order
      });
       setName('');
       setLink('');

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
 import {
   DarkForm,
   DarkInput,
@@ -12,41 +10,85 @@ import {
   FormGroup,
 } from "./pageStyle/AlterSchedule";
 import { useNavigate } from "react-router-dom";
-
-interface Schedule {
-  date: string;
-  músicos: {
-    teclas: string;
-    violao: string;
-    batera: string;
-    bass: string;
-    guita: string;
-    vocal1: string;
-    vocal2: string;
-  };
-}
+import useSchedulesContext from "../context/hooks/useScheduleContext";
+import { Musicos } from "../services/ScheduleService";
+import LoadingScreen from "../components/LoadingScreen";
+import useNotificationContext from "../context/hooks/useNotificationContext";
 
 const ScheduleForm: React.FC = () => {
-  const [DarkSelectedMonth, setDarkSelectedMonth] = useState<string>("01"); // Mês inicial
-  const [DarkSelectedYear, setDarkSelectedYear] = useState<number>(new Date().getFullYear()); // Ano atual
+  const [month, setMonth] = useState<string>("01");
+  const [year, setYear] = useState<number>(new Date().getFullYear());
   const [date, setDate] = useState("");
-  const [teclas, setTeclas] = useState("");
-  const [violao, setViolao] = useState("");
-  const [batera, setBatera] = useState("");
-  const [bass, setBass] = useState("");
-  const [guita, setGuita] = useState("");
-  const [vocal1, setVocal1] = useState("");
-  const [vocal2, setVocal2] = useState("");
+  const [músicos, setMúsicos] = useState<Musicos>({
+    teclas: "",
+    violao: "",
+    batera: "",
+    bass: "",
+    guita: "",
+    vocal1: "",
+    vocal2: "",
+  });
   const [sundays, setSundays] = useState<Date[]>([]);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const labels: Record<string, string> = {
+    teclas: "Teclado",
+    violao: "Violão",
+    batera: "Bateria",
+    bass: "Baixo",
+    guita: "Guitarra",
+    vocal1: "Vocal 1",
+    vocal2: "Vocal 2",
+  };
+
+  const ordemCampos = ["teclas", "violao", "batera", "bass", "guita", "vocal1", "vocal2"];
+
+  const {
+    saveOrUpdateSchedule,
+    getScheduleForMonth,
+    monthlySchedule,
+  } = useSchedulesContext();
+
+  // Buscar domingos do mês
   useEffect(() => {
-    const sundaysList = getSundaysOfMonth(
-      parseInt(DarkSelectedMonth),
-      DarkSelectedYear
-    );
+    const sundaysList = getSundaysOfMonth(parseInt(month), year);
     setSundays(sundaysList);
-  }, [DarkSelectedMonth, DarkSelectedYear]);
+  }, [month, year]);
+
+  // Buscar escala do mês quando mudar mês ou ano
+  useEffect(() => {
+    const fetchSchedule = async () => {
+    setIsLoading(true);
+    await getScheduleForMonth(`${month}-${year}`);
+    setIsLoading(false);
+  };
+
+  fetchSchedule();
+  }, [getScheduleForMonth, month, year]);
+
+  // Preenche os músicos se já houver dados salvos para a data
+  useEffect(() => {
+    if (!date || !monthlySchedule) return;
+
+    setIsLoading(true);
+
+    const found = monthlySchedule.find((s) => s.date.slice(0, 10) === date.slice(0, 10));
+    if (found) setMúsicos(found.músicos);
+    else
+      setMúsicos({
+        teclas: "",
+        violao: "",
+        batera: "",
+        bass: "",
+        guita: "",
+        vocal1: "",
+        vocal2: "",
+      });
+
+    setIsLoading(false);
+
+  }, [date, monthlySchedule]);
 
   const getSundaysOfMonth = (month: number, year: number): Date[] => {
     const date = new Date(year, month - 1, 1);
@@ -62,112 +104,65 @@ const ScheduleForm: React.FC = () => {
     return sundays;
   };
 
-  useEffect(() => {
-    const fetchSchedule = async () => {
-      if (!date) return;
-
-      const monthYear = `${DarkSelectedMonth}-${DarkSelectedYear}`;
-      const docRef = doc(db, "schedules", monthYear);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const existingData = docSnap.data();
-        const formatDate = (d: string) => new Date(d).toISOString().slice(0, 10);
-        const foundSchedule = existingData.sundays?.find(
-          (s: Schedule) => formatDate(s.date) === formatDate(date)
-        );
-
-        if (foundSchedule) {
-          setTeclas(foundSchedule.músicos.teclas);
-          setViolao(foundSchedule.músicos.violao);
-          setBatera(foundSchedule.músicos.batera);
-          setBass(foundSchedule.músicos.bass);
-          setGuita(foundSchedule.músicos.guita);
-          setVocal1(foundSchedule.músicos.vocal1);
-          setVocal2(foundSchedule.músicos.vocal2);
-        } else {
-          setTeclas("");
-          setViolao("");
-          setBatera("");
-          setBass("");
-          setGuita("");
-          setVocal1("");
-          setVocal2("");
-        }
-      }
-    };
-
-    fetchSchedule();
-  }, [date, DarkSelectedMonth, DarkSelectedYear]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const monthYear = `${DarkSelectedMonth}-${DarkSelectedYear}`;
+    const payload = {
+      month,
+      year: year.toString(),
+      date,
+      músicos,
+    };
+
+    setIsLoading(true);
 
     try {
-      // Verifica se o documento já existe
-      const docRef = doc(db, "schedules", monthYear);
-      const docSnap = await getDoc(docRef);
-
-      // Se o documento já existe, atualiza a escala do domingo selecionado
-      if (docSnap.exists()) {
-        const existingData = docSnap.data();
-        const updatedSundays: Schedule[] = existingData.sundays || [];
-
-        // Substitui ou adiciona a escala para o domingo
-        const sundayIndex = updatedSundays.findIndex(
-          (s: Schedule) => s.date === date
-        );
-
-        if (sundayIndex >= 0) {
-          updatedSundays[sundayIndex] = {
-            date,
-            músicos: { teclas, violao, batera, bass, guita, vocal1, vocal2 },
-          };
-        } else {
-          updatedSundays.push({
-            date,
-            músicos: { teclas, violao, batera, bass, guita, vocal1, vocal2 },
-          });
-        }
-
-        // Atualiza o documento no Firestore
-        await setDoc(docRef, { sundays: updatedSundays });
-      } else {
-        // Se o documento não existir, cria um novo com os domingos e a escala
-        await setDoc(docRef, {
-          sundays: [
-            { date, músicos: { teclas, violao, batera, bass, guita, vocal1, vocal2 } },
-          ],
-        });
-      }
-
+      await saveOrUpdateSchedule(payload);
       alert("Escala salva com sucesso!");
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       alert("Erro ao salvar a escala!");
+    } finally {
+      setIsLoading(false); 
     }
   };
 
+//notificações
+  const { notification, postNotification, getNotification } = useNotificationContext();
+  const [notificationText, setNotificationText] = useState<string>("");
+
+  useEffect(() => {
+  if (notification?.text) {
+    setNotificationText(notification.text);
+  }
+}, [notification]);
+
+const handleSendNotification = async () => {
+  try {
+    await postNotification(notificationText);
+    alert("Notificação enviada!");
+    // Atualiza para garantir que a notificação salva está atualizada
+    await getNotification();
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao enviar notificação");
+  }
+};
+
+
   return (
-    <DarkWrapper>
+   isLoading ? (
+       <LoadingScreen /> 
+    ) : (
+      <DarkWrapper>
       <DarkTitle>Preencher Escala do Mês</DarkTitle>
       <DarkForm onSubmit={handleSubmit}>
         <FormGroup style={{ display: "flex", justifyContent: "space-between" }}>
           <DarkLabel>Mês:</DarkLabel>
-          <DarkSelect
-            value={DarkSelectedMonth}
-            onChange={(e) => setDarkSelectedMonth(e.target.value)}
-            required
-          >
+          <DarkSelect value={month} onChange={(e) => setMonth(e.target.value)} required>
             {Array.from({ length: 12 }, (_, index) => (
-              <option
-                key={index}
-                value={(index + 1).toString().padStart(2, "0")}
-              >
-                {new Date(0, index).toLocaleString("default", {
-                  month: "long",
-                })}
+              <option key={index} value={(index + 1).toString().padStart(2, "0")}>
+                {new Date(0, index).toLocaleString("default", { month: "long" })}
               </option>
             ))}
           </DarkSelect>
@@ -176,19 +171,15 @@ const ScheduleForm: React.FC = () => {
           <DarkLabel>Ano:</DarkLabel>
           <DarkInput
             type="number"
-            value={DarkSelectedYear}
-            onChange={(e) => setDarkSelectedYear(parseInt(e.target.value))}
+            value={year}
+            onChange={(e) => setYear(parseInt(e.target.value))}
             min={2000}
             required
           />
         </FormGroup>
         <FormGroup>
           <DarkLabel>Data (Domingo):</DarkLabel>
-          <DarkSelect
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          >
+          <DarkSelect value={date} onChange={(e) => setDate(e.target.value)} required>
             <option value="">Selecione um domingo</option>
             {sundays.map((sunday, index) => (
               <option key={index} value={sunday.toISOString()}>
@@ -197,75 +188,40 @@ const ScheduleForm: React.FC = () => {
             ))}
           </DarkSelect>
         </FormGroup>
-        <FormGroup>
-          <DarkLabel>Teclas:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={teclas}
-            onChange={(e) => setTeclas(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Violão:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={violao}
-            onChange={(e) => setViolao(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Batera:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={batera}
-            onChange={(e) => setBatera(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Bass:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={bass}
-            onChange={(e) => setBass(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Guita:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={guita}
-            onChange={(e) => setGuita(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Vocal 1:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={vocal1}
-            onChange={(e) => setVocal1(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Vocal 2:</DarkLabel>
-          <DarkInput
-            type="text"
-            value={vocal2}
-            onChange={(e) => setVocal2(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <DarkButton type="submit">Salvar Escala</DarkButton>
+
+        {ordemCampos.map((key) => (
+          <FormGroup key={key}>
+            <DarkLabel>{labels[key] || key}:</DarkLabel>
+            <DarkInput
+              type="text"
+              value={músicos[key as keyof Musicos] || ""}
+              onChange={(e) => setMúsicos((prev) => ({ ...prev, [key]: e.target.value }))}
+              required
+            />
+          </FormGroup>
+        ))}
+
+        <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+          <DarkButton type="submit">Salvar Escala</DarkButton>
+        </div>
       </DarkForm>
-        <DarkButton onClick={() => {
-                            navigate("/")
-                        }}>Voltar</DarkButton>
-    </DarkWrapper>
+
+      <FormGroup>
+        <DarkLabel>Mensagem da Notificação:</DarkLabel>
+        <DarkInput
+          type="text"
+          value={notificationText}
+          onChange={(e) => setNotificationText(e.target.value)}
+          placeholder="Digite a mensagem da notificação"
+        />
+        <DarkButton type="button" onClick={handleSendNotification} style={{ marginTop: 8 }}>
+          Enviar Notificação
+        </DarkButton>
+        <DarkButton onClick={() => navigate("/")}>Voltar</DarkButton>
+      </FormGroup>
+
+    </DarkWrapper> 
+    )
   );
 };
 

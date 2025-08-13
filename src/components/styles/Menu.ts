@@ -1,51 +1,59 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const ContainerMenu = styled.div<{ $openMenu: boolean }>`
-    width: 100vw;
-    position: fixed;
-    z-index: 200;
-    box-shadow: 0px 5px 5px -5px #fff;
-    margin-top: 80px;
-    transition: transform 0.5s ease-in-out, opacity 1s ease-in-out;
-    transform: ${({ $openMenu }) => ($openMenu ? 'translateY(0)' : 'translateY(-200%)')};
-    pointer-events: ${({ $openMenu }) => ($openMenu ? 'auto' : 'none')};
-`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 170px;
+  z-index: 10000;
+  max-height: ${({ $openMenu }) => ($openMenu ? '300px' : '0')};
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  background-color: rgba(0, 0, 0, 0.7);
+  margin: 0;
+  padding-top: 60px;
+  border: none;
+
+  @media (min-width: 550px) {
+    height: 60px;
+  }
+`;
 
 export const ContentMenu = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    z-index: 250;
-`
+  width: 100%;
+`;
 
-export const NavMenu = styled.div`
-    width: 100%;
-    height: auto;
+export const NavMenu = styled.nav`
+  width: 100%;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
     display: flex;
-    align-items: center;
     justify-content: center;
+    gap: 30px;
 
-    ul {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        list-style-type: none;
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        
-        li {
-            font-weight: bold;
-            margin: 10px 0 40px 0;
-            cursor: pointer;
-            transition: transform 2s;
-
-            &:hover {
-                color: white;
-            }
-        }
+    @media (max-width: 550px) {
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
     }
-`
+
+    li {
+      color: #00bfff;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+
+      &:hover {
+        background-color: #00bfff;
+        color: #000;
+      }
+    }
+  }
+`;

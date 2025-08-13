@@ -13,7 +13,7 @@ export const DarkWrapper = styled.div`
 
 export const DarkTitle = styled.h1`
   color: #fff;
-  font-size: 2.5rem;
+  font-size: 1rem;
   margin-bottom: 30px;
   text-align: center;
   font-weight: 700;
@@ -31,15 +31,15 @@ export const DarkForm = styled.form`
   flex-direction: column;
   width: 100%;
   max-width: 600px;
-  padding: 25px;
-  gap: 5px;
+  padding: 10px;
+  gap: 3px;
 `;
 
 export const DarkInput = styled.input`
   background-color: #333;
   color: #fff;
   padding: 8px;
-  font-size: 1rem;
+  font-size: 11px;
   border: 1px solid #444;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -55,7 +55,7 @@ export const DarkSelect = styled.select`
   background-color: #333;
   color: #fff;
   padding: 8px;
-  font-size: 1rem;
+  font-size: 13px;
   border: 1px solid #444;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -70,8 +70,8 @@ export const DarkSelect = styled.select`
 export const DarkButton = styled.button`
   background-color: #6200ea;
   color: #fff;
-  padding: 12px;
-  font-size: 1.1rem;
+  padding: 10px;
+  font-size: 13px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -89,7 +89,7 @@ export const DarkButton = styled.button`
 
 export const DarkLabel = styled.label`
   color: #fff;
-  font-size: 1rem;
+  font-size: 13px;
   font-weight: 600;
   margin-bottom: 5px;
   letter-spacing: 0.5px;

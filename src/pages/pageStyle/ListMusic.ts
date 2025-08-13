@@ -12,6 +12,7 @@ export const ContainerMusic = styled.div`
 
   h1 {
     margin-top: 100px;
+    color: #58a6ff;
   }
 `
 
@@ -22,6 +23,10 @@ export const ContentMusic = styled.div`
     display: flex;
     justify-content: space-around;
     overflow: auto;
+
+    h2 {
+        color: #58a6ff;
+    }
 
     div {
         width: 100%;
@@ -47,11 +52,12 @@ export const ContentMusic = styled.div`
                 align-items: center;
                 margin: 10px 0;
                 padding: 0;
+                color: #58a6ff;
             }
 
             &::-webkit-scrollbar {
                 width: 10px;
-                background-color: #fff;
+                background-color: #0e1e30ff;
                 border-radius: 1em;
             }
 
@@ -60,7 +66,7 @@ export const ContentMusic = styled.div`
             }
 
             &::-webkit-scrollbar-thumb {
-                background-color: #00FFFF;
+                background-color: #58a6ff;
                 border-radius: 1em;
             }
 

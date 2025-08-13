@@ -2,17 +2,19 @@ import styled from 'styled-components';
 
 export const HeaderContainer = styled.div<{ $openMenu: boolean }>`
   width: 100%;
-  height: 80px;
+  height: 60px;
   display: flex;
   align-items: center;
-  background-color: #000;
-  box-shadow: ${({ $openMenu }) => ($openMenu ? 'none' : '0px 0px 5px #000')};
   transition: box-shadow 0.5s ease-in-out;
   position: fixed;
+  top: 0;
+  left: 0;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  z-index: 300;
+  z-index: 100900;
+  border: none; /* eliminar bordas */
+  box-shadow: none; /* eliminar sombra que cause linha */
 `
 
 export const ContainerLogo = styled.div`
@@ -28,8 +30,8 @@ export const ContainerLogo = styled.div`
     gap: 15px;
 
     .hamburguer {
-      width: 50px;
-      height: 50px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -39,27 +41,20 @@ export const ContainerLogo = styled.div`
     }
       
       .menu {
-        width: 25px;
-        height: 25px;
+        width: 20px;
+        height: 20px;
       }
 
       .closeMenu {
-        width: 15px;
-        height: 15px;
+        width: 12px;
+        height: 12px;
       }
-
-      .hideButton {
-        @media (max-width: 550px) {
-          display: none;
-      }
-    }
   }
 
   .logo {
-    width: 140px;
-    height: 70px;
-    object-fit: cover;
-    filter: drop-shadow(2px 3px 5px #949494);
+    width: 90px;
+    height: 35px;
+    object-fit: contain;
   }
 
   @media(max-width: 759px) {
