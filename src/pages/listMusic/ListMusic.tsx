@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { ContainerMusic, ContentMusic } from './pageStyle/ListMusic';
-import Button from '../components/Buttons';
+import Header from '../../components/header/Header';
+import Footer from '../../components/footer/Footer';
+import { ContainerMusic, ContentMusic } from './../listMusic/ListMusicStyle';
+import Button from '../../components/buttons/Buttons';
 
 const listCelebration = [
     {song: "Mil graus"},

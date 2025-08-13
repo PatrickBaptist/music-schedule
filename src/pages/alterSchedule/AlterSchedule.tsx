@@ -8,12 +8,12 @@ import {
   DarkSelect,
   DarkButton,
   FormGroup,
-} from "./pageStyle/AlterSchedule";
+} from "./AlterScheduleStyle";
 import { useNavigate } from "react-router-dom";
-import useSchedulesContext from "../context/hooks/useScheduleContext";
-import { Musicos } from "../services/ScheduleService";
-import LoadingScreen from "../components/LoadingScreen";
-import useNotificationContext from "../context/hooks/useNotificationContext";
+import useSchedulesContext from "../../context/hooks/useScheduleContext";
+import { Musicos } from "../../services/ScheduleService";
+import LoadingScreen from "../../components/loading/LoadingScreen";
+import useNotificationContext from "../../context/hooks/useNotificationContext";
 
 const ScheduleForm: React.FC = () => {
   const [month, setMonth] = useState<string>("01");

@@ -1,9 +1,9 @@
 import React, { useState} from 'react';
-import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
-import Button from './Buttons';
-import Loading from '../assets/Loading.gif'
-import Delete from '../assets/imgs/delete.png'
-import { ContainerVd, ContentVd, ListContainer, SelectContainer } from '../components/styles/MusicLinkList'
+import { useMusicLinksContext } from '../../context/hooks/useMusicLinksContext';
+import Button from '../buttons/Buttons';
+import Loading from '../../assets/Loading.gif'
+import Delete from '../../assets/imgs/delete.png'
+import { ContainerVd, ContentVd, ListContainer, SelectContainer } from './MusicLinkListStyle'
 
 type Video = {
   url: string

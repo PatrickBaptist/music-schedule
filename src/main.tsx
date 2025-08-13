@@ -5,10 +5,10 @@ import App from './App';
 import GlobalStyle from './globalStyles';
 import { MusicLinksProvider } from './services/MusicLinksService';
 import { UserStore } from './context/openMenuContext';
-import Menu from './components/Menu';
+import Menu from './components/menu/Menu';
 import { SchedulesProvider } from './services/ScheduleService';
 import { NotificationProvider } from './services/NotificationService';
-import Notification from './components/Notification';
+import Notification from './components/notification/Notification';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

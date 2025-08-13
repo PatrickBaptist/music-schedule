@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ContainerMenu, ContentMenu, NavMenu } from "./styles/Menu";
-import { useUserContext } from "../context/hooks/useUserContext";
+import { ContainerMenu, ContentMenu, NavMenu } from "./MenuStyle";
+import { useUserContext } from "../../context/hooks/useUserContext";
 
 const Menu: React.FC = () => {
     const { openMenu, setOpenMenu } = useUserContext();

@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import Logo from '../assets/imgs/logo.webp'
-import { ContainerLogo, HeaderContainer } from './styles/Header';
-import Menu from '../assets/imgs/Menu.png';
-import ClosedMenu from '../assets/imgs/closeMenu.png'
-import { useUserContext } from '../context/hooks/useUserContext';
+import Logo from '../../assets/imgs/logo.webp'
+import { ContainerLogo, HeaderContainer } from './HeaderStyle';
+import Menu from '../../assets/imgs/Menu.png';
+import ClosedMenu from '../../assets/imgs/closeMenu.png'
+import { useUserContext } from '../../context/hooks/useUserContext';
 
 interface HeaderProps {
     children: ReactNode;

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useMusicLinksContext } from '../context/hooks/useMusicLinksContext';
-import Button from './Buttons';
-import { InputContainer } from './styles/MusicLinkInput';
-import { SelectContainer } from './styles/MusicLinkList';
+import { useMusicLinksContext } from '../../context/hooks/useMusicLinksContext';
+import Button from '../buttons/Buttons';
+import { InputContainer } from './MusicLinkInputStyle';
+import { SelectContainer } from '../musicList/MusicLinkListStyle';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;

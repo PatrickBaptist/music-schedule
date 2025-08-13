@@ -1,4 +1,4 @@
-import { ContainerFooter } from "./styles/Footer";
+import { ContainerFooter } from "./FooterStyle";
 import { useNavigate } from "react-router-dom";
 
 const Footer: React.FC = () => {

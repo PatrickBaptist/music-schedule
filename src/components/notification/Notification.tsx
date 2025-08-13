@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import useNotificationContext from '../context/hooks/useNotificationContext';
+import useNotificationContext from '../../context/hooks/useNotificationContext';
 
 const STORAGE_KEY = 'closedNotification';
 

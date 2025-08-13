@@ -1,8 +1,8 @@
 import React from 'react';
-import Schedule from '../components/Schedule';
-import Header from '../components/Header';
-import { ContainerSchedule } from './pageStyle/SchedulePage';
-import Footer from '../components/Footer';
+import Schedule from '../../components/schedule/Schedule';
+import Header from '../../components/header/Header';
+import { ContainerSchedule } from './SchedulePageStyle';
+import Footer from '../../components/footer/Footer';
 
 const SchedulePage: React.FC = () => {
   return (

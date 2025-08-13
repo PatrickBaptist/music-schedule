@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import MusicLinkInput from '../components/MusicLinkInput';
-import MusicLinkList from '../components/MusicLinkList';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { Container, ContainerHome } from './pageStyle/HomePage';
-import EditLink from '../assets/imgs/edit.png'
-import useSchedulesContext from '../context/hooks/useScheduleContext';
-import Button from '../components/Buttons';
+import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
+import MusicLinkList from '../../components/musicList/MusicLinkList';
+import Header from '../../components/header/Header';
+import Footer from '../../components/footer/Footer';
+import { Container, ContainerHome } from './HomePageStyle';
+import EditLink from '../../assets/imgs/edit.png';
+import useSchedulesContext from '../../context/hooks/useScheduleContext';
+import Button from '../../components/buttons/Buttons';
 
 const HomePage: React.FC = () => {
 
