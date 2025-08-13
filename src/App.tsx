@@ -6,10 +6,12 @@ import HomePage from './pages/home/HomePage';
 import SchedulePage from './pages/schedule/SchedulePage';
 import ListMusic from './pages/listMusic/ListMusic';
 import ScheduleForm from './pages/alterSchedule/AlterSchedule';
+import { useServiceWorkerUpdate } from './context/hooks/useServiceWorkerUpdate';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const {getScheduleForMonth} = useSchedulesContext();
+  const updateAvailable = useServiceWorkerUpdate();
 
   const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -51,17 +53,42 @@ useEffect(() => {
   checkServer();
 }, [getScheduleForMonth, currentMonth]);
 
+const handleUpdate = () => {
+  window.location.reload(); // recarrega para pegar nova versão
+};
+
   return (
     <>
       {loading ? (
         <LoadingScreen />
       ) : (
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/listMusic" element={<ListMusic />} />
-            <Route path="/alter" element={<ScheduleForm />} />
-          </Routes>
+        <>
+          {updateAvailable && (
+            <div
+            style={{
+                  position: 'fixed',
+                  bottom: 20,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  backgroundColor: '#00bfff',
+                  color: '#fff',
+                  padding: '10px 20px',
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  zIndex: 9999,
+                }}
+                onClick={handleUpdate}
+                >
+                Nova versão disponível! Clique para atualizar.
+              </div>
+            )}
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/schedule" element={<SchedulePage />} />
+              <Route path="/listMusic" element={<ListMusic />} />
+              <Route path="/alter" element={<ScheduleForm />} />
+            </Routes>
+        </>
         )}
     </>
   );
