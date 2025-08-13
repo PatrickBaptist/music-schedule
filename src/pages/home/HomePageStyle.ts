@@ -77,6 +77,13 @@ export const ContainerHome = styled.div`
         padding-bottom: 6px;
       }
 
+      p:hover {
+        background-color: #f1803481;
+        border-radius: 5px;
+        padding: 5px;
+        transition: all 0.3s ease-in-out;
+      }
+
       .content-escala p:last-child {
         border-bottom: none;
       }

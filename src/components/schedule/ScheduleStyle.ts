@@ -83,4 +83,9 @@ export const SeeScale = styled.div`
     min-width: 70px;
     color: #fff;
   }
+
+  &:hover {
+    background-color: #f180346b;
+    transition: all 0.4s ease-in-out;
+  }
 `;

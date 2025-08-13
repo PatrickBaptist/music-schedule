@@ -41,7 +41,15 @@ export const ListContainer = styled.ul`
 
         &:hover {
           transform: translateY(-1px);
+          background-color: #f180346b;
+          transition: all 0.4s ease-in-out;
+
+          .span-music {
+            color: white;
+            transition: all 0.4s ease-in-out;
+          }
         }
+
       }
 
       .span-music {
