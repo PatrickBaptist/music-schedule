@@ -9,7 +9,7 @@ export const ListContainer = styled.ul`
   padding: 0 8px;
   box-sizing: border-box;
 
-  @media (min-width: 426px) {
+  @media (min-width: 429px) {
     .delete-icon-edit {
       display: none;
     }

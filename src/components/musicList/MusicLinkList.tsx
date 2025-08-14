@@ -57,6 +57,8 @@ const MusicLinkList: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     setLoadingCards(prev => ({ ...prev, [id]: true }));
+    setIsEditing(false);
+    setEditIndex(null);
 
     await removeMusicLink(id);
 
@@ -68,7 +70,6 @@ const MusicLinkList: React.FC = () => {
         setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
         const updatedLink = { name, link, letter, cifra, order };
         setIsEditing(false);
-        setEditIndex(null);
 
         await updateMusicLink(editIndex, updatedLink);
 
@@ -168,7 +169,7 @@ const MusicLinkList: React.FC = () => {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Nome da música"  
+                    placeholder="Nome da música"
                     onKeyDown={handleKeyPress}
                   />
                   <input
@@ -219,7 +220,7 @@ const MusicLinkList: React.FC = () => {
                   <Button
                     className='delete-icon-edit'
                     onClick={() => {
-                      removeMusicLink(musicLink.id!)
+                      handleDelete(musicLink.id!)
                     }}
                     style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', borderRadius: 'none', border: 'none' }}
                     >
