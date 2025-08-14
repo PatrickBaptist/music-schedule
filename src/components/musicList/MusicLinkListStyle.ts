@@ -9,6 +9,12 @@ export const ListContainer = styled.ul`
   padding: 0 8px;
   box-sizing: border-box;
 
+  @media (min-width: 426px) {
+    .delete-icon-edit {
+      display: none;
+    }
+  }
+
     .container-list {
       width: 100%;
       display: flex;
@@ -29,7 +35,7 @@ export const ListContainer = styled.ul`
 
       .card {
         width: 100%;
-        min-width: 300px;
+        min-width: 100px;
         background-color: #161b22;
         display: flex;
         justify-content: space-between;
@@ -49,7 +55,6 @@ export const ListContainer = styled.ul`
             transition: all 0.4s ease-in-out;
           }
         }
-
       }
 
       .span-music {
@@ -93,21 +98,23 @@ export const ListContainer = styled.ul`
         display: flex;
         flex-direction: column;
         gap: 13px;
+        
+        @media (max-width: 366px) {
+          padding: 0 5px;
+        }
       }
 
       .menu-buttons {
         display: flex;
         gap: 6px;
-      }
-
-      .delete-icon {
-        @media (max-width: 400px) {
-          display: none;
+        
+        @media (max-width: 372px) {
+          gap: 3px;
         }
       }
 
-      .delete-icon-edit {
-        @media (min-width: 400px) {
+      .delete-icon {
+        @media (max-width: 428px) {
           display: none;
         }
       }

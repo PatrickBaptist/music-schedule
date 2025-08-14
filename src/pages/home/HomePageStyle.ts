@@ -28,7 +28,7 @@ export const ContainerHome = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff; // azul claro parecido com home
+    background-color: #58a6ff;
     border-radius: 1em;
   }
 
@@ -43,7 +43,7 @@ export const ContainerHome = styled.div`
       h4 {
         margin-left: 16px;
         font-size: 18px;
-        color: #00bfff; // Azul claro
+        color: #00bfff;
         font-weight: 600;
       }
 
@@ -56,7 +56,7 @@ export const ContainerHome = styled.div`
 
       .content-escala {
         width: 100%;
-        background-color: #161b22; // Fundo escuro suave
+        background-color: #161b22;
         border-radius: 10px;
         padding: 20px 30px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
