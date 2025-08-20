@@ -14,6 +14,7 @@ import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { Musicos } from "../../services/ScheduleService";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import useNotificationContext from "../../context/hooks/useNotificationContext";
+import { toast } from "sonner";
 
 const ScheduleForm: React.FC = () => {
   const [month, setMonth] = useState<string>("01");
@@ -118,10 +119,10 @@ const ScheduleForm: React.FC = () => {
 
     try {
       await saveOrUpdateSchedule(payload);
-      alert("Escala salva com sucesso!");
+      toast.success("Escala salva com sucesso!");
     } catch (err) {
       console.error(err);
-      alert("Erro ao salvar a escala!");
+      toast.error("Erro ao salvar a escala!");
     } finally {
       setIsLoading(false); 
     }
@@ -140,12 +141,12 @@ const ScheduleForm: React.FC = () => {
 const handleSendNotification = async () => {
   try {
     await postNotification(notificationText);
-    alert("Notificação enviada!");
+    toast.success("Notificação enviada!");
     // Atualiza para garantir que a notificação salva está atualizada
     await getNotification();
   } catch (error) {
     console.error(error);
-    alert("Erro ao enviar notificação");
+    toast.error("Erro ao enviar notificação");
   }
 };
 

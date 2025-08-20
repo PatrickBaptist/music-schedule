@@ -4,6 +4,7 @@ import Button from '../buttons/Buttons';
 import Loading from '../../assets/Loading.gif'
 import Delete from '../../assets/imgs/delete.png'
 import { ContainerVd, ContentVd, ListContainer, SelectContainer } from './MusicLinkListStyle'
+import { toast } from 'sonner';
 
 type Video = {
   url: string
@@ -60,9 +61,16 @@ const MusicLinkList: React.FC = () => {
     setIsEditing(false);
     setEditIndex(null);
 
-    await removeMusicLink(id);
+    try {
+      await removeMusicLink(id);
+      toast.success("Link removido com sucesso!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao remover Link. Tente novamente.");
+    } finally {
+      setLoadingCards(prev => ({ ...prev, [id]: false }));
+    }
 
-    setLoadingCards(prev => ({ ...prev, [id]: false }));
   };
   
     const handleSaveEdit = async () => {
@@ -71,9 +79,15 @@ const MusicLinkList: React.FC = () => {
         const updatedLink = { name, link, letter, cifra, order };
         setIsEditing(false);
 
-        await updateMusicLink(editIndex, updatedLink);
-
+        try {
+          await updateMusicLink(editIndex, updatedLink);
+          toast.success("Link editado com sucesso!");
+        } catch (err) {
+          console.error(err);
+          toast.error("Erro ao editar música. Tente novamente.");
+        } finally {
         setLoadingCards(prev => ({ ...prev, [editIndex]: false }));
+        }
       }
     };
   
@@ -211,10 +225,10 @@ const MusicLinkList: React.FC = () => {
                     </select>
                   </SelectContainer>
 
-                  <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF' }}>
+                  <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF', marginBottom: '10px' }}>
                     Salvar
                   </Button>
-                  <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e' }}>
+                  <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e', marginBottom: '10px' }}>
                     Cancelar
                   </Button>
                   <Button

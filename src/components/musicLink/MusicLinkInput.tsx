@@ -3,6 +3,7 @@ import { useMusicLinksContext } from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
 import { InputContainer } from './MusicLinkInputStyle';
 import { SelectContainer } from '../musicList/MusicLinkListStyle';
+import { toast } from 'sonner';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,24 +29,37 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     nameInputRef.current?.focus();
   }, []);
 
-  const handleAddLink = () => {
+  const handleAddLink = async () => {
     setIsModalOpen(false)
-    if (name.trim()) {
-      addMusicLink({ 
-        name: name.trim(),
-        link: link.trim() || "",
-        letter: letter.trim() || "",
-        cifra: cifra.trim() || "",
-     });
-      setName('');
-      setLink('');
-      setLetter('');
-      setCifra('');
-      setOrder(1);
-
-      nameInputRef.current?.focus();
+    if (!name.trim()) {
+      toast.error("O nome da música é obrigatório!");
+      return;
     }
+    
+    const toastId = toast.loading("Aguarde...");
+    
+    try {
+    await addMusicLink({ 
+      name: name.trim(),
+      link: link.trim() || "",
+      letter: letter.trim() || "",
+      cifra: cifra.trim() || "",
+    });
+
+    setIsModalOpen(false);
+    setName('');
+    setLink('');
+    setLetter('');
+    setCifra('');
+    setOrder(1);
+
+    nameInputRef.current?.focus();
+    toast.success("Música adicionada com sucesso!", { id: toastId });
+  } catch (error) {
+    console.error(error);
+    toast.error("Erro ao adicionar a música. Tente novamente.", { id: toastId });
   }
+};
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

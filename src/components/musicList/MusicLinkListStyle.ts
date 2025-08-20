@@ -63,7 +63,6 @@ export const ListContainer = styled.ul`
         text-overflow: ellipsis;
         font-weight: bold;
         font-size: 14px;
-        color: #58a6ff;
         display: inline-block;
 
         @media (max-width: 700px) {
@@ -155,6 +154,7 @@ export const ListContainer = styled.ul`
       box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
       outline:  none;
       padding: 6px;
+      font-size: 16px;
     }
   }
 `

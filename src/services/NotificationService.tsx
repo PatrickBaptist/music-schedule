@@ -6,8 +6,8 @@ export interface Notification {
 
 export interface NotificationContextProps {
   notification: Notification | null;
-  getNotification: () => void;
-  postNotification: (text: string) => void;
+  getNotification: () => Promise<void>;
+  postNotification: (text: string) => Promise<void>;
 }
 
 export const NotificationService = createContext<NotificationContextProps | undefined>(undefined);

@@ -14,6 +14,7 @@ export const InputContainer = styled.div`
     box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
     outline:  none;
     padding: 6px;
+    font-size: 16px;
   }
 
   button {

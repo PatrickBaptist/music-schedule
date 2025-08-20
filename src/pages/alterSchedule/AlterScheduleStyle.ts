@@ -39,7 +39,7 @@ export const DarkInput = styled.input`
   background-color: #333;
   color: #fff;
   padding: 8px;
-  font-size: 11px;
+  font-size: 16px;
   border: 1px solid #444;
   border-radius: 8px;
   transition: all 0.3s ease;

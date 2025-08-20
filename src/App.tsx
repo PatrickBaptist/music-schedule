@@ -7,6 +7,7 @@ import SchedulePage from './pages/schedule/SchedulePage';
 import ListMusic from './pages/listMusic/ListMusic';
 import ScheduleForm from './pages/alterSchedule/AlterSchedule';
 import { useServiceWorkerUpdate } from './context/hooks/useServiceWorkerUpdate';
+import { toast } from 'sonner';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -43,9 +44,11 @@ useEffect(() => {
 
     try {
       await getScheduleForMonth(currentMonth);
+      toast.success('Servidor Funcionando!', { id: 'server-status' });
       setLoading(false);
     } catch (err) {
       console.warn("Servidor ainda não respondeu, tentando novamente...");
+      toast('Servidor ainda não respondeu, tentando novamente...', { id: 'server-status' });
       setTimeout(checkServer, 3000);
     }
   };
@@ -57,38 +60,32 @@ const handleUpdate = () => {
   window.location.reload(); // recarrega para pegar nova versão
 };
 
+useEffect(() => {
+    if (updateAvailable) {
+      toast("Nova versão disponível!", {
+        action: {
+          label: "Atualizar",
+          onClick: handleUpdate,
+        },
+        duration: 10000,
+        richColors: true,
+        position: "bottom-center", // fixa no centro inferior
+        id: "update-toast",
+      });
+    }
+  }, [updateAvailable]);
+
   return (
     <>
       {loading ? (
         <LoadingScreen />
       ) : (
-        <>
-          {updateAvailable && (
-            <div
-            style={{
-                  position: 'fixed',
-                  bottom: 20,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  backgroundColor: '#00bfff',
-                  color: '#fff',
-                  padding: '10px 20px',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  zIndex: 9999,
-                }}
-                onClick={handleUpdate}
-                >
-                Nova versão disponível! Clique para atualizar.
-              </div>
-            )}
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/listMusic" element={<ListMusic />} />
-              <Route path="/alter" element={<ScheduleForm />} />
-            </Routes>
-        </>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/schedule" element={<SchedulePage />} />
+            <Route path="/listMusic" element={<ListMusic />} />
+            <Route path="/alter" element={<ScheduleForm />} />
+          </Routes>
         )}
     </>
   );

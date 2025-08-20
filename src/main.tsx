@@ -9,6 +9,7 @@ import Menu from './components/menu/Menu';
 import { SchedulesProvider } from './services/ScheduleService';
 import { NotificationProvider } from './services/NotificationService';
 import Notification from './components/notification/Notification';
+import { toast, Toaster } from 'sonner';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -24,6 +25,15 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             </NotificationProvider>
           </SchedulesProvider>
         </MusicLinksProvider>
+        <Toaster 
+          richColors
+          position='top-right'
+          toastOptions={{
+            actionButtonStyle: {
+              backgroundColor: 'red'
+            }
+          }}
+        />
       </UserStore>
     </BrowserRouter>
   </React.StrictMode>
@@ -36,7 +46,7 @@ if ('serviceWorker' in navigator) {
         const newWorker = reg.installing;
         newWorker?.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            alert('Nova versão disponível! Atualize o app.');
+            toast('Nova versão disponível! Atualize o app.');
           }
         });
       };
