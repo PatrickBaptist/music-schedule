@@ -12,7 +12,7 @@ export interface MusicLink {
 
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
-  addMusicLink: (musicLink: Omit<MusicLink, 'id' | 'order'>) => Promise<void>;
+  addMusicLink: (musicLink: Omit<MusicLink, 'order'> & { id?: string }) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
   updateMusicLink: (id: string, updated: MusicLink) => Promise<void>;
 }
@@ -48,7 +48,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
     fetchMusicLinks();
   }, [fetchMusicLinks]);
 
-  const addMusicLink = async (musicLink: Omit<MusicLink, 'id' | 'order'>) => {
+  const addMusicLink = async (musicLink: Omit<MusicLink, 'order'> & { id?: string }) => {
     try {
       const res = await fetch(`${API_URL}/musicList`, {
         method: 'POST',

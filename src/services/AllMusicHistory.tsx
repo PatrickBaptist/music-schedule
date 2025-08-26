@@ -8,7 +8,7 @@ interface AllMusicLink {
   letter?: string | null;
   cifra?: string | null;
   createdAt?: string | Date | FirestoreTimestamp;
-  minister: string | null;
+  minister?: string | null;
 }
 
 interface ApiResponse {
@@ -29,7 +29,7 @@ export interface AllMusicLinksContextProps {
   getAllMusicLinks: (params?: { page?: number; limit?: number; search?: string }) => Promise<void>;
   addMusicLink: (data: Omit<AllMusicLink, "id" | "createdAt">) => Promise<void>;
   updateMusicLink: (id: string, data: Partial<AllMusicLink>) => Promise<void>;
-  deleteMusicLink: (id: string) => Promise<void>;
+  removeMusicLink: (id: string) => Promise<void>;
 }
 
 export const AllMusicLinksService = createContext<AllMusicLinksContextProps | undefined>(undefined);
@@ -90,6 +90,7 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
       });
 
       if (!res.ok) throw new Error("Erro ao adicionar música");
+      
       await getAllMusicLinks();
     } catch (err) {
       console.error(err);
@@ -97,7 +98,9 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   };
 
-  const updateMusicLink = async (id: string, music: Partial<AllMusicLink>) => {
+  const updateMusicLink = async (id?: string, music?: Partial<AllMusicLink>) => {
+    if (!id || !music) throw new Error("ID e dados da música são obrigatórios");
+
     try {
       const res = await fetch(`${API_URL}/allMusicLinks/${id}`, {
         method: "PUT",
@@ -113,7 +116,7 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   };
 
-  const deleteMusicLink = async (id: string) => {
+  const removeMusicLink = async (id: string) => {
     try {
       const res = await fetch(`${API_URL}/allMusicLinks/${id}`, {
         method: "DELETE",
@@ -130,7 +133,7 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
 
   return (
     <AllMusicLinksService.Provider
-      value={{ musicLinks, loading, hasNextPage, hasPrevPage, currentPage, getAllMusicLinks, addMusicLink, updateMusicLink, deleteMusicLink }}
+      value={{ musicLinks, loading, hasNextPage, hasPrevPage, currentPage, getAllMusicLinks, addMusicLink, updateMusicLink, removeMusicLink }}
     >
       {children}
     </AllMusicLinksService.Provider>

@@ -2,19 +2,39 @@ import React, { useEffect, useState } from "react";
 import useAllMusicHistoryContext from "../../context/hooks/useAllMusicHistoryContext";
 import Button from "../../components/buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
-import { Container, ContainerVd, ContentVd, Input, ListContainer, Main } from "./ListMusicStyle";
+import { Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
 import { FirestoreTimestamp } from "../../helpers/helpers";
 import Header from "../../components/header/Header";
 import EditLink from '../../assets/imgs/edit.png';
 import Footer from "../../components/footer/Footer";
+import { toast } from "sonner";
+import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
+import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
+
+const tons = [
+  'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
+  'F', 'Fm', 'F#', 'F#m', 'G', 'Gm', 'G#', 'G#m', 'A', 'Am',
+  'A#', 'A#m', 'B', 'Bm'
+];
 
 const ListMusic: React.FC = () => {
-  const { musicLinks, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage } = useAllMusicHistoryContext();
+  const { musicLinks, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage, updateMusicLink } = useAllMusicHistoryContext();
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
   const [limit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
+  const { addMusicLink } = useMusicLinksContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [name, setName] = useState('');
+  const [link, setLink] = useState('');
+  const [letter, setLetter] = useState('');
+  const [cifra, setCifra] = useState('');
+  const [minister, setMinister] = useState('');
+  const [ isEditing, setIsEditing ] = useState<boolean>(false);
+  const [ editIndex, setEditIndex ] = useState<string | null>(null);
+  const [ loadingCards, setLoadingCards ] = useState<{ [key: string]: boolean }>({});
 
  useEffect(() => {
     getAllMusicLinks({ page: 1, limit });
@@ -38,13 +58,77 @@ const ListMusic: React.FC = () => {
     setLoadingVideo(false);
   };
 
-  const handleAddToSunday = (id: string) => {
-      console.log("Adicionar na lista de domingo:", id);
-    };
+  const handleAddToSunday = async (id: string) => {
+    const music = musicLinks.find((m) => m.id === id);
+    if (!music) {
+      toast.error("Música não encontrada!");
+      return;
+    }
+    
+    try {
+      const toastId = toast.loading("Adicionando à lista de domingo...");
+      await addMusicLink({
+        id: music.id,
+        name: music.name,
+        link: music.link || "",
+        cifra: music.cifra || "",
+        letter: music.letter  || "",
+        ministeredBy: music.minister
+      });
 
-    const handleUpdate = (id: string) => {
-      console.log("Atualizar música:", id);
-    };
+      toast.success("Música adicionada ao domingo com sucesso!", { id: toastId });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error("Erro ao adicionar: " + err.message);
+      } else {
+        toast.error("Erro desconhecido ao adicionar");
+      }
+    }
+  };
+
+  const handleUpdate = (id: string) => {
+    const musicLink = musicLinks.find(m => m.id === id);
+    if (!musicLink) return;
+
+      setName(musicLink.name);
+      setLink(musicLink.link || '');
+      setLetter(musicLink.letter || '');
+      setCifra(musicLink.cifra || '');
+      setMinister(musicLink.minister || '');
+      setEditIndex(musicLink.id!);
+      setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editIndex) {
+      setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
+      const updatedLink = { name, link, letter, cifra, minister };
+      setIsEditing(false);
+
+      try {
+        await updateMusicLink(editIndex, updatedLink);
+        toast.success("Link editado com sucesso!");
+      } catch (err: unknown) {
+          if (err instanceof Error) {
+            toast.error("Sem premissão! " + err.message);
+          } else {
+              toast.error("Erro desconhecido ao editar");
+          }
+      } finally {
+      setLoadingCards(prev => ({ ...prev, [editIndex]: false }));
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveEdit();
+    }
+  }
 
   const getTime = (date: string | Date | FirestoreTimestamp | undefined) => {
     if (!date) return 0;
@@ -79,10 +163,72 @@ const ListMusic: React.FC = () => {
 
           <div className='content-louvores'>
             <h4>Adicionar louvor</h4>
-            <Button className='btn-write'>
+            <Button className='btn-write' onClick={() => setIsModalOpen(true)}>
               <img src={EditLink} alt="editLink" />
             </Button>
           </div>
+
+          {isModalOpen && (
+            <div className="modal">
+              <div className="modal-content">
+                <AllMusicLinkInput setIsModalOpen={setIsModalOpen}/>
+              </div>
+            </div>
+          )}
+
+          {isEditing && (
+            <div className="all-edit-form">
+              <div className='all-edit-content'>
+                <div className="all-input-container">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nome da música"
+                    onKeyDown={handleKeyPress}
+                  />
+                  <input
+                    type="text"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    placeholder="Link da música"
+                    onKeyDown={handleKeyPress}
+                  />
+                  <input
+                    type="text"
+                    value={letter}
+                    onChange={(e) => setLetter(e.target.value)}
+                    placeholder="Link da letra"
+                    onKeyDown={handleKeyPress}
+                  />
+
+                  <SelectContainer>
+                    <label htmlFor="cifra">Tom da Música</label>
+                    <select
+                      id="cifra"
+                      value={cifra}
+                      onChange={(e) => setCifra(e.target.value)}
+                    >
+                      <option value="">Selecione o tom</option>
+                      {tons.map((tom, index) => (
+                        <option key={index} value={tom}>
+                          {tom}
+                        </option>
+                      ))}
+                    </select>
+                  </SelectContainer>
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                      <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e', marginBottom: '10px' }}>
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF', marginBottom: '10px' }}>
+                        Salvar
+                      </Button>
+                    </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="container">
             {!musicLinks.length && <p>Nenhuma música encontrada.</p>}
@@ -96,39 +242,50 @@ const ListMusic: React.FC = () => {
             )}
             {sortedMusicLinks.map((music) => (
               <div key={music.id} className="container-card-music">
-                <div className="music-info">
-                  <div className="span-cifra">{music.cifra || "-"}</div>
-                  <div className="music-text">
-                    <div className="span-music">{music.name}</div>
-                    <span className="divider-music">-</span>
-                    <div className="span-minister">Ministro: {music.minister}</div>
+
+                {loadingCards[music.id!] ? (
+                
+                  <p style={{ color: '#fff' }}>
+                    Aguarde..
+                  </p>
+                
+              ) : (
+                <>
+                  <div className="music-info">
+                    <div className="span-cifra">{music.cifra || "-"}</div>
+                    <div className="music-text">
+                      <div className="span-music">{music.name}</div>
+                      <span className="divider-music">-</span>
+                      <div className="span-minister">Ministro: {music.minister}</div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="music-buttons">
-                  {music.link && (
+                  <div className="music-buttons">
+                    {music.link && (
+                      <Button
+                        style={{ backgroundColor: "#a371f7", color: "#fff" }}
+                        onClick={() => handleOpenVideo(music.link!)}
+                      >
+                        Vídeo
+                      </Button>
+                    )}
+
                     <Button
-                      style={{ backgroundColor: "#a371f7", color: "#fff" }}
-                      onClick={() => handleOpenVideo(music.link!)}
+                      style={{ backgroundColor: "#2f81f7", color: "#fff" }}
+                      onClick={() => handleUpdate(music.id)}
                     >
-                      Vídeo
+                      Edit
                     </Button>
-                  )}
 
-                  <Button
-                    style={{ backgroundColor: "#2f81f7", color: "#fff" }}
-                    onClick={() => handleUpdate(music.id)}
-                  >
-                    Atualizar
-                  </Button>
-
-                  <Button
-                    style={{ backgroundColor: "#3fb950", color: "#fff" }}
-                    onClick={() => handleAddToSunday(music.id)}
-                  >
-                    Add para Domingo
-                  </Button>
-                </div>
+                    <Button
+                      style={{ backgroundColor: "#3fb950", color: "#fff" }}
+                      onClick={() => handleAddToSunday(music.id)}
+                    >
+                      Add Dom
+                    </Button>
+                  </div>
+                </>
+              )}
               </div>
             ))}
 

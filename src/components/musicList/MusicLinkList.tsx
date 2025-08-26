@@ -76,36 +76,36 @@ const MusicLinkList: React.FC = () => {
 
   };
   
-    const handleSaveEdit = async () => {
-      if (editIndex) {
-        setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
-        const updatedLink = { name, link, letter, cifra, order };
-        setIsEditing(false);
+  const handleSaveEdit = async () => {
+    if (editIndex) {
+      setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
+      const updatedLink = { name, link, letter, cifra, order };
+      setIsEditing(false);
 
-        try {
-          await updateMusicLink(editIndex, updatedLink);
-          toast.success("Link editado com sucesso!");
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-              toast.error("Sem premissão! " + err.message);
-            } else {
-                toast.error("Erro desconhecido ao editar");
-            }
-        } finally {
-        setLoadingCards(prev => ({ ...prev, [editIndex]: false }));
-        }
+      try {
+        await updateMusicLink(editIndex, updatedLink);
+        toast.success("Link editado com sucesso!");
+      } catch (err: unknown) {
+          if (err instanceof Error) {
+            toast.error("Sem premissão! " + err.message);
+          } else {
+              toast.error("Erro desconhecido ao editar");
+          }
+      } finally {
+      setLoadingCards(prev => ({ ...prev, [editIndex]: false }));
       }
-    };
+    }
+  };
   
     const handleCancelEdit = () => {
       setIsEditing(false);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-          handleSaveEdit();
-        }
+      if (e.key === 'Enter') {
+        handleSaveEdit();
       }
+    }
     
   return (
     <ListContainer>
@@ -157,7 +157,7 @@ const MusicLinkList: React.FC = () => {
                         style={{ backgroundColor: '#2f81f7', color: 'white' }}
                         onClick={() => handleEditClick(index)}
                       >
-                        Editar
+                        Edit
                       </Button>
                     </>
                 </div>
@@ -231,21 +231,17 @@ const MusicLinkList: React.FC = () => {
                     </select>
                   </SelectContainer>
 
-                  <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF', marginBottom: '10px' }}>
-                    Salvar
-                  </Button>
-                  <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e', marginBottom: '10px' }}>
-                    Cancelar
-                  </Button>
-                  <Button
-                    className='delete-icon-edit'
-                    onClick={() => {
-                      handleDelete(musicLink.id!)
-                    }}
-                    style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', borderRadius: 'none', border: 'none' }}
-                    >
-                    <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
-                  </Button>
+                  <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                    <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e' }}>
+                      Cancelar
+                    </Button>
+                    <Button className='delete-icon-edit' onClick={() => { handleDelete(musicLink.id!)}} style={{ backgroundColor: '#C0392B' }}>
+                      <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
+                    </Button>
+                    <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF' }}>
+                      Salvar
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

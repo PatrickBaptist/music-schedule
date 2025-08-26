@@ -171,8 +171,8 @@ const handleSendNotification = async () => {
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        <>
-          <DarkTitle>Preencher Escala do Mês</DarkTitle>
+        <div style={{ width: "100%", gap: "45px", display: "flex", flexDirection: "column" }}>
+          <DarkTitle>Gerenciador</DarkTitle>
           <DarkForm onSubmit={handleSubmit}>
             <FormGroup>
               <DarkLabel>Mês:</DarkLabel>
@@ -238,7 +238,7 @@ const handleSendNotification = async () => {
               Enviar Notificação
             </DarkButton>
           </FormGroup>
-        </>
+        </div>
       )}
       </ContainerForm>
       <Footer />

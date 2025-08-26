@@ -149,6 +149,87 @@ export const ListContainer = styled.ul`
     gap: 10px;
     flex-wrap: wrap;
   }
+
+  .modal {
+      width: 100vw;
+      height: 100dvh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2024;
+      background-color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .btn-close {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        margin-bottom: 10px;
+
+        button {
+          background-color: #ffc107;
+        }
+
+        .close-modal {
+          cursor: pointer;
+        }
+      }
+    }
+
+  .all-edit-form{
+    width: 100vw;
+    height: 100dvh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2024;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .all-edit-content {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .all-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+
+    input {
+      width: 350px;
+      height: 25px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
+      outline:  none;
+      padding: 6px;
+      font-size: 16px;
+
+      &:focus {
+        border-color: #2EBEF2;
+        box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
+      }
+    }
+  }
 `
 
 export const Input = styled.input`
