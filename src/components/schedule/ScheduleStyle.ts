@@ -3,12 +3,13 @@ import styled from 'styled-components';
 export const ScheduleContainer = styled.div`
   width: 100%;
   height: 100dvh;
-  background-color: #000;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
   padding-top: 60px;
+  padding-bottom: 28px;
+
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -35,7 +36,6 @@ export const ScheduleContent = styled.div`
 
   h1 {
     margin-bottom: 30px;
-    color: #58a6ff;
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
     font-size: 2.2rem;
@@ -67,7 +67,6 @@ export const SeeScale = styled.div`
 
   h3 {
     font-size: 1.1rem;
-    color: #58a6ff;
     margin-bottom: 12px;
   }
 

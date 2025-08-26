@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { useMusicLinksContext } from '../../context/hooks/useMusicLinksContext';
+import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
 import Loading from '../../assets/Loading.gif'
 import Delete from '../../assets/imgs/delete.png'
@@ -64,9 +64,12 @@ const MusicLinkList: React.FC = () => {
     try {
       await removeMusicLink(id);
       toast.success("Link removido com sucesso!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao remover Link. Tente novamente.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error("Sem premissão! " + err.message);
+      } else {
+          toast.error("Erro desconhecido ao remover");
+      }
     } finally {
       setLoadingCards(prev => ({ ...prev, [id]: false }));
     }
@@ -82,9 +85,12 @@ const MusicLinkList: React.FC = () => {
         try {
           await updateMusicLink(editIndex, updatedLink);
           toast.success("Link editado com sucesso!");
-        } catch (err) {
-          console.error(err);
-          toast.error("Erro ao editar música. Tente novamente.");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+              toast.error("Sem premissão! " + err.message);
+            } else {
+                toast.error("Erro desconhecido ao editar");
+            }
         } finally {
         setLoadingCards(prev => ({ ...prev, [editIndex]: false }));
         }

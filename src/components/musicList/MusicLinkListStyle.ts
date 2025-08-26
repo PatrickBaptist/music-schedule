@@ -155,6 +155,11 @@ export const ListContainer = styled.ul`
       outline:  none;
       padding: 6px;
       font-size: 16px;
+
+      &:focus {
+        border-color: #2EBEF2;
+        box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
+      }
     }
   }
 `

@@ -1,11 +1,12 @@
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 
-interface MusicLink {
+export interface MusicLink {
   id?: string;
   link: string | null;
   name: string;
   letter: string | null;
   cifra: string | null;
+  ministeredBy?: string | null;
   order: number;
 }
 
@@ -21,6 +22,14 @@ export const MusicLinksService = createContext<MusicLinksContextProps | undefine
 export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [musicLinks, setMusicLinks] = useState<MusicLink[]>([]);
 
+  const getHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
   const fetchMusicLinks = useCallback(async () => {
@@ -31,6 +40,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
       setMusicLinks(sorted);
     } catch (err) {
       console.error('Erro ao buscar músicas:', err);
+      throw err;
     }
   }, [API_URL]);
 
@@ -42,7 +52,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
     try {
       const res = await fetch(`${API_URL}/musicList`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify(musicLink),
       });
 
@@ -51,16 +61,22 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
       await fetchMusicLinks();
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
 
   const removeMusicLink = async (id: string) => {
     try {
-      const res = await fetch(`${API_URL}/musicList/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/musicList/${id}`, { 
+        method: 'DELETE', 
+        headers: getHeaders()
+      });
+      
       if (!res.ok) throw new Error('Erro ao deletar música');
       await fetchMusicLinks();
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
 
@@ -68,7 +84,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
     try {
       const res = await fetch(`${API_URL}/musicList/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify(updated),
       });
 
@@ -76,6 +92,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
       await fetchMusicLinks();
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
 

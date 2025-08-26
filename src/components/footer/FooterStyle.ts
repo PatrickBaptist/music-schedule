@@ -1,14 +1,43 @@
 import styled from 'styled-components'
 
-export const ContainerFooter = styled.div`
-    width: 100%;
-    height: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
+export const ContainerFooter = styled.footer`
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
+  background-color: #000;
+  border-top: 1px solid #444;
+  z-index: 9999;
+`;
 
-    h5 {
-        color: black;
-    }
-`
+export const NavFooter = styled.nav`
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 5px;
+
+  @media (min-width: 600px) {
+      display: none;
+  }
+`;
+
+export const FooterItem = styled.div<{ $active?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  a {
+    text-decoration: none;
+    color: ${(props) => (props.$active ? "#2f81f7" : "#555")};
+    font-weight: ${(props) => (props.$active ? "bold" : "normal")};
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  img {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+    filter: ${(props) => (props.$active ? "none" : "grayscale(1)")};
+    transform: ${(props) => (props.$active ? "rotate(-15deg)" : "rotate(0deg)")};
+    transition: transform 0.3s ease;
+  }
+`;

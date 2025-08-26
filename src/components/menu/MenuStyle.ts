@@ -6,7 +6,7 @@ export const ContainerMenu = styled.div<{ $openMenu: boolean }>`
   left: 0;
   width: 100vw;
   height: 170px;
-  z-index: 10000;
+  z-index: 2025;
   max-height: ${({ $openMenu }) => ($openMenu ? '300px' : '0')};
   overflow: hidden;
   transition: max-height 0.4s ease;
@@ -14,6 +14,10 @@ export const ContainerMenu = styled.div<{ $openMenu: boolean }>`
   margin: 0;
   padding-top: 60px;
   border: none;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 
   @media (min-width: 550px) {
     height: 60px;

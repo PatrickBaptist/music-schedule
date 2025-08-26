@@ -6,12 +6,13 @@ interface ButtonProps {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ onClick, children, className, style }) => {
+const Button: React.FC<ButtonProps> = ({ onClick, children, disabled, className, style }) => {
 
   return (
-    <ContainerButton onClick={onClick} className={className} style={style} >
+    <ContainerButton onClick={onClick} disabled={disabled} className={className} style={style} >
         {children}
     </ContainerButton>
   );

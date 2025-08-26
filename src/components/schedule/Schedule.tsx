@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
+import { toast } from 'sonner';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -59,9 +60,12 @@ const Schedule: React.FC = () => {
       try {
         await getScheduleForMonth(currentMonth);
         setLoading(false);
-      } catch (err) {
-        console.warn("Servidor ainda não respondeu, tentando novamente...");
-        setTimeout(fetch, 3000); // tenta de novo em 3 segundos
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          toast.error("Sem premissão! " + err.message);
+        } else {
+          toast.error("Erro desconhecido ao buscar escala");
+        }
       }
     };
 

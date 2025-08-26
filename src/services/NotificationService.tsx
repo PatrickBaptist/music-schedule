@@ -14,6 +14,14 @@ export const NotificationService = createContext<NotificationContextProps | unde
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [notification, setNotification] = useState<Notification | null>(null);
+  
+  const getHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
@@ -26,6 +34,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     } catch (err) {
       console.error('Erro ao buscar notificação:', err);
       setNotification(null);
+      throw err;
     }
   }, [API_URL]);
 
@@ -37,7 +46,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     try {
       const res = await fetch(`${API_URL}/notification`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({ text }),
       });
 
@@ -45,6 +54,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       await getNotification();
     } catch (err) {
       console.error('Erro ao postar notificação:', err);
+      throw err;
     }
   };
 

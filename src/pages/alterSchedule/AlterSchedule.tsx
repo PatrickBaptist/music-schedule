@@ -8,13 +8,15 @@ import {
   DarkSelect,
   DarkButton,
   FormGroup,
+  ContainerForm,
 } from "./AlterScheduleStyle";
-import { useNavigate } from "react-router-dom";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { Musicos } from "../../services/ScheduleService";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import useNotificationContext from "../../context/hooks/useNotificationContext";
 import { toast } from "sonner";
+import Header from "../../components/header/Header";
+import Footer from "../../components/footer/Footer";
 
 const ScheduleForm: React.FC = () => {
   const [month, setMonth] = useState<string>("01");
@@ -30,7 +32,6 @@ const ScheduleForm: React.FC = () => {
     vocal2: "",
   });
   const [sundays, setSundays] = useState<Date[]>([]);
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const labels: Record<string, string> = {
@@ -59,14 +60,19 @@ const ScheduleForm: React.FC = () => {
 
   // Buscar escala do mês quando mudar mês ou ano
   useEffect(() => {
-    const fetchSchedule = async () => {
+  const fetchSchedule = async () => {
     setIsLoading(true);
-    await getScheduleForMonth(`${month}-${year}`);
-    setIsLoading(false);
+    try {
+      await getScheduleForMonth(`${month}-${year}`);
+    } catch (err) {
+      console.error("Erro ao carregar escala:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   fetchSchedule();
-  }, [getScheduleForMonth, month, year]);
+}, [getScheduleForMonth, month, year]);
 
   // Preenche os músicos se já houver dados salvos para a data
   useEffect(() => {
@@ -115,14 +121,18 @@ const ScheduleForm: React.FC = () => {
       músicos,
     };
 
-    setIsLoading(true);
-
+    
     try {
+      setIsLoading(true);
       await saveOrUpdateSchedule(payload);
       toast.success("Escala salva com sucesso!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao salvar a escala!");
+      setIsLoading(false);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error("Sem premissão! " + err.message);
+      } else {
+        toast.error("Erro desconhecido ao salvar");
+    }
     } finally {
       setIsLoading(false); 
     }
@@ -130,7 +140,7 @@ const ScheduleForm: React.FC = () => {
 
 //notificações
   const { notification, postNotification, getNotification } = useNotificationContext();
-  const [notificationText, setNotificationText] = useState<string>("");
+  const [ notificationText, setNotificationText ] = useState<string>("");
 
   useEffect(() => {
   if (notification?.text) {
@@ -144,85 +154,95 @@ const handleSendNotification = async () => {
     toast.success("Notificação enviada!");
     // Atualiza para garantir que a notificação salva está atualizada
     await getNotification();
-  } catch (error) {
-    console.error(error);
-    toast.error("Erro ao enviar notificação");
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      toast.error("Sem premissão! " + err.message);
+    } else {
+      toast.error("Erro desconhecido ao salvar");
+    }
   }
 };
 
 
   return (
-   isLoading ? (
-       <LoadingScreen /> 
-    ) : (
-      <DarkWrapper>
-      <DarkTitle>Preencher Escala do Mês</DarkTitle>
-      <DarkForm onSubmit={handleSubmit}>
-        <FormGroup style={{ display: "flex", justifyContent: "space-between" }}>
-          <DarkLabel>Mês:</DarkLabel>
-          <DarkSelect value={month} onChange={(e) => setMonth(e.target.value)} required>
-            {Array.from({ length: 12 }, (_, index) => (
-              <option key={index} value={(index + 1).toString().padStart(2, "0")}>
-                {new Date(0, index).toLocaleString("default", { month: "long" })}
-              </option>
-            ))}
-          </DarkSelect>
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Ano:</DarkLabel>
-          <DarkInput
-            type="number"
-            value={year}
-            onChange={(e) => setYear(parseInt(e.target.value))}
-            min={2000}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <DarkLabel>Data (Domingo):</DarkLabel>
-          <DarkSelect value={date} onChange={(e) => setDate(e.target.value)} required>
-            <option value="">Selecione um domingo</option>
-            {sundays.map((sunday, index) => (
-              <option key={index} value={sunday.toISOString()}>
-                {sunday.toLocaleDateString()}
-              </option>
-            ))}
-          </DarkSelect>
-        </FormGroup>
+    <DarkWrapper>
+      <Header />
+      <ContainerForm>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <DarkTitle>Preencher Escala do Mês</DarkTitle>
+          <DarkForm onSubmit={handleSubmit}>
+            <FormGroup>
+              <DarkLabel>Mês:</DarkLabel>
+              <DarkSelect value={month} onChange={(e) => setMonth(e.target.value)} required>
+                {Array.from({ length: 12 }, (_, index) => (
+                  <option key={index} value={(index + 1).toString().padStart(2, "0")}>
+                    {new Date(0, index).toLocaleString("default", { month: "long" })}
+                  </option>
+                ))}
+              </DarkSelect>
+            </FormGroup>
 
-        {ordemCampos.map((key) => (
-          <FormGroup key={key}>
-            <DarkLabel>{labels[key] || key}:</DarkLabel>
+            <FormGroup>
+              <DarkLabel>Ano:</DarkLabel>
+              <DarkInput
+                type="number"
+                value={year}
+                onChange={(e) => setYear(parseInt(e.target.value))}
+                min={2000}
+                required
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <DarkLabel>Data (Domingo):</DarkLabel>
+              <DarkSelect value={date} onChange={(e) => setDate(e.target.value)} required>
+                <option value="">Selecione um domingo</option>
+                {sundays.map((sunday, index) => (
+                  <option key={index} value={sunday.toISOString()}>
+                    {sunday.toLocaleDateString()}
+                  </option>
+                ))}
+              </DarkSelect>
+            </FormGroup>
+
+            {ordemCampos.map((key) => (
+              <FormGroup key={key}>
+                <DarkLabel>{labels[key] || key}:</DarkLabel>
+                <DarkInput
+                  type="text"
+                  value={músicos[key as keyof Musicos] || ""}
+                  onChange={(e) => setMúsicos((prev) => ({ ...prev, [key]: e.target.value }))}
+                  required
+                />
+              </FormGroup>
+            ))}
+
+            <div style={{ width: "100%", boxSizing: "border-box", paddingLeft: "20px" }}>
+              <DarkButton type="submit">Salvar Escala</DarkButton>
+            </div>
+          </DarkForm>
+
+          <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
+          <FormGroup>
+            <DarkLabel>Mensagem da Notificação:</DarkLabel>
             <DarkInput
               type="text"
-              value={músicos[key as keyof Musicos] || ""}
-              onChange={(e) => setMúsicos((prev) => ({ ...prev, [key]: e.target.value }))}
-              required
+              value={notificationText}
+              onChange={(e) => setNotificationText(e.target.value)}
+              placeholder="Digite a mensagem da notificação"
             />
+            <DarkButton type="button" onClick={handleSendNotification} style={{ marginTop: 15 }}>
+              Enviar Notificação
+            </DarkButton>
           </FormGroup>
-        ))}
-
-        <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-          <DarkButton type="submit">Salvar Escala</DarkButton>
-        </div>
-      </DarkForm>
-
-      <FormGroup>
-        <DarkLabel>Mensagem da Notificação:</DarkLabel>
-        <DarkInput
-          type="text"
-          value={notificationText}
-          onChange={(e) => setNotificationText(e.target.value)}
-          placeholder="Digite a mensagem da notificação"
-        />
-        <DarkButton type="button" onClick={handleSendNotification} style={{ marginTop: 8 }}>
-          Enviar Notificação
-        </DarkButton>
-        <DarkButton onClick={() => navigate("/")}>Voltar</DarkButton>
-      </FormGroup>
-
-    </DarkWrapper> 
-    )
+        </>
+      )}
+      </ContainerForm>
+      <Footer />
+    </DarkWrapper>
   );
 };
 

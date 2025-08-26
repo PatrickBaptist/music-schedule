@@ -35,6 +35,14 @@ export const SchedulesService = createContext<ScheduleContextProps | undefined>(
 export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [nextSundaySchedule, setNextSundaySchedule] = useState<Schedule | null>(null);
   const [monthlySchedule, setMonthlySchedule] = useState<Schedule[] | null>(null);
+  
+  const getHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
@@ -51,12 +59,12 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     } catch (err) {
       console.error(err);
+      throw err;
     }
   }, [API_URL]);
 
   // Buscar escala do mês
-  const getScheduleForMonth = useCallback(
-    async (monthId: string) => {
+  const getScheduleForMonth = useCallback(async (monthId: string) => {
       try {
         const res = await fetch(`${API_URL}/schedule/${monthId}`);
         if (!res.ok) throw new Error('Erro ao buscar escala do mês');
@@ -64,6 +72,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
         setMonthlySchedule(data.sundays || []);
       } catch (err) {
         console.error(err);
+        throw err;
       }
     },
     [API_URL]
@@ -74,7 +83,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
     try {
       const res = await fetch(`${API_URL}/schedule/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify(schedule),
       });
 
@@ -83,6 +92,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
       await getScheduleForMonth(`${schedule.month}-${schedule.year}`); // Atualiza mês
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
 

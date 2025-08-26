@@ -6,15 +6,18 @@ export const HeaderContainer = styled.div<{ $openMenu: boolean }>`
   display: flex;
   align-items: center;
   transition: box-shadow 0.5s ease-in-out;
-  position: fixed;
-  top: 0;
-  left: 0;
+  background-color: transparent;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   z-index: 100900;
-  border: none; /* eliminar bordas */
-  box-shadow: none; /* eliminar sombra que cause linha */
+  border-bottom: 1px solid #444;
+  box-shadow: none;
+  z-index: 9999;
+
+  @media (max-width: 600px) {
+    background-color: none;
+  }
 `
 
 export const ContainerLogo = styled.div`
@@ -27,7 +30,30 @@ export const ContainerLogo = styled.div`
 
   div {
     display: flex;
+    align-items: center;
     gap: 15px;
+
+    span {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    p {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .logout {
+      width: 30px;
+      cursor: pointer;
+      object-fit: contain;
+      filter: drop-shadow(3px 3px 5px white);
+
+      &:hover {
+        filter: drop-shadow(3px 3px 5px red);
+      }
+    }
 
     .hamburguer {
       width: 30px;
@@ -38,6 +64,10 @@ export const ContainerLogo = styled.div`
       background-color: transparent;
       cursor: pointer;
       border: none;
+
+      @media (max-width: 600px) {
+        display: none;
+      }
     }
       
       .menu {

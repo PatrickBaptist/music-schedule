@@ -7,9 +7,7 @@ import Footer from '../../components/footer/Footer';
 const SchedulePage: React.FC = () => {
   return (
     <ContainerSchedule>
-      <Header>
-        Voltar
-      </Header>
+      <Header />
       
       <Schedule />
 

@@ -7,15 +7,17 @@ import { Container, ContainerHome } from './HomePageStyle';
 import EditLink from '../../assets/imgs/edit.png';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import Button from '../../components/buttons/Buttons';
+import LoadingScreen from '../../components/loading/LoadingScreen';
 
 const HomePage: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { nextSundaySchedule } = useSchedulesContext();
+  const isLoading = !nextSundaySchedule;
 
   return (
     <Container>
-      <Header>Escala</Header>
+      <Header />
       <ContainerHome>
 
         <div className='content-louvores'>
@@ -38,7 +40,9 @@ const HomePage: React.FC = () => {
         <div className='container-escala'>
           <h4>Escala do próximo domingo</h4>
           <div className='content'>
-          {nextSundaySchedule ? (
+          {isLoading ? (
+              <LoadingScreen />
+            ) : nextSundaySchedule ? (
             <div className='content-escala'>
               <p><strong>Vocal:</strong> {nextSundaySchedule.músicos.vocal1}</p>
               <p><strong>Vocal:</strong> {nextSundaySchedule.músicos.vocal2}</p>

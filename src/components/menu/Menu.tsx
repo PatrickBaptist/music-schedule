@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ContainerMenu, ContentMenu, NavMenu } from "./MenuStyle";
-import { useUserContext } from "../../context/hooks/useUserContext";
+import useUserContext from "../../context/hooks/useUserContext";
 
 const Menu: React.FC = () => {
     const { openMenu, setOpenMenu } = useUserContext();
@@ -19,9 +19,7 @@ const Menu: React.FC = () => {
                         <li onClick={() => {
                             navigate("/"); 
                             handleMenuClick()
-                        }}>
-                        INÍCIO
-                        </li>
+                        }}>INÍCIO</li>
                         <li onClick={() => {
                             navigate("/schedule")
                             handleMenuClick()
@@ -29,7 +27,11 @@ const Menu: React.FC = () => {
                         <li onClick={() => {
                             navigate("/listMusic")
                             handleMenuClick()
-                        }}>SUGEST. MUSIC</li>
+                        }}>CANÇÕES</li>
+                        <li onClick={() => {
+                            navigate("/alter")
+                            handleMenuClick()
+                        }}>GEREN. ESCALA</li>
                     </ul>
                 </NavMenu>
             </ContentMenu>

@@ -6,7 +6,6 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: #000;
   box-sizing: border-box;
   overflow: hidden;
 `
@@ -17,7 +16,7 @@ export const ContainerHome = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 60px;
+    padding: 70px 0 40px 0;
     overflow-y: auto;
     box-sizing: border-box;
 
@@ -37,15 +36,7 @@ export const ContainerHome = styled.div`
       margin-top: 30px;
       border-top: 1px solid #444;
       padding-top: 20px;
-      color: #e0e0e0;
       font-family: 'Segoe UI', sans-serif;
-
-      h4 {
-        margin-left: 16px;
-        font-size: 18px;
-        color: #00bfff;
-        font-weight: 600;
-      }
 
       .content {
         width: 100%;
@@ -62,6 +53,7 @@ export const ContainerHome = styled.div`
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
         width: 90%;
         max-width: 400px;
+        color: #e0e0e0;
 
         @media (max-width: 478px) {
           max-width: 300px;
@@ -93,6 +85,12 @@ export const ContainerHome = styled.div`
         min-width: 90px;
       }
     }
+
+    h4 {
+        margin-left: 16px;
+        font-size: 18px;
+        font-weight: 600;
+      }
 
     .content-louvores {
       width: 100%;
@@ -132,7 +130,7 @@ export const ContainerHome = styled.div`
       top: 0;
       left: 0;
       z-index: 2024;
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: #000;
       display: flex;
       align-items: center;
       justify-content: center;

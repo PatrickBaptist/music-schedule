@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useMusicLinksContext } from '../../context/hooks/useMusicLinksContext';
+import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
 import { InputContainer } from './MusicLinkInputStyle';
 import { SelectContainer } from '../musicList/MusicLinkListStyle';
 import { toast } from 'sonner';
+import useAuthContext from '../../context/hooks/useAuthContext';
+import { UserRole } from '../../types/UserRole';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,6 +25,9 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [cifra, setCifra] = useState('');
   const [, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
+  const { user } = useAuthContext();
+  const [ministerModalOpen, setMinisterModalOpen] = useState(false);
+  const [ministerName, setMinisterName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -30,13 +35,19 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   }, []);
 
   const handleAddLink = async () => {
-    setIsModalOpen(false)
     if (!name.trim()) {
       toast.error("O nome da música é obrigatório!");
       return;
     }
+
+    const isMinister = user?.roles?.includes(UserRole.Minister);
+    if (!isMinister && !ministerName) {
+      setMinisterModalOpen(true);
+      return;
+    }
     
     const toastId = toast.loading("Aguarde...");
+    setIsModalOpen(false);
     
     try {
     await addMusicLink({ 
@@ -44,6 +55,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       link: link.trim() || "",
       letter: letter.trim() || "",
       cifra: cifra.trim() || "",
+      ministeredBy: isMinister ? user?.name : ministerName
     });
 
     setIsModalOpen(false);
@@ -52,12 +64,16 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     setLetter('');
     setCifra('');
     setOrder(1);
+    setMinisterName('');
 
     nameInputRef.current?.focus();
     toast.success("Música adicionada com sucesso!", { id: toastId });
-  } catch (error) {
-    console.error(error);
-    toast.error("Erro ao adicionar a música. Tente novamente.", { id: toastId });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      toast.error("Sem premissão! " + err.message, { id: toastId });
+    } else {
+      toast.error("Erro desconhecido ao adicionar", { id: toastId });
+    }
   }
 };
 
@@ -114,6 +130,25 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
         Cancelar
       </Button>
+      {ministerModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <InputContainer>
+            <h3>Informe quem irá ministrar a música</h3>
+            <input
+              type="text"
+              value={ministerName}
+              onChange={(e) => setMinisterName(e.target.value)}
+              placeholder="Nome do ministro"
+            />
+            <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
+              Confirmar
+            </Button>
+            <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+              Cancelar
+            </Button>
+          </InputContainer>
+        </div>
+      )}
     </InputContainer>
   );
 };

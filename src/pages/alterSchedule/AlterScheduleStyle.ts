@@ -1,84 +1,103 @@
 import styled from 'styled-components';
 
 export const DarkWrapper = styled.div`
-  background-color: #06141b;
-  color: #e0e0e0;
-  padding: 40px 20px;
-  min-height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+export const ContainerForm = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: auto;
+  padding: 50px 0;
+  gap: 45px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    background-color: #0e1e30ff;
+    border-radius: 1em;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #58a6ff;
+    border-radius: 1em;
+  }
+`;
+
+export const DarkTitle = styled.h1`
+  text-align: center;
+`;
+
+
+export const DarkForm = styled.form`
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`;
-
-export const DarkTitle = styled.h1`
-  color: #fff;
-  font-size: 1rem;
-  margin-bottom: 30px;
-  text-align: center;
-  font-weight: 700;
-`;
-
+  box-sizing: border-box;
+  gap: 20px;
+  `;
+  
 export const FormGroup = styled.div`
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-export const DarkForm = styled.form`
-  display: flex;
-  flex-direction: column;
   width: 100%;
-  max-width: 600px;
-  padding: 10px;
-  gap: 3px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 35px;
 `;
 
 export const DarkInput = styled.input`
-  background-color: #333;
-  color: #fff;
-  padding: 8px;
+  width: 100%;
   font-size: 16px;
-  border: 1px solid #444;
-  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
+  border-radius: 3px;
   transition: all 0.3s ease;
   outline: none;
 
   &:focus {
-    border-color: #6200ea;
-    box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+    border-color: #2EBEF2;
+    box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
   }
 `;
 
 export const DarkSelect = styled.select`
-  background-color: #333;
-  color: #fff;
-  padding: 8px;
-  font-size: 13px;
-  border: 1px solid #444;
-  border-radius: 8px;
+  width: 100%;
+  font-size: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
+  border-radius: 3px;
   transition: all 0.3s ease;
   outline: none;
 
   &:focus {
-    border-color: #6200ea;
-    box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+    border-color: #2EBEF2;
+    box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
   }
 `;
 
 export const DarkButton = styled.button`
-  background-color: #6200ea;
+  background-color: #007BFF;
   color: #fff;
-  padding: 10px;
   font-size: 13px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 10px 10px;
 
   &:hover {
-    background-color: #3700b3;
+    background-color: #2EBEF2;
     transform: scale(1.05);
   }
 
@@ -88,7 +107,6 @@ export const DarkButton = styled.button`
 `;
 
 export const DarkLabel = styled.label`
-  color: #fff;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 5px;
@@ -97,7 +115,7 @@ export const DarkLabel = styled.label`
 
 export const BackButton = styled(DarkButton)`
   background-color: #444;
-  margin-top: 20px;
+
   &:hover {
     background-color: #333;
   }
