@@ -18,9 +18,16 @@ export const formatFirestoreDate = (date?: string | Date | FirestoreTimestamp): 
 };
 
 export const formatDateDDMMYYYY = (isoDate: string) => {
-    const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
+  // Caso venha só "YYYY-MM-DD"
+  if (/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+    const [, month, day] = isoDate.split("-");
+    return `${day}-${month}`;
+  }
+
+  // Caso venha ISO completo
+  const date = new Date(isoDate);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${day}-${month}`;
+};
+

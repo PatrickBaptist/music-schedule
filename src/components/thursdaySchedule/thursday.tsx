@@ -28,7 +28,7 @@ const ThursdaySchedule: React.FC = () => {
 
     return thursdays.map((thursday, index) => ({
       date: formatDateDDMMYYYY(thursday.toISOString()),
-      minister: vocals[index % vocals.length], // gira entre eles
+      minister: vocals[index % vocals.length],
     }));
   };
 
