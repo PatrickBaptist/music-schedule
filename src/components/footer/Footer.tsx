@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
                   }}
                   animate={isActive ? { y: [0, -5, 0] } : { y: 0 }}
                   transition={isActive ? { duration: 0.6, repeat: Infinity, repeatType: "loop" } : { duration: 0 }}
-                  style={{ width: 20, height: 20, marginBottom: 2 }}
+                  style={{ width: 30, height: 30, marginBottom: 2 }}
                 />
                 <span>{item.name}</span>
               </Link>

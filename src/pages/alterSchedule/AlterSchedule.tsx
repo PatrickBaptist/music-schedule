@@ -453,7 +453,7 @@ const handleSendWarning = async () => {
                     placeholder="Digite a mensagem do aviso"
                     />
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}> 
-                      <DarkButton type="button" onClick={handleSendWarning} style={{ marginTop: 15 }}>
+                      <DarkButton type="button" onClick={handleSendWarning} style={{ marginTop: 15, marginBottom: 50 }}>
                       Enviar Aviso
                       </DarkButton>
                     </div>

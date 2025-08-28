@@ -5,7 +5,6 @@ export const DarkWrapper = styled.div`
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 `;
 
 export const ContainerForm = styled.div`
@@ -16,7 +15,7 @@ export const ContainerForm = styled.div`
   align-items: center;
   justify-content: space-between;
   overflow: auto;
-  padding: 50px 0;
+  box-sizing: border-box;
   gap: 45px;
 
   &::-webkit-scrollbar {
