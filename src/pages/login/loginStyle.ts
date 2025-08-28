@@ -5,6 +5,7 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100dvh;
+  width: 100%;
 `;
 
 export const FormWrapper = styled.form`

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button, Container, FieldContainer, FormWrapper, Input, Label, LoginPrompt, RoleItem, RolesContainer, RolesLabel, StyledInputMask, Title } from "./registerStyle";
+import { Button, ContainerRegiter, FieldContainer, FormWrapper, Input, Label, LoginPrompt, RoleItem, RolesContainer, RolesLabel, StyledInputMask, Title } from "./registerStyle";
 import { roleOptions } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
+import { motion } from "framer-motion";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const RegisterPage: React.FC = () => {
 
   return (
     <PageWrapper>
-      <Container>
+      <ContainerRegiter>
         <FormWrapper onSubmit={handleRegister}>
           <Title>Cadastro</Title>
 
@@ -80,28 +81,36 @@ const RegisterPage: React.FC = () => {
 
           <FieldContainer>
               <RolesLabel htmlFor="roles">
-                  Selecione as suas funções no ministério de louvor
+                  Selecione suas funções no ministério de louvor
               </RolesLabel>
           </FieldContainer>
           <RolesContainer>
 
               {roleOptions.map((role) => (
                   <RoleItem key={role.value}>
-                      <input
-                          type="checkbox"
-                          id={role.value}
-                          value={role.value}
-                          checked={roles.includes(role.value)}
-                          onChange={(e) => {
-                          const value = e.target.value;
-                          if (e.target.checked) {
-                              setRoles([...roles, value]);
-                          } else {
-                              setRoles(roles.filter((r) => r !== value));
-                          }
-                          }}
-                      />
-                      <label htmlFor={role.value}>{role.label}</label>
+                    <motion.input
+                      type="checkbox"
+                      id={role.value}
+                      value={role.value}
+                      checked={roles.includes(role.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (e.target.checked) {
+                          setRoles([...roles, value]);
+                        } else {
+                          setRoles(roles.filter((r) => r !== value));
+                        }
+                      }}
+                      whileTap={{ scale: 1.2 }}
+                      whileHover={{ scale: 1.05 }}
+                      // animação ao marcar/desmarcar
+                      animate={{
+                        backgroundColor: roles.includes(role.value) ? "#3fb950" : "#fff",
+                        borderColor: roles.includes(role.value) ? "#3fb950" : "#ccc",
+                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    />
+                    <label htmlFor={role.value}>{role.label}</label>
                   </RoleItem>
               ))}
           </RolesContainer>
@@ -114,7 +123,7 @@ const RegisterPage: React.FC = () => {
           </LoginPrompt>
 
         </FormWrapper>
-      </Container>
+      </ContainerRegiter>
     </PageWrapper>
   );
 };
