@@ -3,8 +3,11 @@ import React, { createContext, useState, ReactNode, useEffect, useCallback } fro
 export interface User {
   id: string;
   name: string;
+  nickname?: string;
   email: string;
   roles: string[];
+  birthDate?: string;
+  status?: string;
 }
 
 export interface UsersContextProps {
@@ -30,10 +33,9 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
   };
 
-  // Buscar todos os usuários permitidos (rota /users/all)
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/users/all`, {
+      const res = await fetch(`${API_URL}/users`, {
         headers: getHeaders(),
       });
 

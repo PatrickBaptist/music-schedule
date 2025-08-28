@@ -14,6 +14,7 @@ import SpecialSchedules from '../../components/specialSchedule/specialSchedule';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { SpecialSchedule } from '../../services/ScheduleService';
 import ThursdaySchedule from '../../components/thursdaySchedule/thursday';
+import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
 
 const HomePage: React.FC = () => {
 
@@ -80,6 +81,10 @@ const HomePage: React.FC = () => {
             </div>
 
             {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} />}
+
+            <div style={{ width: '100%', borderTop: '1px solid #444', margin: '55px 0' }} />
+            <BirthdaysThisMonth />
+
           </PageWrapper> 
         </ContainerHome>
         <Footer />

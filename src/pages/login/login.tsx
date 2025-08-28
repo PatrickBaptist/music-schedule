@@ -14,15 +14,16 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading("Aguarde...");
     try {
       await login(email, password);
-      toast.success("Login realizado com sucesso!");
+      toast.success("Login realizado com sucesso!", { id: toastId });
       navigate("/");
     } catch (err: unknown) {
         if (err instanceof Error) {
             toast.error(err.message);
         } else {
-            toast.error("Erro desconhecido ao fazer login");
+            toast.error("Erro desconhecido ao fazer login", { id: toastId });
         }
     }
   };

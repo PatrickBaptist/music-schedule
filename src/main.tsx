@@ -11,33 +11,36 @@ import { toast, Toaster } from 'sonner';
 import { AuthProvider } from './services/AuthService';
 import LayoutWrapper from './components/layoutWrapper/layoutWrapper';
 import { AllMusicLinksProvider } from './services/AllMusicHistory';
+import { UsersProvider } from './services/UsersService';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <UserStore>
-          <AllMusicLinksProvider>
-            <MusicLinksProvider>
-              <SchedulesProvider>
-                <NotificationProvider>
-                  <GlobalStyle />
-                    <LayoutWrapper>  
-                      <App />
-                    </LayoutWrapper>
-                </NotificationProvider>
-              </SchedulesProvider>
-            </MusicLinksProvider>
-            <Toaster 
-              richColors
-              position='top-right'
-              toastOptions={{
-                actionButtonStyle: {
-                  backgroundColor: 'red'
-                }
-              }}
-            />
-          </AllMusicLinksProvider>
+          <UsersProvider>
+            <AllMusicLinksProvider>
+              <MusicLinksProvider>
+                <SchedulesProvider>
+                  <NotificationProvider>
+                    <GlobalStyle />
+                      <LayoutWrapper>  
+                        <App />
+                      </LayoutWrapper>
+                  </NotificationProvider>
+                </SchedulesProvider>
+              </MusicLinksProvider>
+              <Toaster 
+                richColors
+                position='top-right'
+                toastOptions={{
+                  actionButtonStyle: {
+                    backgroundColor: 'red'
+                  }
+                }}
+              />
+            </AllMusicLinksProvider>
+          </UsersProvider>
         </UserStore>
       </AuthProvider>
     </BrowserRouter>

@@ -66,8 +66,8 @@ const Header: React.FC = () => {
             alignItems: 'center',
           }}
           whileHover={{
-            scale: [1, 1.2, 1, 1.2, 1], // ping-pong
-            rotate: [0, -10, 0, 10, 0], // pequeno balanço
+            scale: [1, 1.2, 1, 1.2, 1],
+            rotate: [0, -10, 0, 10, 0],
           }}
           transition={{
             duration: 0.8,
