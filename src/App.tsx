@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import LoginPage from './pages/login/login';
 import RegisterPage from './pages/register/register';
 import PrivateRoute from './context/PrivateRoute';
+import UsersPage from './pages/users/users';
+import MePage from './pages/me/me';
 
 const App: React.FC = () => {
   const updateAvailable = useServiceWorkerUpdate();
@@ -40,6 +42,9 @@ useEffect(() => {
         <Route path="/schedule" element={<PrivateRoute><SchedulePage /></PrivateRoute>} />
         <Route path="/listMusic" element={<PrivateRoute><ListMusic /></PrivateRoute>} />
         <Route path="/alter" element={<PrivateRoute><ScheduleForm /></PrivateRoute>} />
+        <Route path="/users" element={<PrivateRoute><UsersPage /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><MePage /></PrivateRoute>} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
   );
 };

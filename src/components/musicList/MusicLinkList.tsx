@@ -5,6 +5,7 @@ import Loading from '../../assets/Loading.gif'
 import Delete from '../../assets/imgs/delete.png'
 import { ContainerVd, ContentVd, ListContainer, SelectContainer } from './MusicLinkListStyle'
 import { toast } from 'sonner';
+import { AnimatePresence, motion } from "framer-motion";
 
 type Video = {
   url: string
@@ -109,8 +110,16 @@ const MusicLinkList: React.FC = () => {
     
   return (
     <ListContainer>
+      <AnimatePresence>
       {musicLinks.map((musicLink, index) => (
-        <div key={index} className='container-list'>
+        <motion.div
+            key={index}
+            className='container-list'
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -200 }} // card some para a esquerda
+            transition={{ duration: 0.4 }}
+          >
 
           <div className='container-card'>
             <div className='card'>
@@ -132,33 +141,32 @@ const MusicLinkList: React.FC = () => {
 
                 <div className='menu-buttons'>
                   {musicLink.link && (
-                      <Button
-                        onClick={() => openLinkVideo({ url: musicLink.link || '' })}
-                        style={{ backgroundColor: '#a371f7', color: 'white' }}
-                      >
-                        Vídeo
-                      </Button>              
+                    <motion.button
+                      className='btns'
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => openLinkVideo({ url: musicLink.link || '' })}
+                      style={{ backgroundColor: '#a371f7', color: 'white' }}
+                    >Vídeo</motion.button>              
                   )}
                   
                   {musicLink.letter && (
-                      <Button 
-                        style={{ backgroundColor: '#3fb950', color: 'white' }}
-                        onClick={() => {
-                          if (musicLink.letter) {
-                            window.open(musicLink.letter, '_blank')
-                          }
-                        }}
-                      >
-                        Letra               
-                      </Button>
+                    <motion.button
+                      className='btns'
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{ backgroundColor: '#3fb950', color: 'white' }}
+                      onClick={() => musicLink.letter && window.open(musicLink.letter, '_blank')}
+                    >Letra</motion.button>
                   )}
                     <>
-                      <Button
+                      <motion.button
+                        className='btns'
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
                         style={{ backgroundColor: '#2f81f7', color: 'white' }}
                         onClick={() => handleEditClick(index)}
-                      >
-                        Edit
-                      </Button>
+                      >Edit</motion.button>
                     </>
                 </div>
               </div>
@@ -170,19 +178,24 @@ const MusicLinkList: React.FC = () => {
               </>
               )}
             </div>
-            <Button
-              className='delete-icon'
-              onClick={() => {
-                handleDelete(musicLink.id!)
-              }}
-              style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', borderRadius: 'none', border: 'none' }}
-              >
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              className='btns'
+              onClick={() => handleDelete(musicLink.id!)}
+              style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', border: 'none' }}
+            >
               <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
-            </Button>
+            </motion.button>
           </div>
 
           {isEditing && (
-            <div className="edit-form">
+            <motion.div
+                className="edit-form"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+            >
               <div className='edit-content'>
                 <div className="input-container">
                   <input
@@ -244,7 +257,7 @@ const MusicLinkList: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {openVideo && currentVideo && (
@@ -272,8 +285,9 @@ const MusicLinkList: React.FC = () => {
             </ContainerVd>
           )}
 
-        </div>
+        </motion.div>
       ))}
+      </AnimatePresence>
     </ListContainer>
   );
 };

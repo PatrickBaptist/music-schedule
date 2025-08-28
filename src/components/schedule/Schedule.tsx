@@ -3,6 +3,7 @@ import { ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import { toast } from 'sonner';
+import PageWrapper from '../pageWrapper/pageWrapper';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -80,30 +81,32 @@ const Schedule: React.FC = () => {
 
   return (
     <ScheduleContainer>
-      <ScheduleContent>
-        <h1>Escala de {nameMonth}</h1>
+      <PageWrapper>
+        <ScheduleContent>
+          <h1>Escala de {nameMonth}</h1>
 
-        {loading ? (
-          <LoadingScreen />
-        ) : monthlySchedule && monthlySchedule.length > 0 ? (
-          <span>
-            {monthlySchedule.map((musician, index) => (
-              <SeeScale key={index}>
-                <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#58a6ff' }}>{new Date(musician.date).toLocaleDateString("pt-BR")}</h3>
-                <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
-                <p><strong>Vocal: </strong>{musician.músicos.vocal2 || 'Não definido'}</p>
-                <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
-                <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
-                <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
-                <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
-                <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
-              </SeeScale>
-            ))}
-          </span>
-        ) : (
-          <p>Nenhuma escala disponível para este mês</p>
-        )}
-      </ScheduleContent>
+          {loading ? (
+            <LoadingScreen />
+          ) : monthlySchedule && monthlySchedule.length > 0 ? (
+            <span>
+              {monthlySchedule.map((musician, index) => (
+                <SeeScale key={index}>
+                  <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#58a6ff' }}>{new Date(musician.date).toLocaleDateString("pt-BR")}</h3>
+                  <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
+                  <p><strong>Vocal: </strong>{musician.músicos.vocal2 || 'Não definido'}</p>
+                  <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
+                  <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
+                  <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
+                  <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
+                  <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
+                </SeeScale>
+              ))}
+            </span>
+          ) : (
+            <p>Nenhuma escala disponível para este mês</p>
+          )}
+        </ScheduleContent>
+      </PageWrapper>
     </ScheduleContainer>
   );
 };

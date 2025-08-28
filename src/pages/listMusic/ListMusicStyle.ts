@@ -73,13 +73,13 @@ export const ListContainer = styled.ul`
 
     }
   .container {
-      width: 100%;
-      height: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-sizing: border-box;
-      padding: 0 50px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 50px;
   }
 
   .container-card-music {
@@ -99,6 +99,27 @@ export const ListContainer = styled.ul`
       background-color: #f180346b;
       transition: all 0.4s ease-in-out;
     }
+  }
+
+  .btns {
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 500;
+    justify-content: center;
+    padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
+    width: auto;
+    height: 14px;
   }
 
   .music-info {

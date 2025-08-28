@@ -16,3 +16,11 @@ export const formatFirestoreDate = (date?: string | Date | FirestoreTimestamp): 
 
   return isNaN(d.getTime()) ? "Invalid Date" : d.toLocaleString();
 };
+
+export const formatDateDDMMYYYY = (isoDate: string) => {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };

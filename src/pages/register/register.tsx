@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button, Container, FieldContainer, FormWrapper, Input, Label, LoginPrompt, RoleItem, RolesContainer, RolesLabel, StyledInputMask, Title } from "./registerStyle";
 import { roleOptions } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
+import PageWrapper from "../../components/pageWrapper/pageWrapper";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -49,70 +50,72 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <Container>
-      <FormWrapper onSubmit={handleRegister}>
-        <Title>Cadastro</Title>
+    <PageWrapper>
+      <Container>
+        <FormWrapper onSubmit={handleRegister}>
+          <Title>Cadastro</Title>
 
-        <Input placeholder="Nome e sobrenome" value={name} onChange={e => setName(e.target.value)} required />
-        <Input placeholder="Apelido" value={nickname} onChange={e => setNickname(e.target.value)} required />
-        <Input type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} required />
-        <StyledInputMask mask="(99) 9 9999-9999" placeholder="Telefone (xx) x xxxx-xxxx" value={phone} onChange={e => setPhone(e.target.value)} maskChar="" required />
+          <Input placeholder="Nome e sobrenome" value={name} onChange={e => setName(e.target.value)} required />
+          <Input placeholder="Apelido" value={nickname} onChange={e => setNickname(e.target.value)} required />
+          <Input type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} required />
+          <StyledInputMask mask="(99) 9 9999-9999" placeholder="Telefone (xx) x xxxx-xxxx" value={phone} onChange={e => setPhone(e.target.value)} maskChar="" required />
 
-        <FieldContainer> 
-            <Label htmlFor="birthDate">Data de aniversário</Label>
-        </FieldContainer>
-        
-        <Input type="date" placeholder="Data de nascimento" value={birthDate} onChange={e => setBirthDate(e.target.value)} required />
+          <FieldContainer> 
+              <Label htmlFor="birthDate">Data de aniversário</Label>
+          </FieldContainer>
+          
+          <Input type="date" placeholder="Data de nascimento" value={birthDate} onChange={e => setBirthDate(e.target.value)} required />
 
-        <div className="show-password">
-          <input
-            type="checkbox"
-            checked={showPassword}
-            onChange={() => setShowPassword(prev => !prev)}
-            id="showPassword"
-          />
-          <Label htmlFor="showPassword">Mostrar senha</Label>
-        </div>
-        <Input id="password" type={showPassword ? "text" : "password"} placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
-        <Input id="confirmPassword" type={showPassword ? "text" : "password"} placeholder="Confirme a senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+          <div className="show-password">
+            <input
+              type="checkbox"
+              checked={showPassword}
+              onChange={() => setShowPassword(prev => !prev)}
+              id="showPassword"
+            />
+            <Label htmlFor="showPassword">Mostrar senha</Label>
+          </div>
+          <Input id="password" type={showPassword ? "text" : "password"} placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
+          <Input id="confirmPassword" type={showPassword ? "text" : "password"} placeholder="Confirme a senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
 
-        <FieldContainer>
-            <RolesLabel htmlFor="roles">
-                Selecione as suas funções no ministério de louvor
-            </RolesLabel>
-        </FieldContainer>
-        <RolesContainer>
+          <FieldContainer>
+              <RolesLabel htmlFor="roles">
+                  Selecione as suas funções no ministério de louvor
+              </RolesLabel>
+          </FieldContainer>
+          <RolesContainer>
 
-            {roleOptions.map((role) => (
-                <RoleItem key={role.value}>
-                    <input
-                        type="checkbox"
-                        id={role.value}
-                        value={role.value}
-                        checked={roles.includes(role.value)}
-                        onChange={(e) => {
-                        const value = e.target.value;
-                        if (e.target.checked) {
-                            setRoles([...roles, value]);
-                        } else {
-                            setRoles(roles.filter((r) => r !== value));
-                        }
-                        }}
-                    />
-                    <label htmlFor={role.value}>{role.label}</label>
-                </RoleItem>
-            ))}
-        </RolesContainer>
+              {roleOptions.map((role) => (
+                  <RoleItem key={role.value}>
+                      <input
+                          type="checkbox"
+                          id={role.value}
+                          value={role.value}
+                          checked={roles.includes(role.value)}
+                          onChange={(e) => {
+                          const value = e.target.value;
+                          if (e.target.checked) {
+                              setRoles([...roles, value]);
+                          } else {
+                              setRoles(roles.filter((r) => r !== value));
+                          }
+                          }}
+                      />
+                      <label htmlFor={role.value}>{role.label}</label>
+                  </RoleItem>
+              ))}
+          </RolesContainer>
 
-        <Button type="submit">Cadastrar</Button>
+          <Button type="submit">Cadastrar</Button>
 
-        <LoginPrompt>
-            Já possui conta?
-        <Link to="/login">Entre</Link>
-        </LoginPrompt>
+          <LoginPrompt>
+              Já possui conta?
+          <Link to="/login">Entre</Link>
+          </LoginPrompt>
 
-      </FormWrapper>
-    </Container>
+        </FormWrapper>
+      </Container>
+    </PageWrapper>
   );
 };
 

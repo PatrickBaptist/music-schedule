@@ -87,6 +87,7 @@ export const DarkSelect = styled.select`
 `;
 
 export const DarkButton = styled.button`
+  max-width: 400px;
   background-color: #007BFF;
   color: #fff;
   font-size: 13px;

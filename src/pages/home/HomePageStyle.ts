@@ -36,7 +36,6 @@ export const ContainerHome = styled.div`
       margin-top: 30px;
       border-top: 1px solid #444;
       padding-top: 20px;
-      font-family: 'Segoe UI', sans-serif;
 
       .content {
         width: 100%;
@@ -87,10 +86,10 @@ export const ContainerHome = styled.div`
     }
 
     h4 {
-        margin-left: 16px;
-        font-size: 18px;
-        font-weight: 600;
-      }
+      margin-left: 16px;
+      font-size: 18px;
+      font-weight: 600;
+    }
 
     .content-louvores {
       width: 100%;

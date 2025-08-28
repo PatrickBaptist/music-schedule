@@ -36,8 +36,5 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
     width: 20px;
     height: 20px;
     margin-bottom: 2px;
-    filter: ${(props) => (props.$active ? "none" : "grayscale(1)")};
-    transform: ${(props) => (props.$active ? "rotate(-15deg)" : "rotate(0deg)")};
-    transition: transform 0.3s ease;
   }
 `;
