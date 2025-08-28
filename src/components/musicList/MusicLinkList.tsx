@@ -248,9 +248,6 @@ const MusicLinkList: React.FC = () => {
                     <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e' }}>
                       Cancelar
                     </Button>
-                    <Button className='delete-icon-edit' onClick={() => { handleDelete(musicLink.id!)}} style={{ backgroundColor: '#C0392B' }}>
-                      <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
-                    </Button>
                     <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF' }}>
                       Salvar
                     </Button>
