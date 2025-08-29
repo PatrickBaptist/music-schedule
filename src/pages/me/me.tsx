@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
-import Header from '../../components/header/Header';
-import Footer from '../../components/footer/Footer';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
-import { Badge, ProfileItem, ProfileList, ProfileTitle, ScrollContainer } from './meStyle';
+import { Badge, ProfileItem, ProfileList, ProfileTitle } from './meStyle';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { roleOptions, UserRole } from '../../types/UserRole';
 import { FaCogs, FaEnvelope, FaTag, FaUser } from 'react-icons/fa';
@@ -38,10 +36,8 @@ const MePage: React.FC = () => {
   }, [user?.roles, rolePriority]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center", justifyContent: "center" }}
     >
-      <Header />
-      <ScrollContainer>
         <PageWrapper>
           <ProfileTitle
             initial={{ opacity: 0, y: -20 }}
@@ -94,8 +90,6 @@ const MePage: React.FC = () => {
             </ProfileList>
           )}
         </PageWrapper>
-      </ScrollContainer>
-      <Footer />
     </div>
   );
 };

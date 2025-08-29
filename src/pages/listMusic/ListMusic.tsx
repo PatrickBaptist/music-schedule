@@ -5,9 +5,7 @@ import Button from "../../components/buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
 import { Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
 import { FirestoreTimestamp } from "../../helpers/helpers";
-import Header from "../../components/header/Header";
 import EditLink from '../../assets/imgs/edit.png';
-import Footer from "../../components/footer/Footer";
 import { toast } from "sonner";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
@@ -150,7 +148,6 @@ const ListMusic: React.FC = () => {
 
   return (
     <Container>
-      <Header />
 
       <Main>
         <PageWrapper>
@@ -348,7 +345,6 @@ const ListMusic: React.FC = () => {
           )}
         </PageWrapper>
       </Main>
-      <Footer/>
     </Container>
   );
 };

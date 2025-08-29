@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const DarkWrapper = styled.div`
-  width: 100dvw;
-  height: 100dvh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
@@ -14,20 +14,8 @@ export const ContainerForm = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  overflow: auto;
   box-sizing: border-box;
   gap: 45px;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0e1e30ff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
-    border-radius: 1em;
-  }
 `;
 
 export const DarkTitle = styled.h1`

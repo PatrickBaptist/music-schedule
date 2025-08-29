@@ -1,8 +1,6 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  width: 100vw;
-  height: 100dvh;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -17,19 +15,8 @@ export const ContainerHome = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 70px 0 40px 0;
-    overflow-y: auto;
+    overflow-y: hidden;
     box-sizing: border-box;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0e1e30ff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
-    border-radius: 1em;
-  }
 
     .container-escala {
       width: 100%;

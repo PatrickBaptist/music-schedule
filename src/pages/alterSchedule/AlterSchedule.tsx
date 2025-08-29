@@ -15,8 +15,6 @@ import { Musicos, SpecialSchedule } from "../../services/ScheduleService";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import useNotificationContext from "../../context/hooks/useNotificationContext";
 import { toast } from "sonner";
-import Header from "../../components/header/Header";
-import Footer from "../../components/footer/Footer";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import { UserRole } from "../../types/UserRole";
 import useUsersContext from "../../context/hooks/useUsersContext";
@@ -283,222 +281,220 @@ const handleSendWarning = async () => {
 
   return (
     <DarkWrapper>
-      <Header />
-        <ContainerForm>
-          <PageWrapper>
-          {isLoading ? (
-            <LoadingScreen />
-          ) : (
-            <div style={{ width: "100%", gap: "45px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <DarkTitle>Gerenciador</DarkTitle>
-              <h2>Escala de domingo</h2>
-              <DarkForm onSubmit={handleSubmit}>
-                <FormGroup>
-                  <DarkLabel>Mês:</DarkLabel>
-                  <DarkSelect value={month} onChange={(e) => setMonth(e.target.value)} required>
-                    {Array.from({ length: 12 }, (_, index) => (
-                      <option key={index} value={(index + 1).toString().padStart(2, "0")}>
-                        {new Date(0, index).toLocaleString("default", { month: "long" })}
-                      </option>
-                    ))}
-                  </DarkSelect>
-                </FormGroup>
+      <ContainerForm>
+        <PageWrapper>
+        {isLoading ? (
+          <LoadingScreen />
+        ) : (
+          <div style={{ width: "100%", gap: "45px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <DarkTitle>Gerenciador</DarkTitle>
+            <h2>Escala de domingo</h2>
+            <DarkForm onSubmit={handleSubmit}>
+              <FormGroup>
+                <DarkLabel>Mês:</DarkLabel>
+                <DarkSelect value={month} onChange={(e) => setMonth(e.target.value)} required>
+                  {Array.from({ length: 12 }, (_, index) => (
+                    <option key={index} value={(index + 1).toString().padStart(2, "0")}>
+                      {new Date(0, index).toLocaleString("default", { month: "long" })}
+                    </option>
+                  ))}
+                </DarkSelect>
+              </FormGroup>
 
-                <FormGroup>
-                  <DarkLabel>Ano:</DarkLabel>
-                  <DarkInput
-                    type="number"
-                    value={year}
-                    onChange={(e) => setYear(parseInt(e.target.value))}
-                    min={2000}
-                    required
-                  />
-                </FormGroup>
+              <FormGroup>
+                <DarkLabel>Ano:</DarkLabel>
+                <DarkInput
+                  type="number"
+                  value={year}
+                  onChange={(e) => setYear(parseInt(e.target.value))}
+                  min={2000}
+                  required
+                />
+              </FormGroup>
 
-                <FormGroup>
-                  <DarkLabel>Data (Domingo):</DarkLabel>
-                  <DarkSelect value={date} onChange={(e) => setDate(e.target.value)} required>
-                    <option value="">Selecione um domingo</option>
-                    {sundays.map((sunday, index) => (
-                      <option key={index} value={sunday.toISOString()}>
-                        {sunday.toLocaleDateString()}
-                      </option>
-                    ))}
-                  </DarkSelect>
-                </FormGroup>
+              <FormGroup>
+                <DarkLabel>Data (Domingo):</DarkLabel>
+                <DarkSelect value={date} onChange={(e) => setDate(e.target.value)} required>
+                  <option value="">Selecione um domingo</option>
+                  {sundays.map((sunday, index) => (
+                    <option key={index} value={sunday.toISOString()}>
+                      {sunday.toLocaleDateString()}
+                    </option>
+                  ))}
+                </DarkSelect>
+              </FormGroup>
 
-                {ordemCampos.map((key) => {
-                  const skillKey = key.startsWith("vocal") ? "vocal" : key;
-                  const options = musiciansBySkill[skillKey] || [];
+              {ordemCampos.map((key) => {
+                const skillKey = key.startsWith("vocal") ? "vocal" : key;
+                const options = musiciansBySkill[skillKey] || [];
 
-                  const isVocal = key.startsWith("vocal");
+                const isVocal = key.startsWith("vocal");
 
-                  return (
-                    <FormGroup key={key}>
-                      <DarkLabel>{labels[key] || key}:</DarkLabel>
-                      <DarkSelect
-                        multiple={isVocal}
-                        value={
-                          isVocal
-                            ? (músicos[key as keyof Musicos] as string)
-                                ?.split(",")
-                                .map((s) => s.trim()) || []
-                            : músicos[key as keyof Musicos] || ""
+                return (
+                  <FormGroup key={key}>
+                    <DarkLabel>{labels[key] || key}:</DarkLabel>
+                    <DarkSelect
+                      multiple={isVocal}
+                      value={
+                        isVocal
+                          ? (músicos[key as keyof Musicos] as string)
+                              ?.split(",")
+                              .map((s) => s.trim()) || []
+                          : músicos[key as keyof Musicos] || ""
+                      }
+                      onChange={(e) => {
+                        if (isVocal) {
+                          const selected = Array.from(
+                            e.target.selectedOptions,
+                            (opt) => opt.value
+                          );
+                          setMúsicos((prev) => ({
+                            ...prev,
+                            [key]: selected.join(", "),
+                          }));
+                        } else {
+                          setMúsicos((prev) => ({
+                            ...prev,
+                            [key]: e.target.value,
+                          }));
                         }
-                        onChange={(e) => {
-                          if (isVocal) {
-                            const selected = Array.from(
-                              e.target.selectedOptions,
-                              (opt) => opt.value
-                            );
-                            setMúsicos((prev) => ({
-                              ...prev,
-                              [key]: selected.join(", "),
-                            }));
-                          } else {
-                            setMúsicos((prev) => ({
-                              ...prev,
-                              [key]: e.target.value,
-                            }));
-                          }
-                        }}
-                      >
-                        {!isVocal && <option value="">Selecione</option>}
-                        {options.map((musico) => (
-                          <option key={musico} value={musico}>
-                            {musico}
-                          </option>
-                        ))}
-                      </DarkSelect>
-                    </FormGroup>
-                  );
-                })}
-                <DarkButton type="submit">Salvar Escala</DarkButton>
-              </DarkForm>
+                      }}
+                    >
+                      {!isVocal && <option value="">Selecione</option>}
+                      {options.map((musico) => (
+                        <option key={musico} value={musico}>
+                          {musico}
+                        </option>
+                      ))}
+                    </DarkSelect>
+                  </FormGroup>
+                );
+              })}
+              <DarkButton type="submit">Salvar Escala</DarkButton>
+            </DarkForm>
 
-              <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
-              <DarkForm>
-                <h2>Escala especial</h2>
-                <FormGroup>
-                  <DarkLabel>Evento:</DarkLabel>
-                  <DarkInput
-                    type="text"
-                    value={specialMusicos.evento}
-                    onChange={(e) =>
-                      setSpecialMusicos((prev) => ({ ...prev, evento: e.target.value }))
-                    }
-                    placeholder="Nome do evento"
-                    required
-                  />
-                </FormGroup>
+            <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
+            <DarkForm>
+              <h2>Escala especial</h2>
+              <FormGroup>
+                <DarkLabel>Evento:</DarkLabel>
+                <DarkInput
+                  type="text"
+                  value={specialMusicos.evento}
+                  onChange={(e) =>
+                    setSpecialMusicos((prev) => ({ ...prev, evento: e.target.value }))
+                  }
+                  placeholder="Nome do evento"
+                  required
+                />
+              </FormGroup>
 
-                <FormGroup>
-                  <DarkLabel>Data:</DarkLabel>
-                  <DarkInput
-                    type="date"
-                    value={specialMusicos.data}
-                    onChange={(e) =>
-                      setSpecialMusicos((prev) => ({ ...prev, data: e.target.value }))
-                    }
-                    required
-                  />
-                </FormGroup>
+              <FormGroup>
+                <DarkLabel>Data:</DarkLabel>
+                <DarkInput
+                  type="date"
+                  value={specialMusicos.data}
+                  onChange={(e) =>
+                    setSpecialMusicos((prev) => ({ ...prev, data: e.target.value }))
+                  }
+                  required
+                />
+              </FormGroup>
 
-                {ordemCampos.map((key) => {
-                  const skillKey = key.startsWith("vocal") ? "vocal" : key;
-                  const options = musiciansBySkill[skillKey] || [];
+              {ordemCampos.map((key) => {
+                const skillKey = key.startsWith("vocal") ? "vocal" : key;
+                const options = musiciansBySkill[skillKey] || [];
 
-                  const isVocal = key.startsWith("vocal");
+                const isVocal = key.startsWith("vocal");
 
-                  return (
-                    <FormGroup key={key}>
-                      <DarkLabel>{labels[key] || key}:</DarkLabel>
-                      <DarkSelect
-                        multiple={isVocal}
-                        value={
-                          isVocal
-                            ? (specialMusicos[key as keyof SpecialSchedule] as string)
-                                ?.split(",")
-                                .map((s) => s.trim()) || []
-                            : specialMusicos[key as keyof SpecialSchedule] || ""
+                return (
+                  <FormGroup key={key}>
+                    <DarkLabel>{labels[key] || key}:</DarkLabel>
+                    <DarkSelect
+                      multiple={isVocal}
+                      value={
+                        isVocal
+                          ? (specialMusicos[key as keyof SpecialSchedule] as string)
+                              ?.split(",")
+                              .map((s) => s.trim()) || []
+                          : specialMusicos[key as keyof SpecialSchedule] || ""
+                      }
+                      onChange={(e) => {
+                        if (isVocal) {
+                          const selected = Array.from(
+                            e.target.selectedOptions,
+                            (opt) => opt.value
+                          );
+                          setSpecialMusicos((prev) => ({
+                            ...prev,
+                            [key]: selected.join(", "),
+                          }));
+                        } else {
+                          setSpecialMusicos((prev) => ({
+                            ...prev,
+                            [key]: e.target.value,
+                          }));
                         }
-                        onChange={(e) => {
-                          if (isVocal) {
-                            const selected = Array.from(
-                              e.target.selectedOptions,
-                              (opt) => opt.value
-                            );
-                            setSpecialMusicos((prev) => ({
-                              ...prev,
-                              [key]: selected.join(", "),
-                            }));
-                          } else {
-                            setSpecialMusicos((prev) => ({
-                              ...prev,
-                              [key]: e.target.value,
-                            }));
-                          }
-                        }}
-                      >
-                        {!isVocal && <option value="">Selecione</option>}
-                        {options.map((musico) => (
-                          <option key={musico} value={musico}>
-                            {musico}
-                          </option>
-                        ))}
-                      </DarkSelect>
-                    </FormGroup>
-                  );
-                })}
-                <DarkButton
-                  type="button"
-                  onClick={handleAddSpecialSchedule}
-                  style={{ marginTop: 15 }}
-                >
-                  Adicionar Escala Especial
-                </DarkButton>
-              </DarkForm>
+                      }}
+                    >
+                      {!isVocal && <option value="">Selecione</option>}
+                      {options.map((musico) => (
+                        <option key={musico} value={musico}>
+                          {musico}
+                        </option>
+                      ))}
+                    </DarkSelect>
+                  </FormGroup>
+                );
+              })}
+              <DarkButton
+                type="button"
+                onClick={handleAddSpecialSchedule}
+                style={{ marginTop: 15 }}
+              >
+                Adicionar Escala Especial
+              </DarkButton>
+            </DarkForm>
 
-              <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
-              <DarkForm>
-                <FormGroup>
-                  <DarkLabel>Mensagem da Notificação:</DarkLabel>
-                  <DarkInput
-                    type="text"
-                    value={notificationText}
-                    onChange={(e) => setNotificationText(e.target.value)}
-                    placeholder="Digite a mensagem da notificação"
+            <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
+            <DarkForm>
+              <FormGroup>
+                <DarkLabel>Mensagem da Notificação:</DarkLabel>
+                <DarkInput
+                  type="text"
+                  value={notificationText}
+                  onChange={(e) => setNotificationText(e.target.value)}
+                  placeholder="Digite a mensagem da notificação"
+                />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}> 
+                  <DarkButton type="button" onClick={handleSendNotification} style={{ marginTop: 15 }}>
+                    Enviar Notificação
+                  </DarkButton>
+                </div>
+              </FormGroup>
+            </DarkForm>
+
+            <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
+            <DarkForm>
+              <FormGroup>
+                <DarkLabel>Mensagem de Aviso:</DarkLabel>
+                <DarkInput
+                  type="text"
+                  value={warningText}
+                  onChange={(e) => setWarningText(e.target.value)}
+                  placeholder="Digite a mensagem do aviso"
                   />
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}> 
-                    <DarkButton type="button" onClick={handleSendNotification} style={{ marginTop: 15 }}>
-                      Enviar Notificação
+                    <DarkButton type="button" onClick={handleSendWarning} style={{ marginTop: 15, marginBottom: 50 }}>
+                    Enviar Aviso
                     </DarkButton>
                   </div>
-                </FormGroup>
-              </DarkForm>
-
-              <div style={{ width: "100%", borderTop: "1px solid #444", marginTop: 20 }}></div>
-              <DarkForm>
-                <FormGroup>
-                  <DarkLabel>Mensagem de Aviso:</DarkLabel>
-                  <DarkInput
-                    type="text"
-                    value={warningText}
-                    onChange={(e) => setWarningText(e.target.value)}
-                    placeholder="Digite a mensagem do aviso"
-                    />
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}> 
-                      <DarkButton type="button" onClick={handleSendWarning} style={{ marginTop: 15, marginBottom: 50 }}>
-                      Enviar Aviso
-                      </DarkButton>
-                    </div>
-                </FormGroup>
-              </DarkForm>
-            </div>
-          )}
-          </PageWrapper>
-        </ContainerForm>
-      <Footer />
+              </FormGroup>
+            </DarkForm>
+          </div>
+        )}
+        </PageWrapper>
+      </ContainerForm>
     </DarkWrapper>
   );
 };

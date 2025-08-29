@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  height: 100dvh;
-  max-width: 100vw;
+  height: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -17,18 +17,6 @@ export const Main = styled.main`
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  overflow: auto;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0e1e30ff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
-    border-radius: 1em;
-  }
 `;
 
 export const ListContainer = styled.ul`

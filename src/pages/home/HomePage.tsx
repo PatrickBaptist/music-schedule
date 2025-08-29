@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
 import MusicLinkList from '../../components/musicList/MusicLinkList';
-import Header from '../../components/header/Header';
-import Footer from '../../components/footer/Footer';
 import { Container, ContainerHome } from './HomePageStyle';
 import EditLink from '../../assets/imgs/edit.png';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
@@ -30,7 +28,7 @@ const HomePage: React.FC = () => {
 
   return (
     <Container>
-        <Header />
+ 
         <ContainerHome>
           <PageWrapper>
             {warning?.text && <Aviso message={"⚠️ " + warning.text} duration={20000} />}
@@ -87,7 +85,7 @@ const HomePage: React.FC = () => {
 
           </PageWrapper> 
         </ContainerHome>
-        <Footer />
+
     </Container>
   );
 };

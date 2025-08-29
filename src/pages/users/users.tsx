@@ -1,12 +1,10 @@
 import React, { useMemo } from "react";
-import Header from "../../components/header/Header";
-import Footer from "../../components/footer/Footer";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { roleOptions, UserRole } from "../../types/UserRole";
-import { ScrollContainer, UserCard, UsersContainer } from "./usersStyle";
+import { UserCard, UsersContainer } from "./usersStyle";
 import { toast } from "sonner";
-import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope } from 'react-icons/fa';
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers } = useUsersContext();
@@ -89,44 +87,42 @@ const UsersCardsPage: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
+        padding: "40px 0",
       }}
     >
-      <Header />
-      <ScrollContainer>
-        <PageWrapper>
-          <h1>Usuários</h1>
-          <UsersContainer>
-            {processedUsers.map((user, index) => (
-              <UserCard
-                key={user.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
-              >
-                <span><FaUser style={{ marginRight: '8px' }} /> <strong>{user.nickname || user.name}</strong></span>
-                <span><FaCogs style={{ marginRight: '8px' }} /> {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}</span>
-                <span>
-                  {user.status === "enabled" ? <FaCheckCircle style={{ color: 'green', marginRight: '8px' }} /> : <FaTimesCircle style={{ color: 'red', marginRight: '8px' }} />}
-                  Status: {getStatusLabel(user.status!)}
-                </span>
+      <PageWrapper>
+        <h1>Usuários</h1>
+        <UsersContainer>
+          {processedUsers.map((user, index) => (
+            <UserCard
+              key={user.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
+            >
+              <span><FaUser style={{ marginRight: '8px' }} /> <strong>{user.nickname || user.name}</strong></span>
+              <span><FaEnvelope style={{ marginRight: '8px' }} />{user.email}</span>
+              <span><FaCogs style={{ marginRight: '8px' }} /> {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}</span>
+              <span>
+                {user.status === "enabled" ? <FaCheckCircle style={{ color: 'green', marginRight: '8px' }} /> : <FaTimesCircle style={{ color: 'red', marginRight: '8px' }} />}
+                Status: {getStatusLabel(user.status!)}
+              </span>
 
-                {user.status !== "enabled" && (
-                  <button onClick={() => handleStatusChange(user.id, "enabled")}>
-                    <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
-                  </button>
-                )}
+              {user.status !== "enabled" && (
+                <button onClick={() => handleStatusChange(user.id, "enabled")}>
+                  <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
+                </button>
+              )}
 
-                {user.status !== "disabled" && (
-                  <button onClick={() => handleStatusChange(user.id, "disabled")}>
-                    <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
-                  </button>
-                )}
-              </UserCard>
-            ))}
-          </UsersContainer>
-        </PageWrapper>
-      </ScrollContainer>
-      <Footer />
+              {user.status !== "disabled" && (
+                <button onClick={() => handleStatusChange(user.id, "disabled")}>
+                  <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
+                </button>
+              )}
+            </UserCard>
+          ))}
+        </UsersContainer>
+      </PageWrapper>
     </div>
   );
 };

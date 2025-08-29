@@ -1,25 +1,6 @@
 import { motion } from "motion/react";
 import styled from "styled-components";
 
-export const ScrollContainer = styled.div`
-  flex: 1;
-  width: 100%;
-  overflow-y: auto;
-  padding: 20px 0;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0e1e30ff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
-    border-radius: 1em;
-  }
-
-`;
-
 export const ProfileTitle = styled(motion.h1)`
   font-size: 2.2rem;
   margin-bottom: 25px;

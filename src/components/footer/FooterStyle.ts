@@ -26,7 +26,6 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
   a {
     text-decoration: none;
     color: ${(props) => (props.$active ? "#2f81f7" : "#555")};
-    font-weight: ${(props) => (props.$active ? "bold" : "normal")};
     font-size: 12px;
     display: flex;
     flex-direction: column;

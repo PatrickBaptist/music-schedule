@@ -1,25 +1,6 @@
 import { motion } from "motion/react";
 import styled from "styled-components";
 
-export const ScrollContainer = styled.div`
-  flex: 1;
-  width: 100%;
-  overflow-y: auto;
-  padding: 20px 0;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0e1e30ff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
-    border-radius: 1em;
-  }
-
-`;
-
 export const UsersContainer = styled.div`
   width: 100%;
   display: flex;
@@ -27,6 +8,7 @@ export const UsersContainer = styled.div`
   align-items: center;
   gap: 20px;
   justify-content: center;
+  padding: 40px 0;
 `;
 
 export const UserCard = styled(motion.div)`
