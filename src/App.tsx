@@ -1,19 +1,13 @@
-import React, { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import HomePage from './pages/home/HomePage';
-import SchedulePage from './pages/schedule/SchedulePage';
-import ListMusic from './pages/listMusic/ListMusic';
-import ScheduleForm from './pages/alterSchedule/AlterSchedule';
+import React, { memo, useEffect } from 'react';
 import { useServiceWorkerUpdate } from './context/hooks/useServiceWorkerUpdate';
 import { toast } from 'sonner';
-import LoginPage from './pages/login/login';
-import RegisterPage from './pages/register/register';
-import PrivateRoute from './context/PrivateRoute';
-import UsersPage from './pages/users/users';
-import MePage from './pages/me/me';
 import styled from 'styled-components';
 import Header from './components/header/Header';
 import Footer from './components/footer/Footer';
+import MainRoutes from './components/mainRoutes/mainRoutes';
+
+const HeaderComponent = memo(Header);
+const FooterComponent = memo(Footer);
 
 const AppContainer = styled.div`
   display: flex;
@@ -61,23 +55,13 @@ useEffect(() => {
 
   return (
     <AppContainer>
-      <Header />
+      <HeaderComponent />
 
       <ConainterRoutes>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-          <Route path="/schedule" element={<PrivateRoute><SchedulePage /></PrivateRoute>} />
-          <Route path="/listMusic" element={<PrivateRoute><ListMusic /></PrivateRoute>} />
-          <Route path="/alter" element={<PrivateRoute><ScheduleForm /></PrivateRoute>} />
-          <Route path="/users" element={<PrivateRoute><UsersPage /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute><MePage /></PrivateRoute>} />
-          <Route path="*" element={<HomePage />} />
-        </Routes>
+        <MainRoutes />
       </ConainterRoutes>
 
-      <Footer />
+      <FooterComponent />
     </AppContainer>
   );
 };

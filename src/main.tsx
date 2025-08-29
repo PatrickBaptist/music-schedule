@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import GlobalStyle from './globalStyles';
 import { MusicLinksProvider } from './services/MusicLinksService';
-import { UserStore } from './context/openMenuContext';
 import { SchedulesProvider } from './services/ScheduleService';
 import { NotificationProvider } from './services/NotificationService';
 import { toast, Toaster } from 'sonner';
@@ -17,7 +16,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <UserStore>
           <UsersProvider>
             <AllMusicLinksProvider>
               <MusicLinksProvider>
@@ -41,7 +39,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               />
             </AllMusicLinksProvider>
           </UsersProvider>
-        </UserStore>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
