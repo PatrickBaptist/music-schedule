@@ -27,7 +27,7 @@ interface PostSpecialSchedulesPayload {
   schedules: SpecialSchedule[];
 }
 
-interface Schedule {
+export interface Schedule {
   date: string;
   músicos: Musicos;
 }
@@ -84,11 +84,16 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   }, [API_URL]);
 
-  // Buscar escala do mês
   const getScheduleForMonth = useCallback(async (monthId: string) => {
       try {
         const res = await fetch(`${API_URL}/schedule/${monthId}`);
-        if (!res.ok) throw new Error('Erro ao buscar escala do mês');
+        if (!res.ok) {
+          if (res.status === 404) {
+            setMonthlySchedule([]);
+            return;
+          }
+          throw new Error('Erro ao buscar escala do mês');
+        }
         const data = await res.json();
         setMonthlySchedule(data.sundays || []);
       } catch (err) {

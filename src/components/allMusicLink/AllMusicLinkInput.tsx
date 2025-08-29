@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import useAllMusicHistoryContext from '../../context/hooks/useAllMusicHistoryContext';
+import useUsersContext from '../../context/hooks/useUsersContext';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +26,7 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
   const [, setOrder] = useState(1);
   const { addMusicLink } = useAllMusicHistoryContext();
   const { user } = useAuthContext();
+  const { users } = useUsersContext();
   const [ministerModalOpen, setMinisterModalOpen] = useState(false);
   const [ministerName, setMinisterName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -40,47 +42,49 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
     }
 
     const isMinister = user?.roles?.includes(UserRole.Minister);
-    if (!isMinister && !ministerName) {
-      setMinisterModalOpen(true);
-      return;
-    }
-    
-    const toastId = toast.loading("Aguarde...");
-    setIsModalOpen(false);
-    
-    try {
-    await addMusicLink({
-      name: name.trim(),
-      link: link.trim() || "",
-      letter: letter.trim() || "",
-      cifra: cifra.trim() || "",
-      minister: isMinister ? user?.name : ministerName
-    });
+      if (!isMinister && !ministerName) {
+        setMinisterModalOpen(true);
+        return;
+      }
+      
+      const toastId = toast.loading("Aguarde...");
+      setIsModalOpen(false);
+      
+      try {
+      await addMusicLink({
+        name: name.trim(),
+        link: link.trim() || "",
+        letter: letter.trim() || "",
+        cifra: cifra.trim() || "",
+        minister: isMinister ? user?.name : ministerName
+      });
 
-    setIsModalOpen(false);
-    setName('');
-    setLink('');
-    setLetter('');
-    setCifra('');
-    setOrder(1);
-    setMinisterName('');
+      setIsModalOpen(false);
+      setName('');
+      setLink('');
+      setLetter('');
+      setCifra('');
+      setOrder(1);
+      setMinisterName('');
 
-    nameInputRef.current?.focus();
-    toast.success("Música adicionada com sucesso!", { id: toastId });
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      toast.error("Sem premissão! " + err.message, { id: toastId });
-    } else {
-      toast.error("Erro desconhecido ao adicionar", { id: toastId });
+      nameInputRef.current?.focus();
+      toast.success("Música adicionada com sucesso!", { id: toastId });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error("Sem premissão! " + err.message, { id: toastId });
+      } else {
+        toast.error("Erro desconhecido ao adicionar", { id: toastId });
+      }
     }
-  }
-};
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddLink();
     }
   }
+
+  const ministerUsers = users.filter((u) => u.roles?.includes(UserRole.Minister) || u.roles?.includes(UserRole.Guest));
 
   return (
     <InputContainer>
@@ -130,24 +134,29 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
         Cancelar
       </Button>
       {ministerModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <InputContainer>
-            <h3>Informe quem irá ministrar a música</h3>
-            <input
-              type="text"
-              value={ministerName}
-              onChange={(e) => setMinisterName(e.target.value)}
-              placeholder="Nome do ministro"
-            />
-            <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
-              Confirmar
-            </Button>
-            <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
-              Cancelar
-            </Button>
-          </InputContainer>
-        </div>
-      )}
+              <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <InputContainer>
+                  <h3>Selecione quem irá ministrar a música</h3>
+                  <SelectContainer>
+                    <select
+                      value={ministerName}
+                      onChange={(e) => setMinisterName(e.target.value)}
+                    >
+                      <option value="">Selecione o ministro</option>
+                      {ministerUsers.map((m) => (
+                        <option key={m.id} value={m.nickname}>{m.nickname}</option>
+                      ))}
+                    </select>
+                  </SelectContainer>
+                  <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
+                    Confirmar
+                  </Button>
+                  <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+                    Cancelar
+                  </Button>
+                </InputContainer>
+              </div>
+            )}
     </InputContainer>
   );
 };

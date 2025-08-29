@@ -21,14 +21,12 @@ const getTargetMonthAndYear = () => {
   return { targetMonth, targetYear };
 };
 
-// Retorna mês formatado MM-YYYY (ex: "08-2025")
 const getFormattedMonth = (): string => {
   const { targetMonth, targetYear } = getTargetMonthAndYear();
   const formattedMonth = targetMonth.toString().padStart(2, "0");
   return `${formattedMonth}-${targetYear}`;
 };
 
-// Retorna o nome do mês em português
 const getNameMonth = (): string => {
   const monthNames = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -38,7 +36,6 @@ const getNameMonth = (): string => {
   return monthNames[targetMonth - 1];
 };
 
-// Formata datas para o padrão YYYY-MM-DD (só data, sem hora)
 const formatDateToYYYYMMDD = (date: string | Date): string => {
   const d = new Date(date);
   const year = d.getFullYear();
@@ -60,13 +57,16 @@ const Schedule: React.FC = () => {
 
       try {
         await getScheduleForMonth(currentMonth);
-        setLoading(false);
       } catch (err: unknown) {
         if (err instanceof Error) {
-          toast.error("Sem premissão! " + err.message);
+          if (!err.message.includes("404")) {
+            toast.error("Erro ao buscar escala: " + err.message);
+          }
         } else {
           toast.error("Erro desconhecido ao buscar escala");
         }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -89,18 +89,23 @@ const Schedule: React.FC = () => {
             <LoadingScreen />
           ) : monthlySchedule && monthlySchedule.length > 0 ? (
             <span>
-              {monthlySchedule.map((musician, index) => (
-                <SeeScale key={index}>
-                  <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#58a6ff' }}>{new Date(musician.date).toLocaleDateString("pt-BR")}</h3>
-                  <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
-                  <p><strong>Vocal: </strong>{musician.músicos.vocal2 || 'Não definido'}</p>
-                  <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
-                  <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
-                  <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
-                  <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
-                  <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
-                </SeeScale>
-              ))}
+              {monthlySchedule
+            .slice()
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .map((musician, index) => (
+              <SeeScale key={index}>
+                <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#58a6ff' }}>
+                  {new Date(musician.date).toLocaleDateString("pt-BR")}
+                </h3>
+                <p><strong>Vocal 1: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
+                <p><strong>Vocal 2: </strong>{musician.músicos.vocal2 || 'Não definido'}</p>
+                <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
+                <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
+                <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
+                <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
+                <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
+              </SeeScale>
+            ))}
             </span>
           ) : (
             <p>Nenhuma escala disponível para este mês</p>

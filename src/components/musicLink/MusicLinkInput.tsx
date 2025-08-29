@@ -6,6 +6,7 @@ import { SelectContainer } from '../musicList/MusicLinkListStyle';
 import { toast } from 'sonner';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
+import useUsersContext from '../../context/hooks/useUsersContext';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,6 +27,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
   const { user } = useAuthContext();
+  const { users } = useUsersContext();
   const [ministerModalOpen, setMinisterModalOpen] = useState(false);
   const [ministerName, setMinisterName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +85,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     }
   }
 
+  const ministerUsers = users.filter((u) => u.roles?.includes(UserRole.Minister) || u.roles?.includes(UserRole.Guest));
+
   return (
     <InputContainer>
       <input
@@ -133,13 +137,18 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       {ministerModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <InputContainer>
-            <h3>Informe quem irá ministrar a música</h3>
-            <input
-              type="text"
-              value={ministerName}
-              onChange={(e) => setMinisterName(e.target.value)}
-              placeholder="Nome do ministro"
-            />
+            <h3>Selecione quem irá ministrar a música</h3>
+            <SelectContainer>
+              <select
+                value={ministerName}
+                onChange={(e) => setMinisterName(e.target.value)}
+              >
+                <option value="">Selecione o ministro</option>
+                {ministerUsers.map((m) => (
+                  <option key={m.id} value={m.nickname}>{m.nickname}</option>
+                ))}
+              </select>
+            </SelectContainer>
             <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
               Confirmar
             </Button>

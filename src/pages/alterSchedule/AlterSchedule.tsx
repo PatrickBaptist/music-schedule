@@ -18,15 +18,8 @@ import { toast } from "sonner";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
-
-const musiciansBySkill: Record<string, string[]> = {
-  vocal: ["Diego", "Gessé", "Lázaro", "Anna", "Sarah", "Jorge", "Anderson", "Taisa", "Abraão", "Isack", "Convidado"],
-  teclas: ["Patrick", "Abraão", "Convidado"],
-  violao: ["Patrick", "Diego", "Gessé", "Convidado"],
-  bass: ["Patrick", "Isack", "Junior", "Fael", "Diego", "Anderson", "Convidado"],
-  guita: ["Junior", "Fael", "Gessé", "Convidado"],
-  batera: ["Isack", "Max", "Lázaro", "Convidado"],
-};
+import { UserRole } from "../../types/UserRole";
+import useUsersContext from "../../context/hooks/useUsersContext";
 
 const ScheduleForm: React.FC = () => {
   const [month, setMonth] = useState<string>("01");
@@ -43,6 +36,48 @@ const ScheduleForm: React.FC = () => {
   });
   const [sundays, setSundays] = useState<Date[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { users } = useUsersContext();
+
+  const musiciansBySkill: Record<string, string[]> = {
+    vocal: [
+      ...users
+        .filter(u => u.roles?.includes(UserRole.Vocal))
+        .map(u => u.nickname!.trim()), // <-- trim aqui
+      "Convidado"
+    ],
+    teclas: [
+      ...users
+        .filter(u => u.roles?.includes(UserRole.Keyboard))
+        .map(u => u.nickname!.trim()),
+      "Convidado"
+    ],
+    violao: [
+      ...users
+        .filter(u => u.roles?.includes(UserRole.Violao))
+        .map(u => u.nickname!.trim()),
+      "Convidado"
+    ],
+    bass: [
+      ...users
+        .filter(u => u.roles?.includes(UserRole.Bass))
+        .map(u => u.nickname!.trim()),
+      "Convidado"
+    ],
+    guita: [
+      ...users
+        .filter(u => u.roles?.includes(UserRole.Guitar))
+        .map(u => u.nickname!.trim()),
+      "Convidado"
+    ],
+    batera: [
+      ...users
+        .filter(u => u.roles?.includes(UserRole.Drums))
+        .map(u => u.nickname!.trim()),
+      "Convidado"
+    ],
+  };
+
+console.log(musiciansBySkill);
 
   const labels: Record<string, string> = {
     teclas: "Teclado",
