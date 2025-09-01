@@ -75,8 +75,6 @@ const ScheduleForm: React.FC = () => {
     ],
   };
 
-console.log(musiciansBySkill);
-
   const labels: Record<string, string> = {
     teclas: "Teclado",
     violao: "Violão",
