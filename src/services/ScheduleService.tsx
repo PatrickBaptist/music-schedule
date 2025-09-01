@@ -12,6 +12,7 @@ export interface Musicos {
 }
 
 export interface SpecialSchedule {
+  id: string;
   evento: string;
   data: string;
   vocal1: string;
@@ -48,7 +49,7 @@ export interface ScheduleContextProps {
   specialSchedules: SpecialSchedule[] | null;
   getSpecialSchedules: () => Promise<void>;
   postSpecialSchedules: (schedules: PostSpecialSchedulesPayload) => Promise<void>;
-  deleteSpecialSchedules: () => Promise<void>;
+  deleteSpecialSchedules: ( id: string ) => Promise<void>;
 }
 
 export const SchedulesService = createContext<ScheduleContextProps | undefined>(undefined);
@@ -56,7 +57,7 @@ export const SchedulesService = createContext<ScheduleContextProps | undefined>(
 export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [nextSundaySchedule, setNextSundaySchedule] = useState<Schedule | null>(null);
   const [monthlySchedule, setMonthlySchedule] = useState<Schedule[] | null>(null);
-  const [specialSchedules, setSpecialSchedules] = useState<SpecialSchedule[] | null>(null);
+  const [specialSchedules, setSpecialSchedules] = useState<SpecialSchedule[]>([]);
   
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
@@ -132,7 +133,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
       const res = await fetch(`${API_URL}/schedule/special-schedule`);
       if (!res.ok) throw new Error('Erro ao buscar escalas especiais');
       const data = await res.json();
-      setSpecialSchedules(data.schedules || []);
+      setSpecialSchedules(data || []);
     } catch (err) {
       console.error(err);
       setSpecialSchedules([]);
@@ -155,9 +156,9 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   };
 
-  const deleteSpecialSchedules = async () => {
+  const deleteSpecialSchedules = async (id: string) => {
     try {
-      const res = await fetch(`${API_URL}/schedule/special-schedule`, {
+      const res = await fetch(`${API_URL}/schedule/special-schedule/${id}`, {
         method: 'DELETE',
         headers: getHeaders(),
       });
@@ -167,7 +168,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
         throw new Error(data.message || "Erro ao deletar evento");
       }
 
-      setSpecialSchedules([]);
+      setSpecialSchedules(prev => prev.filter(item => item.id !== id));
     } catch (err) {
       console.error(err);
       throw err;

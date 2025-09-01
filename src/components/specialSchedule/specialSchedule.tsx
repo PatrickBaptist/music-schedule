@@ -7,7 +7,8 @@ import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { motion } from "framer-motion";
 
 interface SpecialSchedulesProps {
-  schedules: { 
+  schedules: {
+    id: string;
     evento: string; 
     data: string; 
     vocal1: string;
@@ -23,7 +24,7 @@ interface SpecialSchedulesProps {
 const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules }) => {
     const { deleteSpecialSchedules } = useSchedulesContext();
 
-  const handleDelete = async (evento: string) => {
+  const handleDelete = async (id: string, evento: string) => {
     toast(
       `Deseja realmente deletar o evento "${evento}"?`,
       {
@@ -31,7 +32,7 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules }) => {
           label: "Deletar",
           onClick: async () => {
             try {
-              await deleteSpecialSchedules();
+              await deleteSpecialSchedules(id);
               toast.success("Evento deletado!");
             } catch (err: unknown) {
               toast.error(err instanceof Error || "Erro ao deletar evento");
@@ -61,7 +62,7 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules }) => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 className='btns'
-                onClick={() => handleDelete(escala.evento)}
+                onClick={() => handleDelete(escala.id, escala.evento)}
                 style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', border: 'none' }}
               >
                 <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>

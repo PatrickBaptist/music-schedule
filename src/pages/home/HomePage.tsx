@@ -80,7 +80,6 @@ const HomePage: React.FC = () => {
 
             {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} />}
 
-            <div style={{ width: '100%', borderTop: '1px solid #444', margin: '55px 0' }} />
             <BirthdaysThisMonth />
 
           </PageWrapper> 
