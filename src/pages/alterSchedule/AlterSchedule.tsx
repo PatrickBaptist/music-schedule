@@ -91,6 +91,7 @@ console.log(musiciansBySkill);
 
   const { saveOrUpdateSchedule, getScheduleForMonth, monthlySchedule, postSpecialSchedules, getSpecialSchedules, specialSchedules } = useSchedulesContext();
   const [specialMusicos, setSpecialMusicos] = useState<SpecialSchedule>({
+    id: "",
     evento: "",
     data: "",
     vocal1: "",
@@ -171,6 +172,7 @@ console.log(musiciansBySkill);
       await postSpecialSchedules(payload);
       toast.success("Escala especial adicionada!");
       setSpecialMusicos({
+        id: "",
         evento: "",
         data: "",
         vocal1: "",
