@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Header from './components/header/Header';
 import Footer from './components/footer/Footer';
 import MainRoutes from './components/mainRoutes/mainRoutes';
+import { useLocation } from 'react-router-dom';
 
 const HeaderComponent = memo(Header);
 const FooterComponent = memo(Footer);
@@ -33,6 +34,7 @@ const ConainterRoutes = styled.div`
 
 const App: React.FC = () => {
   const updateAvailable = useServiceWorkerUpdate();
+  const location = useLocation();
 
 const handleUpdate = () => {
   window.location.reload(); // recarrega para pegar nova versão
@@ -53,15 +55,17 @@ useEffect(() => {
     }
   }, [updateAvailable]);
 
+  const hideLayout = ["/login", "/register"].includes(location.pathname);
+
   return (
     <AppContainer>
-      <HeaderComponent />
+      {!hideLayout && <HeaderComponent />}
 
       <ConainterRoutes>
         <MainRoutes />
       </ConainterRoutes>
 
-      <FooterComponent />
+      {!hideLayout && <FooterComponent />}
     </AppContainer>
   );
 };
