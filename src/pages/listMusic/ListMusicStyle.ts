@@ -1,13 +1,10 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  height: 100%;
-  max-width: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden;
-  box-sizing: border-box;
+
 `;
 
 export const Main = styled.main`
@@ -27,7 +24,7 @@ export const ListContainer = styled.ul`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 100px 0;
+  padding: 50px 0;
 
   .content-louvores {
       width: 100%;
