@@ -7,21 +7,7 @@ export const ScheduleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  padding-top: 60px;
-  padding-bottom: 28px;
-
-  overflow-y: auto;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0e1e30ff;
-    border-radius: 1em;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
-    border-radius: 1em;
-  }
+  padding: 60px 0;
 `;
 
 export const ScheduleContent = styled.div`
