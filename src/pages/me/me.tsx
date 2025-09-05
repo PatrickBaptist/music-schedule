@@ -29,7 +29,7 @@ const MePage: React.FC = () => {
   const userRoles = useMemo(() => {
     if (!user?.roles) return '';
     return user.roles
-      .filter(r => r !== UserRole.Admin && r !== UserRole.Guest)
+      .filter(r => r !== UserRole.Admin)
       .sort((a, b) => rolePriority.indexOf(a as UserRole) - rolePriority.indexOf(b as UserRole))
       .map(r => getRoleLabel(r as UserRole))
       .join(', ');

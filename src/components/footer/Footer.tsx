@@ -7,15 +7,19 @@ import Gerenciador from '../../assets/imgs/gerenciador.png';
 import Users from '../../assets/imgs/usuarios.png';
 import UserIcon from '../../assets/imgs/perfil.png';
 import { motion } from "framer-motion";
+import { UserRole } from "../../types/UserRole";
+import useAuthContext from "../../context/hooks/useAuthContext";
 
 const Footer: React.FC = () => {
   const location = useLocation();
+  const user = useAuthContext();
+  const isLeader = user.user?.roles?.includes(UserRole.Leader);
 
   const menuItems = [
     { name: "Início", path: "/", icon: Home },
     { name: "Escala", path: "/schedule", icon: ScheduleIcon },
     { name: "Canções", path: "/listMusic", icon: MusicIcon },
-    { name: "gerenc.", path: "/alter", icon: Gerenciador },
+    ...(isLeader ? [{ name: "gerenc.", path: "/alter", icon: Gerenciador }] : []),
     { name: "usuários", path: "/users", icon: Users },
     { name: "eu", path: "/profile", icon: UserIcon },
   ];
