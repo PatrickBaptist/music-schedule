@@ -180,7 +180,7 @@ const MusicLinkList: React.FC = () => {
             </div>
             <motion.button
               whileHover={{ scale: 1.1 }}
-              className='btns'
+              className='btns delete-icon'
               onClick={() => handleDelete(musicLink.id!)}
               style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', border: 'none' }}
             >
@@ -247,6 +247,10 @@ const MusicLinkList: React.FC = () => {
                   <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                     <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e' }}>
                       Cancelar
+                    </Button>
+                    <Button className="delete-edit" onClick={() => handleDelete(editIndex!)} style={{ backgroundColor: '#C0392B' }}
+                    >
+                      Delete
                     </Button>
                     <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF' }}>
                       Salvar

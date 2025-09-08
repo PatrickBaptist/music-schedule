@@ -9,11 +9,13 @@ export const ListContainer = styled.ul`
   padding: 0 8px;
   box-sizing: border-box;
 
-  @media (min-width: 429px) {
-    .delete-icon-edit {
+    .delete-edit {
       display: none;
+
+      @media (max-width: 354px) {
+        display: inline-flex;
+      }
     }
-  }
 
     .container-list {
       width: 100%;
@@ -51,6 +53,12 @@ export const ListContainer = styled.ul`
           vertical-align: baseline;
           width: auto;
           height: 14px;
+        }
+
+        .delete-icon {
+          @media (max-width: 354px) {
+            display: none;
+          }
         }
       }
 
@@ -119,7 +127,7 @@ export const ListContainer = styled.ul`
         flex-direction: column;
         gap: 13px;
         
-        @media (max-width: 366px) {
+        @media (max-width: 382px) {
           padding: 0 5px;
         }
       }
@@ -130,12 +138,6 @@ export const ListContainer = styled.ul`
         
         @media (max-width: 372px) {
           gap: 3px;
-        }
-      }
-
-      .delete-icon {
-        @media (max-width: 428px) {
-          display: none;
         }
       }
     }
