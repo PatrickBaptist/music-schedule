@@ -11,14 +11,27 @@ const HeaderComponent = memo(Header);
 const FooterComponent = memo(Footer);
 
 const AppContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+`;
+
+const FixedHeader = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+`;
+
+const FixedFooter = styled.footer`
+  position: sticky;
+  bottom: 0;
+  z-index: 9999;
 `;
 
 const ConainterRoutes = styled.div`
-  flex: 1 1 auto;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -59,13 +72,21 @@ useEffect(() => {
 
   return (
     <AppContainer>
-      {!hideLayout && <HeaderComponent />}
+      {!hideLayout && (
+        <FixedHeader>
+          <HeaderComponent />
+        </FixedHeader>
+      )}
 
       <ConainterRoutes>
         <MainRoutes />
       </ConainterRoutes>
 
-      {!hideLayout && <FooterComponent />}
+      {!hideLayout && (
+        <FixedFooter>
+          <FooterComponent />
+        </FixedFooter>
+      )}
     </AppContainer>
   );
 };

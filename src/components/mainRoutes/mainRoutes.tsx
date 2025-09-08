@@ -21,7 +21,7 @@ const MainRoutes: React.FC = () => (
     <Route path="/users" element={<PrivateRoute><UsersCardsPage /></PrivateRoute>} />
     <Route path="/profile" element={<PrivateRoute><MePage /></PrivateRoute>} />
     <Route path="*" element={<HomePage />} />
-</Routes>
+  </Routes>
 );
 
 export default MainRoutes;

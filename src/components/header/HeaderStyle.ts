@@ -2,13 +2,14 @@ import styled from 'styled-components';
 
 export const HeaderContainer = styled.div`
   width: 100%;
-  min-height: 70px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
   box-sizing: border-box;
   border-bottom: 1px solid #444;
+  background-color: #000;
   z-index: 9999;
 
   @media(max-width: 759px) {
