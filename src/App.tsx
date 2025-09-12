@@ -31,6 +31,7 @@ const FixedFooter = styled.footer`
 
 const ConainterRoutes = styled.div`
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
