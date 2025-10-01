@@ -70,6 +70,8 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
+            {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} />}
+            
             <div className='container-escala'>
               <div className='content'>
                 <div className='content-escala' style={{ backgroundColor: 'transparent' }}>
@@ -77,8 +79,6 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} />}
 
             <BirthdaysThisMonth />
 

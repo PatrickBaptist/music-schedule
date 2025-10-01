@@ -22,7 +22,7 @@ interface SpecialSchedulesProps {
 }
 
 const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules }) => {
-    const { deleteSpecialSchedules } = useSchedulesContext();
+  const { deleteSpecialSchedules } = useSchedulesContext();
 
   const handleDelete = async (id: string, evento: string) => {
     toast(

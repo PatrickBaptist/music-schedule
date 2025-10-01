@@ -57,7 +57,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       link: link.trim() || "",
       letter: letter.trim() || "",
       cifra: cifra.trim() || "",
-      ministeredBy: isMinister ? user?.name : ministerName
+      ministeredBy: isMinister ? user?.nickname : ministerName
     });
 
     setIsModalOpen(false);
