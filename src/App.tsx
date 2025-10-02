@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { useServiceWorkerUpdate } from './context/hooks/useServiceWorkerUpdate';
 import { toast } from 'sonner';
 import styled from 'styled-components';
@@ -49,12 +49,13 @@ const ConainterRoutes = styled.div`
 const App: React.FC = () => {
   const updateAvailable = useServiceWorkerUpdate();
   const location = useLocation();
+  const routesRef = useRef<HTMLDivElement>(null);
 
-const handleUpdate = () => {
-  window.location.reload(); // recarrega para pegar nova versão
-};
+  const handleUpdate = () => {
+    window.location.reload(); // recarrega para pegar nova versão
+  };
 
-useEffect(() => {
+  useEffect(() => {
     if (updateAvailable) {
       toast("Nova versão disponível!", {
         action: {
@@ -69,6 +70,12 @@ useEffect(() => {
     }
   }, [updateAvailable]);
 
+  useEffect(() => {
+    if (routesRef.current) {
+      routesRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname]);
+
   const hideLayout = ["/login", "/register"].includes(location.pathname);
 
   return (
@@ -79,7 +86,7 @@ useEffect(() => {
         </FixedHeader>
       )}
 
-      <ConainterRoutes>
+      <ConainterRoutes ref={routesRef}>
         <MainRoutes />
       </ConainterRoutes>
 
