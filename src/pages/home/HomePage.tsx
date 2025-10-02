@@ -19,11 +19,21 @@ const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { nextSundaySchedule, specialSchedules, getSpecialSchedules } = useSchedulesContext();
   const { warning, getWarning } = useNotificationContext()
-  const isLoading = !nextSundaySchedule;
+  const [ isLoading, setIsLoading ] = useState(true);
 
   useEffect(() => {
-    getWarning();
-    getSpecialSchedules();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([getWarning(), getSpecialSchedules()]);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, [getWarning, getSpecialSchedules]);
 
   return (
@@ -70,7 +80,7 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} />}
+            {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
             
             <div className='container-escala'>
               <div className='content'>

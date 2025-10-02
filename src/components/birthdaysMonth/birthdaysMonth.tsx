@@ -1,10 +1,25 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
 import { BirthdayCard, BirthdayContainer, BirthdayList, Title } from "./birthdaysMonthStyle";
+import LoadingScreen from "../loading/LoadingScreen";
 
 const BirthdaysThisMonth: React.FC = () => {
-  const { users } = useUsersContext();
+  const { users, fetchUsers } = useUsersContext();
+  const [ isLoading, setIsLoading ] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        await fetchUsers();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    load();
+  }, [fetchUsers]);
 
   const currentMonth = new Date().getMonth() + 1;
 
@@ -35,25 +50,29 @@ const BirthdaysThisMonth: React.FC = () => {
       <div style={{ width: '100%', borderTop: '1px solid #444', margin: '55px 0' }} />
       <Title>🎉 Aniversariantes do mês 🎂</Title>
 
-      <BirthdayContainer
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-      >
-          <BirthdayList>
-          {birthdays.map((user, index) => (
-              <BirthdayCard
-              key={user.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              >
-              🎈 <strong>{user.nickname || user.name}</strong>
-              {formatDateDDMMYYYY(user.birthDate!)} 🎁
-              </BirthdayCard>
-          ))}
-          </BirthdayList>
-      </BirthdayContainer>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <BirthdayContainer
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+        >
+            <BirthdayList>
+            {birthdays.map((user, index) => (
+                <BirthdayCard
+                key={user.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1 }}
+                >
+                🎈 <strong>{user.nickname || user.name}</strong>
+                {formatDateDDMMYYYY(user.birthDate!)} 🎁
+                </BirthdayCard>
+            ))}
+            </BirthdayList>
+        </BirthdayContainer>
+      )}
     </>
   );
 };

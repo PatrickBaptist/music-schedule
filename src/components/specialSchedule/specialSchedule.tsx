@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import Delete from '../../assets/imgs/delete.png'
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { motion } from "framer-motion";
+import LoadingScreen from "../loading/LoadingScreen";
 
 interface SpecialSchedulesProps {
   schedules: {
@@ -19,9 +20,10 @@ interface SpecialSchedulesProps {
     bass: string;
     guita: string;
   }[];
+  loading?: boolean;
 }
 
-const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules }) => {
+const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading }) => {
   const { deleteSpecialSchedules } = useSchedulesContext();
 
   const handleDelete = async (id: string, evento: string) => {
@@ -47,18 +49,20 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules }) => {
     <ContainerEscala>
       <h4>Escalas Especiais</h4>
       <div className="escala-content">
-        {schedules.length > 0 ? (
+        {loading ? (
+          <LoadingScreen />
+        ) : schedules.length > 0 ? (
           schedules.map((escala, index) => (
             <div key={index} className="escala-content-escala">
-              <p><strong>Evento:</strong>{escala.evento}</p>
-              <p><strong>Data:</strong>{formatDateDDMMYYYY(escala.data)}</p>
-              <p><strong>Vocal:</strong>{escala.vocal1 || "Não definido"}</p>
-              <p><strong>Vocal:</strong>{escala.vocal2 || "Não definido"}</p>
-              <p><strong>Teclas:</strong>{escala.teclas || "Não definido"}</p>
-              <p><strong>Violão:</strong>{escala.violao || "Não definido"}</p>
-              <p><strong>Batera:</strong>{escala.batera || "Não definido"}</p>
-              <p><strong>Bass:</strong>{escala.bass || "Não definido"}</p>
-              <p><strong>Guita:</strong>{escala.guita || "Não definido"}</p>
+              <p><strong>Evento:</strong> {escala.evento}</p>
+              <p><strong>Data:</strong> {formatDateDDMMYYYY(escala.data)}</p>
+              <p><strong>Vocal:</strong> {escala.vocal1 || "Não definido"}</p>
+              <p><strong>Vocal:</strong> {escala.vocal2 || "Não definido"}</p>
+              <p><strong>Teclas:</strong> {escala.teclas || "Não definido"}</p>
+              <p><strong>Violão:</strong> {escala.violao || "Não definido"}</p>
+              <p><strong>Batera:</strong> {escala.batera || "Não definido"}</p>
+              <p><strong>Bass:</strong> {escala.bass || "Não definido"}</p>
+              <p><strong>Guita:</strong> {escala.guita || "Não definido"}</p>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 className='btns'

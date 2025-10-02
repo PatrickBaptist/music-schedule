@@ -1,13 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { roleOptions, UserRole } from "../../types/UserRole";
 import { UserCard, UsersContainer } from "./usersStyle";
 import { toast } from "sonner";
 import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope } from 'react-icons/fa';
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers } = useUsersContext();
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -66,6 +69,22 @@ const UsersCardsPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await fetchUsers();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [fetchUsers]);
+  
+
   const handleStatusChange = async (id: string, status: "enabled" | "disabled") => {
     const toastId = toast.loading("Aguarde...");
     try {
@@ -92,36 +111,40 @@ const UsersCardsPage: React.FC = () => {
     >
       <PageWrapper>
         <h1>Usuários</h1>
-        <UsersContainer>
-          {processedUsers.map((user, index) => (
-            <UserCard
-              key={user.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
-            >
-              <span><FaUser style={{ marginRight: '8px' }} /> <strong>{user.nickname || user.name}</strong></span>
-              <span><FaEnvelope style={{ marginRight: '8px' }} />{user.email}</span>
-              <span><FaCogs style={{ marginRight: '8px' }} /> {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}</span>
-              <span>
-                {user.status === "enabled" ? <FaCheckCircle style={{ color: 'green', marginRight: '8px' }} /> : <FaTimesCircle style={{ color: 'red', marginRight: '8px' }} />}
-                Status: {getStatusLabel(user.status!)}
-              </span>
+        {isLoading ? (
+          <LoadingScreen /> 
+        ) : (
+            <UsersContainer>
+              {processedUsers.map((user, index) => (
+                <UserCard
+                  key={user.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
+                >
+                  <span><FaUser style={{ marginRight: '8px' }} /> <strong>{user.nickname || user.name}</strong></span>
+                  <span><FaEnvelope style={{ marginRight: '8px' }} />{user.email}</span>
+                  <span><FaCogs style={{ marginRight: '8px' }} /> {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}</span>
+                  <span>
+                    {user.status === "enabled" ? <FaCheckCircle style={{ color: 'green', marginRight: '8px' }} /> : <FaTimesCircle style={{ color: 'red', marginRight: '8px' }} />}
+                    Status: {getStatusLabel(user.status!)}
+                  </span>
 
-              {user.status !== "enabled" && (
-                <button onClick={() => handleStatusChange(user.id, "enabled")}>
-                  <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
-                </button>
-              )}
+                  {user.status !== "enabled" && (
+                    <button onClick={() => handleStatusChange(user.id, "enabled")}>
+                      <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
+                    </button>
+                  )}
 
-              {user.status !== "disabled" && (
-                <button onClick={() => handleStatusChange(user.id, "disabled")}>
-                  <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
-                </button>
-              )}
-            </UserCard>
-          ))}
-        </UsersContainer>
+                  {user.status !== "disabled" && (
+                    <button onClick={() => handleStatusChange(user.id, "disabled")}>
+                      <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
+                    </button>
+                  )}
+                </UserCard>
+              ))}
+            </UsersContainer>
+        )}
       </PageWrapper>
     </div>
   );

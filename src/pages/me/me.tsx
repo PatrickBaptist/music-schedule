@@ -1,12 +1,18 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
 import { Badge, ProfileItem, ProfileList, ProfileTitle } from './meStyle';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { roleOptions, UserRole } from '../../types/UserRole';
 import { FaCogs, FaEnvelope, FaTag, FaUser } from 'react-icons/fa';
+import LoadingScreen from '../../components/loading/LoadingScreen';
 
 const MePage: React.FC = () => {
   const { user } = useAuthContext();
+  const [ isLoading, setIsLoading ] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(!user);
+  }, [user]);
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -38,6 +44,9 @@ const MePage: React.FC = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center", justifyContent: "center" }}
     >
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
         <PageWrapper>
           <ProfileTitle
             initial={{ opacity: 0, y: -20 }}
@@ -90,6 +99,7 @@ const MePage: React.FC = () => {
             </ProfileList>
           )}
         </PageWrapper>
+      )}
     </div>
   );
 };

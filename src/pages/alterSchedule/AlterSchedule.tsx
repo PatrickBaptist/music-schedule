@@ -12,12 +12,12 @@ import {
 } from "./AlterScheduleStyle";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { Musicos, SpecialSchedule } from "../../services/ScheduleService";
-import LoadingScreen from "../../components/loading/LoadingScreen";
 import useNotificationContext from "../../context/hooks/useNotificationContext";
 import { toast } from "sonner";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import { UserRole } from "../../types/UserRole";
 import useUsersContext from "../../context/hooks/useUsersContext";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const ScheduleForm: React.FC = () => {
   const [month, setMonth] = useState<string>("01");
@@ -40,7 +40,7 @@ const ScheduleForm: React.FC = () => {
     vocal: [
       ...users
         .filter(u => u.roles?.includes(UserRole.Vocal))
-        .map(u => u.nickname!.trim()), // <-- trim aqui
+        .map(u => u.nickname!.trim()),
       "Convidado"
     ],
     teclas: [
@@ -164,11 +164,13 @@ const ScheduleForm: React.FC = () => {
   const handleAddSpecialSchedule = async () => {
     if (!specialMusicos.evento || !specialMusicos.data) return toast.error("Evento e data obrigatórios!");
 
+    const toastId = toast.loading("Aguarde...");
+
     const payload = { schedules: [specialMusicos] };
     
     try {
       await postSpecialSchedules(payload);
-      toast.success("Escala especial adicionada!");
+      toast.success("Escala especial adicionada! ", { id: toastId });
       setSpecialMusicos({
         id: "",
         evento: "",
@@ -204,6 +206,8 @@ const ScheduleForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const toastId = toast.loading("Aguarde...");
+
     const payload = {
       month,
       year: year.toString(),
@@ -213,18 +217,14 @@ const ScheduleForm: React.FC = () => {
 
     
     try {
-      setIsLoading(true);
       await saveOrUpdateSchedule(payload);
-      toast.success("Escala salva com sucesso!");
-      setIsLoading(false);
+      toast.success("Escala salva com sucesso!" , { id: toastId });
     } catch (err: unknown) {
       if (err instanceof Error) {
-        toast.error("Sem premissão! " + err.message);
+        toast.error("Sem premissão! " + err.message , { id: toastId });
       } else {
-        toast.error("Erro desconhecido ao salvar");
-    }
-    } finally {
-      setIsLoading(false); 
+        toast.error("Erro desconhecido ao salvar" , { id: toastId });
+      }
     }
   };
 

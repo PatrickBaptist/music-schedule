@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
 import Loading from '../../assets/Loading.gif'
@@ -6,6 +6,7 @@ import Delete from '../../assets/imgs/delete.png'
 import { ContainerVd, ContentVd, ListContainer, SelectContainer } from './MusicLinkListStyle'
 import { toast } from 'sonner';
 import { AnimatePresence, motion } from "framer-motion";
+import LoadingScreen from '../loading/LoadingScreen';
 
 type Video = {
   url: string
@@ -19,10 +20,11 @@ const MusicLinkList: React.FC = () => {
     'A#', 'A#m', 'B', 'Bm'
   ];
 
-  const { musicLinks, removeMusicLink, updateMusicLink } = useMusicLinksContext();
+  const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } = useMusicLinksContext();
   const [ openVideo, setOpenVideo ] = useState(false)
   const [ currentVideo, setCurrentVideo ] = useState<Video | null>(null)
   const [ loading, setLoading ] = useState(false)
+  const [ isLoading, setIsLoading ] = useState(false)
   const [ loadingCards, setLoadingCards ] = useState<{ [key: string]: boolean }>({});
   const [ isEditing, setIsEditing ] = useState<boolean>(false);
   const [ editIndex, setEditIndex ] = useState<string | null>(null);
@@ -32,6 +34,21 @@ const MusicLinkList: React.FC = () => {
   const [letter, setLetter] = useState('');
   const [cifra, setCifra] = useState('');
   const [order, setOrder] = useState(0);
+
+  useEffect(() => {
+    const fetchMusicLink  = async () => {
+      setIsLoading(true);
+      try {
+        await fetchMusicLinks();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMusicLink();
+  }, [fetchMusicLinks]);
 
   const handleVideoClick = () => {
     setOpenVideo(false)
@@ -111,7 +128,10 @@ const MusicLinkList: React.FC = () => {
   return (
     <ListContainer>
       <AnimatePresence>
-      {musicLinks.map((musicLink, index) => (
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+      musicLinks.map((musicLink, index) => (
         <motion.div
             key={index}
             className='container-list'
@@ -287,7 +307,8 @@ const MusicLinkList: React.FC = () => {
           )}
 
         </motion.div>
-      ))}
+      ))
+      )}
       </AnimatePresence>
     </ListContainer>
   );

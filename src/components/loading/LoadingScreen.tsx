@@ -1,11 +1,15 @@
 import React from 'react';
-import Loading from '../../assets/Loading.gif'
-import { LoadingOverlay } from './LoadingScreenStyle';
+import { LoadingText, LoadingOverlay, Dot } from './LoadingScreenStyle';
 
 const LoadingScreen: React.FC = () => {
   return (
     <LoadingOverlay>
-      <img src={Loading} alt="Loading" />
+      <LoadingText>
+        Carregando
+        <Dot style={{ animationDelay: '0s' }}>.</Dot>
+        <Dot style={{ animationDelay: '0.2s' }}>.</Dot>
+        <Dot style={{ animationDelay: '0.4s' }}>.</Dot>
+      </LoadingText>
     </LoadingOverlay>
   )
 }

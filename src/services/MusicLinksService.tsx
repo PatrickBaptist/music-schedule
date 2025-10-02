@@ -12,6 +12,7 @@ export interface MusicLink {
 
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
+  fetchMusicLinks: () => Promise<void>;
   addMusicLink: (musicLink: Omit<MusicLink, 'order'> & { id?: string }) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
   updateMusicLink: (id: string, updated: MusicLink) => Promise<void>;
@@ -97,7 +98,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   return (
-    <MusicLinksService.Provider value={{ musicLinks, addMusicLink, removeMusicLink, updateMusicLink }}>
+    <MusicLinksService.Provider value={{ musicLinks, fetchMusicLinks, addMusicLink, removeMusicLink, updateMusicLink }}>
       {children}
     </MusicLinksService.Provider>
   );
