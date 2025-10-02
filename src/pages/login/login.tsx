@@ -21,7 +21,7 @@ const LoginPage: React.FC = () => {
       navigate("/");
     } catch (err: unknown) {
         if (err instanceof Error) {
-            toast.error(err.message);
+            toast.error(err.message, { id: toastId });
         } else {
             toast.error("Erro desconhecido ao fazer login", { id: toastId });
         }
