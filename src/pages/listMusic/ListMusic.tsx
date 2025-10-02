@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
+import LoadingScreen from "../../components/loading/LoadingScreen";
+import { useScroll } from "../../context/hooks/useScroll";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -22,10 +24,12 @@ const ListMusic: React.FC = () => {
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
   const [limit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const { addMusicLink } = useMusicLinksContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { scrollToTop } = useScroll();
 
   const [name, setName] = useState('');
   const [link, setLink] = useState('');
@@ -36,15 +40,26 @@ const ListMusic: React.FC = () => {
   const [ editIndex, setEditIndex ] = useState<string | null>(null);
   const [ loadingCards, setLoadingCards ] = useState<{ [key: string]: boolean }>({});
 
- useEffect(() => {
-    getAllMusicLinks({ page: 1, limit });
+  useEffect(() => {
+    const fetchMusic = async () => {
+      setIsLoading(true);
+      try {
+        await getAllMusicLinks({ page: 1, limit });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMusic();
   }, [getAllMusicLinks, limit]);
+
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     getAllMusicLinks({ page: 1, limit, search: term.toLowerCase() });
   };
-
 
   const handleOpenVideo = (url: string) => {
     setCurrentVideo(url);
@@ -230,82 +245,90 @@ const ListMusic: React.FC = () => {
               </div>
             )}
 
-            <div className="container">
-              {!musicLinks.length && <p>Nenhuma música encontrada.</p>}
+            {isLoading ? (
+              <LoadingScreen />
+            ) : (
+              <div className="container">
+                {!musicLinks.length && <p>Nenhuma música encontrada.</p>}
 
-              {musicLinks.length > 0 && (
-                <p>
-                  {searchTerm
-                    ? `Resultados para "${searchTerm}": ${musicLinks.length}`
-                    : `Mostrando ${musicLinks.length} músicas`}
-                </p>
-              )}
-              <AnimatePresence mode="wait">
-                {sortedMusicLinks.map((music) => (
-                  <motion.div
-                    key={music.id}
-                    className="container-card-music"
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -200 }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    {loadingCards[music.id!] ? (
-                      <p style={{ color: '#fff' }}>Aguarde..</p>
-                    ) : (
-                      <>
-                        <div className="music-info">
-                          <div className="span-cifra">{music.cifra || "-"}</div>
-                          <div className="music-text">
-                            <div className="span-music">{music.name}</div>
-                            <span className="divider-music">-</span>
-                            <div className="span-minister">Ministro: {music.minister}</div>
+                {musicLinks.length > 0 && (
+                  <p>
+                    {searchTerm
+                      ? `Resultados para "${searchTerm}": ${musicLinks.length}`
+                      : `Mostrando ${musicLinks.length} músicas`}
+                  </p>
+                )}
+                <AnimatePresence mode="wait">
+                  {sortedMusicLinks.map((music) => (
+                    <motion.div
+                      key={music.id}
+                      className="container-card-music"
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -200 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      {loadingCards[music.id!] ? (
+                        <p style={{ color: '#fff' }}>Aguarde..</p>
+                      ) : (
+                        <>
+                          <div className="music-info">
+                            <div className="span-cifra">{music.cifra || "-"}</div>
+                            <div className="music-text">
+                              <div className="span-music">{music.name}</div>
+                              <span className="divider-music">-</span>
+                              <div className="span-minister">Ministro: {music.minister}</div>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="music-buttons">
-                          {music.link && (
+                          <div className="music-buttons">
+                            {music.link && (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="btns"
+                                style={{ backgroundColor: "#a371f7", color: "#fff" }}
+                                onClick={() => handleOpenVideo(music.link!)}
+                              >
+                                Vídeo
+                              </motion.button>
+                            )}
+
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
                               className="btns"
-                              style={{ backgroundColor: "#a371f7", color: "#fff" }}
-                              onClick={() => handleOpenVideo(music.link!)}
+                              style={{ backgroundColor: "#2f81f7", color: "#fff" }}
+                              onClick={() => handleUpdate(music.id)}
                             >
-                              Vídeo
+                              Edit
                             </motion.button>
-                          )}
 
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="btns"
-                            style={{ backgroundColor: "#2f81f7", color: "#fff" }}
-                            onClick={() => handleUpdate(music.id)}
-                          >
-                            Edit
-                          </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="btns"
+                              style={{ backgroundColor: "#3fb950", color: "#fff" }}
+                              onClick={() => handleAddToSunday(music.id)}
+                            >
+                              Add Dom
+                            </motion.button>
+                          </div>
+                        </>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
 
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="btns"
-                            style={{ backgroundColor: "#3fb950", color: "#fff" }}
-                            onClick={() => handleAddToSunday(music.id)}
-                          >
-                            Add Dom
-                          </motion.button>
-                        </div>
-                      </>
-                    )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
             <div style={{ width: "100%", display: "flex", justifyContent: "center", gap: "45px", marginTop: "50px", paddingBottom: "70px" }}>
               <Button 
                 disabled={!hasPrevPage} 
-                onClick={() => getAllMusicLinks({ page: currentPage - 1, limit })}
+                onClick={() => {
+                  getAllMusicLinks({ page: currentPage - 1, limit });
+                  scrollToTop();
+                }}
               >
                 Anterior
               </Button>
@@ -314,7 +337,10 @@ const ListMusic: React.FC = () => {
 
               <Button 
                 disabled={!hasNextPage}
-                onClick={() => getAllMusicLinks({ page: currentPage + 1, limit })}
+                onClick={() => {
+                  getAllMusicLinks({ page: currentPage + 1, limit });
+                  scrollToTop();
+                }}
                 >
                 Próxima
               </Button>

@@ -11,6 +11,7 @@ import { AuthProvider } from './services/AuthService';
 import LayoutWrapper from './components/layoutWrapper/layoutWrapper';
 import { AllMusicLinksProvider } from './services/AllMusicHistory';
 import { UsersProvider } from './services/UsersService';
+import { ScrollProvider } from './context/scrollContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -22,8 +23,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 <SchedulesProvider>
                   <NotificationProvider>
                     <GlobalStyle />
-                      <LayoutWrapper>  
-                        <App />
+                      <LayoutWrapper>
+                        <ScrollProvider>
+                          <App />
+                        </ScrollProvider>
                       </LayoutWrapper>
                   </NotificationProvider>
                 </SchedulesProvider>

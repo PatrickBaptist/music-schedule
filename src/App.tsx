@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect } from 'react';
 import { useServiceWorkerUpdate } from './context/hooks/useServiceWorkerUpdate';
 import { toast } from 'sonner';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import Header from './components/header/Header';
 import Footer from './components/footer/Footer';
 import MainRoutes from './components/mainRoutes/mainRoutes';
 import { useLocation } from 'react-router-dom';
+import { useScroll } from './context/hooks/useScroll';
 
 const HeaderComponent = memo(Header);
 const FooterComponent = memo(Footer);
@@ -29,7 +30,7 @@ const FixedFooter = styled.footer`
   z-index: 9999;
 `;
 
-const ConainterRoutes = styled.div`
+const ContainerRoutes = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -49,7 +50,7 @@ const ConainterRoutes = styled.div`
 const App: React.FC = () => {
   const updateAvailable = useServiceWorkerUpdate();
   const location = useLocation();
-  const routesRef = useRef<HTMLDivElement>(null);
+  const { routesRef, scrollToTop } = useScroll();
 
   const handleUpdate = () => {
     window.location.reload(); // recarrega para pegar nova versão
@@ -71,10 +72,8 @@ const App: React.FC = () => {
   }, [updateAvailable]);
 
   useEffect(() => {
-    if (routesRef.current) {
-      routesRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [location.pathname]);
+    scrollToTop();
+  }, [location.pathname, scrollToTop]);
 
   const hideLayout = ["/login", "/register"].includes(location.pathname);
 
@@ -86,9 +85,9 @@ const App: React.FC = () => {
         </FixedHeader>
       )}
 
-      <ConainterRoutes ref={routesRef}>
+      <ContainerRoutes ref={routesRef}>
         <MainRoutes />
-      </ConainterRoutes>
+      </ContainerRoutes>
 
       {!hideLayout && (
         <FixedFooter>

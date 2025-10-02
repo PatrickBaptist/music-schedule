@@ -4,7 +4,6 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-
 `;
 
 export const Main = styled.main`
@@ -18,14 +17,13 @@ export const Main = styled.main`
 
 export const ListContainer = styled.ul`
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   padding: 50px 0;
-
+  
   .content-louvores {
       width: 100%;
       height: 50px;
@@ -57,6 +55,7 @@ export const ListContainer = styled.ul`
       }
 
     }
+
   .container {
     width: 100%;
     height: auto;
