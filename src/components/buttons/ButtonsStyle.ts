@@ -41,6 +41,16 @@ export const ContainerButton = styled.button`
   transform: translateY(0);
 }
 
+&:disabled {
+  background-color: #d1d1d1;
+  color: rgba(0,0,0,0.35);
+  border-color: #b0b0b0;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.6;
+}
+
 div {
     display: block;
 }
