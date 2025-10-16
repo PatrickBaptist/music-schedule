@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const UsersContainer = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 10px;
   padding: 40px 0px;
 
@@ -20,7 +20,6 @@ export const UsersContainer = styled.div`
 `;
 
 export const UserCard = styled(motion.div)`
-  width: 100%;
   background-color: #161b22;
   color: #fff;
   display: flex;
@@ -40,6 +39,13 @@ export const UserCard = styled(motion.div)`
     opacity: 0.9;
   }
 
+  .actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
   button {
     margin-top: 10px;
     padding: 6px 12px;
@@ -52,6 +58,24 @@ export const UserCard = styled(motion.div)`
 
     &:hover {
       background-color: #ffa726;
+    }
+  }
+
+  button:not(.delete-btn) {
+    background-color: #ffb74d;
+    color: #333;
+
+    &:hover {
+      background-color: #ffa726;
+    }
+  }
+
+  .delete-btn {
+    background-color: #f44336;
+    color: white;
+
+    &:hover {
+      background-color: #d32f2f;
     }
   }
 `;

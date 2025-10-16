@@ -4,11 +4,11 @@ import useUsersContext from "../../context/hooks/useUsersContext";
 import { roleOptions, UserRole } from "../../types/UserRole";
 import { UserCard, UsersContainer } from "./usersStyle";
 import { toast } from "sonner";
-import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope } from 'react-icons/fa';
+import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope, FaTrash } from 'react-icons/fa';
 import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const UsersCardsPage: React.FC = () => {
-  const { users, updateUser, fetchUsers } = useUsersContext();
+  const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -83,7 +83,6 @@ const UsersCardsPage: React.FC = () => {
 
     fetchData();
   }, [fetchUsers]);
-  
 
   const handleStatusChange = async (id: string, status: "enabled" | "disabled") => {
     const toastId = toast.loading("Aguarde...");
@@ -98,6 +97,31 @@ const UsersCardsPage: React.FC = () => {
         toast.error("Erro desconhecido ao salvar", { id: toastId });
       }
     }
+  };
+
+  const handleDelete = async (id: string, userName: string) => {
+    toast(
+      `Deseja realmente deletar o usuário "${userName}"?`,
+      {
+        action: {
+          label: "Deletar",
+          onClick: async () => {
+            const toastId = toast.loading("Aguarde...");
+            try {
+              await deleteUser(id);
+              await fetchUsers();
+              toast.success("Usuário deletado com sucesso!", { id: toastId });
+            } catch (err) {
+              if (err instanceof Error) {
+                toast.error("Sem premissão! " + err.message, { id: toastId });
+              } else {
+                toast.error("Erro desconhecido ao deletar", { id: toastId });
+              }
+            }
+          },
+        },
+      }
+    );
   };
 
   return (
@@ -130,17 +154,25 @@ const UsersCardsPage: React.FC = () => {
                     Status: {getStatusLabel(user.status!)}
                   </span>
 
-                  {user.status !== "enabled" && (
-                    <button onClick={() => handleStatusChange(user.id, "enabled")}>
-                      <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
-                    </button>
-                  )}
+                  <div className="actions-container">
+                    {user.status !== "enabled" && (
+                      <button onClick={() => handleStatusChange(user.id, "enabled")}>
+                        <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
+                      </button>
+                    )}
 
-                  {user.status !== "disabled" && (
-                    <button onClick={() => handleStatusChange(user.id, "disabled")}>
-                      <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
+                    {user.status !== "disabled" && (
+                      <button onClick={() => handleStatusChange(user.id, "disabled")}>
+                        <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
+                      </button>
+                    )}
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(user.id, user.nickname || user.name)}
+                    >
+                      <FaTrash style={{ marginRight: '6px' }} /> Deletar
                     </button>
-                  )}
+                  </div>
                 </UserCard>
               ))}
             </UsersContainer>
