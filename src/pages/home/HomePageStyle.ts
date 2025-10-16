@@ -18,11 +18,49 @@ export const ContainerHome = styled.div`
     overflow-y: hidden;
     box-sizing: border-box;
 
+    /* Layout para desktop */
+    .desktop-layout {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .desktop-layout-row-2 {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    /* Media query para desktop */
+    @media (min-width: 768px) {
+      .desktop-layout {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .desktop-layout-row-2 {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .coluna-1, .coluna-2 {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
     .container-escala {
       width: 100%;
       margin-top: 30px;
-      border-top: 1px solid #444;
       padding-top: 20px;
+
+      @media (max-width: 768px) {
+        border-top: 1px solid #444;
+      }
 
       .content {
         width: 100%;

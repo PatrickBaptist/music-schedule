@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
+import { CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import { toast } from 'sonner';
@@ -86,9 +86,9 @@ const Schedule: React.FC = () => {
           <h1>Escala de {nameMonth}</h1>
 
           {loading ? (
-            <LoadingScreen />
+                <LoadingScreen />
           ) : monthlySchedule && monthlySchedule.length > 0 ? (
-            <span>
+            <CardsGrid>
               {monthlySchedule
             .slice()
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -106,7 +106,7 @@ const Schedule: React.FC = () => {
                 <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
               </SeeScale>
             ))}
-            </span>
+            </CardsGrid>
           ) : (
             <p>Nenhuma escala disponível para este mês</p>
           )}

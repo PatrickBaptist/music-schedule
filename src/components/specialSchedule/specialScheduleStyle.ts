@@ -3,10 +3,13 @@ import styled from "styled-components";
 export const ContainerEscala = styled.div`
       width: 100%;
       margin-top: 30px;
-      border-top: 1px solid #444;
       padding-top: 20px;
       display: flex;
       flex-direction: column;
+
+      @media (max-width: 768px) {
+        border-top: 1px solid #444;
+      }
 
       .escala-content {
         width: 100%;

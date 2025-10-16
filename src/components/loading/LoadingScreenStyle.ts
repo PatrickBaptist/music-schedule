@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export const LoadingOverlay = styled(motion.div)`
   width: 100%;
   height: 100%;
-  background-color: black;
+  background-color: #000;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -11,15 +11,6 @@ export const ContainerThursday = styled.div`
   text-align: center;
 `;
 
-export const TitleThursday = styled.h3`
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  font-weight: 700;
-  background-color: #2ebef2;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
-
 export const CardThursday = styled(motion.div)`
   display: flex;
   justify-content: space-between;

@@ -3,16 +3,24 @@ import styled from "styled-components";
 
 export const UsersContainer = styled.div`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  justify-content: center;
-  padding: 40px 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 40px 0px;
+
+  /* Tablet */
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Desktop */
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 export const UserCard = styled(motion.div)`
-    width: 80%;
+  width: 100%;
   background-color: #161b22;
   color: #fff;
   display: flex;
@@ -21,6 +29,7 @@ export const UserCard = styled(motion.div)`
   padding: 16px;
   gap: 20px;
   border-radius: 12px;
+  box-sizing: border-box;
 
   strong {
     font-size: 1.2rem;

@@ -42,54 +42,67 @@ const HomePage: React.FC = () => {
         <ContainerHome>
           <PageWrapper>
             {warning?.text && <Aviso message={"⚠️ " + warning.text} duration={20000} />}
-            <div className='content-louvores'>
-              <h4>Adicionar louvor</h4>
-              <Button className='btn-write' onClick={() => setIsModalOpen(true)}>
-                  <img src={EditLink} alt="editLink" />
-              </Button>
-            </div>
 
-            {isModalOpen && (
-              <div className="modal">
-                <div className="modal-content">
-                  <MusicLinkInput setIsModalOpen={setIsModalOpen}/>
+            <div className="desktop-layout">
+              <div className="coluna-1">
+                <div className='content-louvores'>
+                  <h4>Adicionar louvor</h4>
+                  <Button className='btn-write' onClick={() => setIsModalOpen(true)}>
+                      <img src={EditLink} alt="editLink" />
+                  </Button>
+                </div>
+
+                {isModalOpen && (
+                  <div className="modal">
+                    <div className="modal-content">
+                      <MusicLinkInput setIsModalOpen={setIsModalOpen}/>
+                    </div>
+                  </div>
+                )}
+
+                <MusicLinkList />
+              </div>
+
+              <div className="coluna-2">
+                <div className='container-escala'>
+                  <h4>Escala do próximo domingo</h4>
+                  <div className='content'>
+                  {isLoading ? (
+                      <LoadingScreen />
+                  ) : nextSundaySchedule ? (
+                    <div className='content-escala'>
+                      <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal1 || 'Não definido'}</p>
+                      <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal2 || 'Não definido'}</p>
+                      <p><strong>Teclas: </strong>{nextSundaySchedule.músicos.teclas || 'Não definido'}</p>
+                      <p><strong>Violão: </strong>{nextSundaySchedule.músicos.violao || 'Não definido'}</p>
+                      <p><strong>Batera: </strong>{nextSundaySchedule.músicos.batera || 'Não definido'}</p>
+                      <p><strong>Bass: </strong>{nextSundaySchedule.músicos.bass || 'Não definido'}</p>
+                      <p><strong>Guita: </strong>{nextSundaySchedule.músicos.guita || 'Não definido'}</p>
+                    </div>
+                  ) : (
+                    <p>Não há escala disponível</p>
+                  )}
+                  </div>
                 </div>
               </div>
-            )}
-
-            <MusicLinkList />
-
-            <div className='container-escala'>
-              <h4>Escala do próximo domingo</h4>
-              <div className='content'>
-              {isLoading ? (
-                  <LoadingScreen />
-              ) : nextSundaySchedule ? (
-                <div className='content-escala'>
-                  <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal1 || 'Não definido'}</p>
-                  <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal2 || 'Não definido'}</p>
-                  <p><strong>Teclas: </strong>{nextSundaySchedule.músicos.teclas || 'Não definido'}</p>
-                  <p><strong>Violão: </strong>{nextSundaySchedule.músicos.violao || 'Não definido'}</p>
-                  <p><strong>Batera: </strong>{nextSundaySchedule.músicos.batera || 'Não definido'}</p>
-                  <p><strong>Bass: </strong>{nextSundaySchedule.músicos.bass || 'Não definido'}</p>
-                  <p><strong>Guita: </strong>{nextSundaySchedule.músicos.guita || 'Não definido'}</p>
-                </div>
-              ) : (
-                <p>Não há escala disponível</p>
-              )}
-              </div>
             </div>
-
-            {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
             
-            <div className='container-escala'>
-              <div className='content'>
-                <div className='content-escala' style={{ backgroundColor: 'transparent' }}>
-                  <ThursdaySchedule />
-                </div>
+            <div className="desktop-layout-row-2">
+              <div className="coluna-1">
+                  {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
+              </div>
+              <div className="coluna-2">
+                  <div className='container-escala'>
+                    <h4>Escala de Quinta-Feira</h4>
+                    <div className='content'>
+                      <div className='content-escala' style={{ backgroundColor: 'transparent' }}>
+                        <ThursdaySchedule />
+                      </div>
+                    </div>
+                  </div>
               </div>
             </div>
-
+            
             <BirthdaysThisMonth />
 
           </PageWrapper> 

@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const ScheduleContainer = styled.div`
   width: 100%;
-  height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,12 +12,12 @@ export const ScheduleContainer = styled.div`
 export const ScheduleContent = styled.div`
   width: 100%;
   height: auto;
-  max-width: 1012px;
+  max-width: 1400px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 20px;
+  box-sizing: border-box;
 
   h1 {
     margin-bottom: 30px;
@@ -26,16 +25,19 @@ export const ScheduleContent = styled.div`
     font-weight: 600;
     font-size: 2.2rem;
   }
+`;
 
-  span {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+export const CardsGrid = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+  justify-items: center;
 
-    @media (max-width: 670px) {
-      justify-content: center;
-    }
+  @media (max-width: 670px) {
+    grid-template-columns: 1fr;
   }
 `;
 

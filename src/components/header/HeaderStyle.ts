@@ -34,7 +34,7 @@ export const NavHeader = styled.nav`
   align-items: center;
   gap: 25px;
 
-  @media(max-width: 600px) {
+  @media(max-width: 670px) {
     display: none;
   }
 `;

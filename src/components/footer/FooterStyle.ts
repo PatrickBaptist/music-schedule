@@ -14,7 +14,7 @@ export const NavFooter = styled.nav`
   justify-content: space-around;
   margin-bottom: 5px;
 
-  @media (min-width: 600px) {
+  @media (min-width: 671px) {
       display: none;
   }
 `;

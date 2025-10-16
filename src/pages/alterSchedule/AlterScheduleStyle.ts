@@ -9,38 +9,97 @@ export const DarkWrapper = styled.div`
 
 export const ContainerForm = styled.div`
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   box-sizing: border-box;
   gap: 45px;
+  padding: 70px 20px 40px 20px;
+
+   /* Layout para mobile (default) */
+  .form-row {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+  }
+
+  .form-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+  }
+
+  .form-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .button-container {
+    margin-top: auto;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Media query para desktop */
+  @media (min-width: 768px) {
+    .form-row {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 25px;
+      align-items: stretch; /* Crucial para alinhar a altura */
+    }
+
+    .form-column {
+      flex: 1;
+      display: flex;
+    }
+
+    .form-container {
+      height: 100%;
+    }
+
+    /* Garante que os formulários ocupem toda a altura */
+    .form-content {
+      height: 100%;
+    }
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+    font-size: 1.5rem;
+    padding-bottom: 10px;
+  }
+`;
+
+export const DarkForm = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 18px;
 `;
 
 export const DarkTitle = styled.h1`
   text-align: center;
 `;
-
-
-export const DarkForm = styled.form`
-  width: 100%;
-  max-width: 600px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  gap: 20px;
-  `;
   
 export const FormGroup = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 0 35px;
 `;
 
 export const DarkInput = styled.input`

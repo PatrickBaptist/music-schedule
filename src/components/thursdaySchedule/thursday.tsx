@@ -1,5 +1,5 @@
 import React from "react";
-import { CardThursday, ContainerThursday, MinisterInfo, TitleThursday } from "./thursdayStayle";
+import { CardThursday, ContainerThursday, MinisterInfo } from "./thursdayStayle";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
 import { motion } from "motion/react";
 
@@ -39,7 +39,6 @@ const ThursdaySchedule: React.FC = () => {
 
   return (
     <ContainerThursday>
-      <TitleThursday>Escala de Quinta-Feira</TitleThursday>
       {schedule.map((item, index) => (
         <CardThursday
             key={item.date}
