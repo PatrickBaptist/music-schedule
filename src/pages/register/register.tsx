@@ -24,12 +24,13 @@ const RegisterPage: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (password !== confirmPassword) {
       toast.error("As senhas não coincidem!");
       return;
     }
-
+    
+    const toastId = toast.loading("Aguarde...");
     try {
       const payload = {
       name,
@@ -42,11 +43,11 @@ const RegisterPage: React.FC = () => {
     };
 
       await registerUser(payload);
-      toast.success("Cadastro realizado com sucesso!");
+      toast.success("Cadastro realizado com sucesso!", { id: toastId });
       navigate("/login");
     } catch (err: unknown) {
       if (err instanceof Error) toast.error(err.message);
-      else toast.error("Erro desconhecido ao cadastrar");
+      else toast.error("Erro desconhecido ao cadastrar", { id: toastId });
     }
   };
 

@@ -6,7 +6,8 @@ export const UsersContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 10px;
-  padding: 40px 0px;
+  padding: 20px;
+  box-sizing: border-box;
 
   /* Tablet */
   @media (min-width: 768px) {
