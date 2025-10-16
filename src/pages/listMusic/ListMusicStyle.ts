@@ -150,7 +150,6 @@ export const ListContainer = styled.ul`
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     gap: 10px;
     flex-wrap: wrap;
   }

@@ -12,6 +12,7 @@ import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { useScroll } from "../../context/hooks/useScroll";
+import { FaTrash } from "react-icons/fa";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -20,7 +21,7 @@ const tons = [
 ];
 
 const ListMusic: React.FC = () => {
-  const { musicLinks, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage, updateMusicLink } = useAllMusicHistoryContext();
+  const { musicLinks, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage, updateMusicLink, removeMusicLink } = useAllMusicHistoryContext();
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
@@ -139,6 +140,31 @@ const ListMusic: React.FC = () => {
     setIsEditing(false);
   };
 
+  const handleDelete = async (id: string, musicName: string) => {
+    toast(
+      `Deseja realmente deletar a música "${musicName}"?`,
+      {
+        action: {
+          label: "Deletar",
+          onClick: async () => {
+            const toastId = toast.loading("Aguarde...");
+            try {
+              await removeMusicLink(id);
+              await getAllMusicLinks({ page: currentPage, limit, search: searchTerm.toLowerCase() });
+              toast.success("Música deletada com sucesso!", { id: toastId });
+            } catch (err) {
+              if (err instanceof Error) {
+                toast.error("Sem premissão! " + err.message, { id: toastId });
+              } else {
+                  toast.error("Erro desconhecido ao editar", { id: toastId });
+              }
+            }
+          },
+        },
+      }
+    );
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSaveEdit();
@@ -160,6 +186,7 @@ const ListMusic: React.FC = () => {
   const sortedMusicLinks = [...musicLinks].sort((a, b) => 
     getTime(b.createdAt) - getTime(a.createdAt)
   );
+
 
   return (
     <Container>
@@ -290,7 +317,7 @@ const ListMusic: React.FC = () => {
                                 style={{ backgroundColor: "#a371f7", color: "#fff" }}
                                 onClick={() => handleOpenVideo(music.link!)}
                               >
-                                Vídeo
+                                Vd
                               </motion.button>
                             )}
 
@@ -311,7 +338,18 @@ const ListMusic: React.FC = () => {
                               style={{ backgroundColor: "#3fb950", color: "#fff" }}
                               onClick={() => handleAddToSunday(music.id)}
                             >
-                              Add Dom
+                              add
+                            </motion.button>
+
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="btns delete-btn"
+                              style={{ backgroundColor: "#da3633", color: "#fff" }}
+                              onClick={() => handleDelete(music.id, music.name)}
+                            >
+                              <FaTrash style={{ marginRight: '6px' }} />
+                              Del
                             </motion.button>
                           </div>
                         </>
