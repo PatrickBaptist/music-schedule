@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import { Button, Container, FormWrapper, Input, Logo, RegisterPrompt } from "./loginStyle";
-import logo from "../../assets/imgs/logo.webp";
+import logo from "../../assets/imgs/logo.png";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 
 const LoginPage: React.FC = () => {

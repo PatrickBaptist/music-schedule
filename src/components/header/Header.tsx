@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from '../../assets/imgs/logo.webp'
+import Logo from '../../assets/imgs/logo.png'
 import { ContainerLogo, HeaderContainer, HeaderItem, NavHeader } from './HeaderStyle';
 import { Link, useLocation } from 'react-router-dom';
 import useAuthContext from '../../context/hooks/useAuthContext';

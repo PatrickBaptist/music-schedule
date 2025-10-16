@@ -24,8 +24,7 @@ export const ContainerLogo = styled.div`
 
   .logo {
     width: 90px;
-    height: 35px;
-    object-fit: cover;
+    height: 50px;
   }
 `;
 
