@@ -22,6 +22,7 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
   const [letter, setLetter] = useState('');
+  const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
   const [, setOrder] = useState(1);
   const { addMusicLink } = useAllMusicHistoryContext();
@@ -55,6 +56,7 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
         name: name.trim(),
         link: link.trim() || "",
         letter: letter.trim() || "",
+        spotify: spotify.trim() || "",
         cifra: cifra.trim() || "",
         minister: isMinister ? user?.name : ministerName
       });
@@ -63,6 +65,7 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
       setName('');
       setLink('');
       setLetter('');
+      setSpotify('');
       setCifra('');
       setOrder(1);
       setMinisterName('');
@@ -100,7 +103,7 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
         type="text"
         value={link}
         onChange={(e) => setLink(e.target.value)}
-        placeholder="Link da música"
+        placeholder="Link do vídeo"
         onKeyDown={handleKeyPress}
       />
       <input
@@ -108,6 +111,13 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
         value={letter}
         onChange={(e) => setLetter(e.target.value)}
         placeholder="Link da letra"
+        onKeyDown={handleKeyPress}
+      />
+      <input
+        type="text"
+        value={spotify}
+        onChange={(e) => setSpotify(e.target.value)}
+        placeholder="Link do Spotify"
         onKeyDown={handleKeyPress}
       />
 

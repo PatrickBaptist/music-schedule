@@ -12,7 +12,7 @@ import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { useScroll } from "../../context/hooks/useScroll";
-import { FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrash, FaYoutube } from "react-icons/fa";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -35,6 +35,7 @@ const ListMusic: React.FC = () => {
   const [name, setName] = useState('');
   const [link, setLink] = useState('');
   const [letter, setLetter] = useState('');
+  const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
   const [minister, setMinister] = useState('');
   const [ isEditing, setIsEditing ] = useState<boolean>(false);
@@ -89,6 +90,7 @@ const ListMusic: React.FC = () => {
         link: music.link || "",
         cifra: music.cifra || "",
         letter: music.letter  || "",
+        spotify: music.spotify || "",
         ministeredBy: music.minister
       });
 
@@ -109,6 +111,7 @@ const ListMusic: React.FC = () => {
       setName(musicLink.name);
       setLink(musicLink.link || '');
       setLetter(musicLink.letter || '');
+      setSpotify(musicLink.spotify || '');
       setCifra(musicLink.cifra || '');
       setMinister(musicLink.minister || '');
       setEditIndex(musicLink.id!);
@@ -118,7 +121,7 @@ const ListMusic: React.FC = () => {
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
-      const updatedLink = { name, link, letter, cifra, minister };
+      const updatedLink = { name, link, letter, spotify, cifra, minister };
       setIsEditing(false);
 
       try {
@@ -233,7 +236,7 @@ const ListMusic: React.FC = () => {
                       type="text"
                       value={link}
                       onChange={(e) => setLink(e.target.value)}
-                      placeholder="Link da música"
+                      placeholder="Link do vídeo"
                       onKeyDown={handleKeyPress}
                     />
                     <input
@@ -241,6 +244,13 @@ const ListMusic: React.FC = () => {
                       value={letter}
                       onChange={(e) => setLetter(e.target.value)}
                       placeholder="Link da letra"
+                      onKeyDown={handleKeyPress}
+                    />
+                    <input
+                      type="text"
+                      value={spotify}
+                      onChange={(e) => setSpotify(e.target.value)}
+                      placeholder="Link do Spotify"
                       onKeyDown={handleKeyPress}
                     />
 
@@ -313,43 +323,39 @@ const ListMusic: React.FC = () => {
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="btns"
-                                style={{ backgroundColor: "#a371f7", color: "#fff" }}
+                                className="btns youtube-btn"
                                 onClick={() => handleOpenVideo(music.link!)}
+                                title="Assistir vídeo"
                               >
-                                Vd
+                                <FaYoutube size={14} />
                               </motion.button>
                             )}
 
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
-                              className="btns"
-                              style={{ backgroundColor: "#2f81f7", color: "#fff" }}
+                              className="btns edit-btn"
                               onClick={() => handleUpdate(music.id)}
                             >
-                              Edit
-                            </motion.button>
-
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              className="btns"
-                              style={{ backgroundColor: "#3fb950", color: "#fff" }}
-                              onClick={() => handleAddToSunday(music.id)}
-                            >
-                              add
+                              <FaEdit size={14} />
                             </motion.button>
 
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
                               className="btns delete-btn"
-                              style={{ backgroundColor: "#da3633", color: "#fff" }}
                               onClick={() => handleDelete(music.id, music.name)}
                             >
-                              <FaTrash style={{ marginRight: '6px' }} />
-                              Del
+                              <FaTrash size={14} />
+                            </motion.button>
+
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="btns add-btn"
+                              onClick={() => handleAddToSunday(music.id)}
+                            >
+                              <FaPlus size={14} />
                             </motion.button>
                           </div>
                         </>

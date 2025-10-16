@@ -5,6 +5,7 @@ export interface MusicLink {
   link: string | null;
   name: string;
   letter: string | null;
+  spotify: string | null;
   cifra: string | null;
   ministeredBy?: string | null;
   order: number;

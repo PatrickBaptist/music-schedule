@@ -106,6 +106,42 @@ export const ListContainer = styled.ul`
     height: 14px;
   }
 
+  .youtube-btn {
+      background-color: #C0392B;
+      color: white;
+    }
+
+    .youtube-btn:hover {
+      background-color: #cc0000;
+    }
+
+    .edit-btn {
+      background-color: #2f81f7;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background-color: #1a6fd8;
+    }
+
+    .delete-btn {
+      background-color: #cc0000 !important;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #A93226 !important;
+    }
+
+    .add-btn {
+      background-color: #1db954;
+      color: white;
+    }
+
+    .add-btn:hover {
+      background-color: #1aa34a;
+    }
+
   .music-info {
     display: flex;
     align-items: center;
@@ -150,6 +186,7 @@ export const ListContainer = styled.ul`
     width: 100%;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 10px;
     flex-wrap: wrap;
   }

@@ -6,6 +6,7 @@ interface AllMusicLink {
   name: string;
   link?: string | null;
   letter?: string | null;
+  spotify?: string | null;
   cifra?: string | null;
   createdAt?: string | Date | FirestoreTimestamp;
   minister?: string | null;
