@@ -284,19 +284,15 @@ export const ListContainer = styled.ul`
 }
 
 .modal-content {
-  background: #fff;
   padding: 24px;
-  width: auto;
+  width: auto !important;
   max-height: 50vh;
   height: auto;
   overflow-y: auto;
   text-align: left;
+  background: #fff;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .modal-content h3 {
