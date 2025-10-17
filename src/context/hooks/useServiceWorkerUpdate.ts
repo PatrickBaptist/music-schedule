@@ -6,6 +6,7 @@ export function useServiceWorkerUpdate() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
+        // SW atualizado, página recarregada automaticamente
         console.log('Service worker controller changed');
       });
 
@@ -14,6 +15,7 @@ export function useServiceWorkerUpdate() {
           const newWorker = registration.installing;
           newWorker?.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // Nova versão disponível
               setUpdateAvailable(true);
             }
           });
