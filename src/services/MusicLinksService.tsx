@@ -7,6 +7,7 @@ export interface MusicLink {
   letter: string | null;
   spotify: string | null;
   cifra: string | null;
+  description: string | null;
   ministeredBy?: string | null;
   order: number;
 }

@@ -37,6 +37,7 @@ const ListMusic: React.FC = () => {
   const [letter, setLetter] = useState('');
   const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
+  const [, setDescription] = useState('');
   const [minister, setMinister] = useState('');
   const [ isEditing, setIsEditing ] = useState<boolean>(false);
   const [ editIndex, setEditIndex ] = useState<string | null>(null);
@@ -91,6 +92,7 @@ const ListMusic: React.FC = () => {
         cifra: music.cifra || "",
         letter: music.letter  || "",
         spotify: music.spotify || "",
+        description: music.description || "",
         ministeredBy: music.minister
       });
 
@@ -113,6 +115,7 @@ const ListMusic: React.FC = () => {
       setLetter(musicLink.letter || '');
       setSpotify(musicLink.spotify || '');
       setCifra(musicLink.cifra || '');
+      setDescription(musicLink.description || '');
       setMinister(musicLink.minister || '');
       setEditIndex(musicLink.id!);
       setIsEditing(true);

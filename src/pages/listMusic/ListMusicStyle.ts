@@ -200,12 +200,15 @@ export const ListContainer = styled.ul`
       z-index: 2024;
       background-color: #000;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      padding: 200px 0;
+      box-sizing: border-box;
+      overflow: auto;
     }
 
     .modal-content {
-      width: 400px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -235,14 +238,17 @@ export const ListContainer = styled.ul`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: #000;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding: 200px 0;
+    box-sizing: border-box;
+    overflow: auto;
   }
 
   .all-edit-content {
-    width: 400px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

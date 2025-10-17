@@ -86,6 +86,18 @@ export const ListContainer = styled.ul`
           transition: all 0.4s ease-in-out;
         }
       }
+
+      .icon-description {
+        cursor: pointer;
+        margin-left: 8px;
+        color: #d4d4d4;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+
+      .icon-description:hover {
+        color: #6659b0; /* muda pra sua cor principal */
+        transform: scale(1.2);
+      }
     }
 
     .music-header {
@@ -216,14 +228,17 @@ export const ListContainer = styled.ul`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #000;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding: 200px 0;
+    box-sizing: border-box;
+    overflow: auto;
   }
 
   .edit-content {
-    width: 400px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -252,6 +267,86 @@ export const ListContainer = styled.ul`
       }
     }
   }
+
+.description-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 24px;
+  max-width: 90%;
+  width: 90%;
+  max-height: 50vh;
+  height: auto;
+  overflow-y: auto;
+  text-align: left;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.modal-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.5;
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.modal-text::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-text::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-text::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.close-btn {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: #9e9e9e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.close-btn:hover {
+  background: #c2c2c2ff;
+}
 `;
 
 export const ContainerVd = styled.div`
@@ -328,5 +423,9 @@ export const SelectContainer = styled.div`
     box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
     outline: none;
     font-size: 14px;
+
+    @media (max-width: 400px) {
+      height: 30px
+    }
   }
 `;

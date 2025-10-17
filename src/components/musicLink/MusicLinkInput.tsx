@@ -25,6 +25,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [letter, setLetter] = useState('');
   const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
+  const [description, setDescription] = useState('');
   const [, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
   const { user } = useAuthContext();
@@ -59,6 +60,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       letter: letter.trim() || "",
       spotify: spotify.trim() || "",
       cifra: cifra.trim() || "",
+      description: description.trim() || "",
       ministeredBy: isMinister ? user?.nickname : ministerName
     });
 
@@ -68,6 +70,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     setLetter('');
     setSpotify('');
     setCifra('');
+    setDescription('');
     setOrder(1);
     setMinisterName('');
 
@@ -137,13 +140,33 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
           ))}
         </select>
       </SelectContainer>
+      
+      <div style={{ width: '100%',display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+        <label htmlFor="description" style={{ fontSize: 14, fontWeight: 'bold' }}>Observações sobre a música</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Observações sobre como será a música"
+          rows={3}
+          style={{
+            width: '95%',
+            marginTop: '8px',
+            marginBottom: '8px',
+            padding: '8px',
+            border: '1px solid #ccc',
+            resize: 'none'
+          }}
+        />
+      </div>
 
-      <Button onClick={handleAddLink}>
-        Adicionar
-      </Button>
-      <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
-        Cancelar
-      </Button>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+          Cancelar
+        </Button>
+        <Button onClick={handleAddLink}>
+          Adicionar
+        </Button>
+      </div>
       {ministerModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <InputContainer>

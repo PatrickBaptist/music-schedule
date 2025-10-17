@@ -8,6 +8,7 @@ interface AllMusicLink {
   letter?: string | null;
   spotify?: string | null;
   cifra?: string | null;
+  description?: string | null;
   createdAt?: string | Date | FirestoreTimestamp;
   minister?: string | null;
 }

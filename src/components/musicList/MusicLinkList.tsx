@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import LoadingScreen from "../loading/LoadingScreen";
-import { FaEdit, FaFileAlt, FaSpotify, FaYoutube } from "react-icons/fa";
+import { FaEdit, FaFileAlt, FaRegCommentDots, FaSpotify, FaYoutube } from "react-icons/fa";
 
 type Video = {
   url: string;
@@ -57,13 +57,19 @@ const MusicLinkList: React.FC = () => {
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<string | null>(null);
-
+  
   const [name, setName] = useState("");
   const [link, setLink] = useState("");
   const [letter, setLetter] = useState("");
   const [spotify, setSpotify] = useState("");
   const [cifra, setCifra] = useState("");
+  const [description, setDescription] = useState("");
   const [order, setOrder] = useState(0);
+  
+  const [selectedDescription, setSelectedDescription] = useState<{
+     description: string;
+     name: string;
+   } | null>(null);
 
   useEffect(() => {
     const fetchMusicLink = async () => {
@@ -99,6 +105,7 @@ const MusicLinkList: React.FC = () => {
     setLetter(musicLink.letter || "");
     setSpotify(musicLink.spotify || "");
     setCifra(musicLink.cifra || "");
+    setDescription(musicLink.description || "");
     setOrder(musicLink.order || 0);
     setEditIndex(musicLink.id!);
     setIsEditing(true);
@@ -126,7 +133,7 @@ const MusicLinkList: React.FC = () => {
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards((prev) => ({ ...prev, [editIndex]: true }));
-      const updatedLink = { name, link, letter, spotify, cifra, order };
+      const updatedLink = { name, link, letter, spotify, cifra, description, order };
       setIsEditing(false);
 
       try {
@@ -154,6 +161,19 @@ const MusicLinkList: React.FC = () => {
     }
   };
 
+  const handleCardClick = (description?: string, name?: string) => {
+    if (name) {
+      setSelectedDescription({ 
+        description: description || "Sem instruções ou descrições.",
+        name 
+      });
+    }
+  };
+
+  const closeModal = () => {
+    setSelectedDescription(null);
+  };
+
   return (
     <ListContainer>
       <AnimatePresence>
@@ -177,7 +197,13 @@ const MusicLinkList: React.FC = () => {
                     <>
                       <div className="music-header">
                         <span className="span-order">{musicLink.order}</span>
-                        <span className="span-music">{musicLink.name}</span>
+                        <span className="span-music">
+                          {musicLink.name}
+                          <FaRegCommentDots
+                          className="icon-description"
+                          onClick={() => handleCardClick(musicLink.description!, musicLink.name)}
+                          />
+                        </span>
                         {musicLink.cifra && (
                           <span className="span-cifra">{musicLink.cifra}</span>
                         )}
@@ -263,7 +289,6 @@ const MusicLinkList: React.FC = () => {
                 </motion.button>
               </div>
 
-              {/* Resto do código permanece igual... */}
               {isEditing && (
                 <motion.div
                   className="edit-form"
@@ -337,6 +362,24 @@ const MusicLinkList: React.FC = () => {
                         </select>
                       </SelectContainer>
 
+                      <div style={{ width: '100%',display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                        <label htmlFor="description" style={{ fontSize: 14, fontWeight: 'bold' }}>Observações sobre a música</label>
+                        <textarea
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          placeholder="Observações sobre como será a música"
+                          rows={3}
+                          style={{
+                            width: '95%',
+                            marginTop: '8px',
+                            marginBottom: '8px',
+                            padding: '8px',
+                            border: '1px solid #ccc',
+                            resize: 'none',
+                          }}
+                        />
+                      </div>
+
                       <div
                         style={{
                           width: "100%",
@@ -366,6 +409,29 @@ const MusicLinkList: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                </motion.div>
+              )}
+
+              {selectedDescription && (
+                <motion.div
+                  className="description-modal"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={closeModal}
+                >
+                  <motion.div
+                    className="modal-content"
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <h3>Informações da "<strong>{selectedDescription.name}</strong>"</h3>
+                    <pre className="modal-text" style={{ color: '#000' }}>{selectedDescription.description}</pre>
+                    <button onClick={closeModal} className="close-btn">Fechar</button>
+                  </motion.div>
                 </motion.div>
               )}
 

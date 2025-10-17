@@ -156,12 +156,15 @@ export const ContainerHome = styled.div`
       z-index: 2024;
       background-color: #000;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      padding: 200px 0;
+      box-sizing: border-box;
+      overflow: auto;
     }
 
     .modal-content {
-      width: 400px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;

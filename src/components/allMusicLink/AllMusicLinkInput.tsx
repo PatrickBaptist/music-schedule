@@ -136,13 +136,15 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
           ))}
         </select>
       </SelectContainer>
-
-      <Button onClick={handleAddLink}>
-        Adicionar
-      </Button>
-      <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
-        Cancelar
-      </Button>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+          Cancelar
+        </Button>
+        <Button onClick={handleAddLink}>
+          Adicionar
+        </Button>
+      </div>
       {ministerModalOpen && (
               <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <InputContainer>
