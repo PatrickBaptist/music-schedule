@@ -7,6 +7,7 @@ import Footer from './components/footer/Footer';
 import MainRoutes from './components/mainRoutes/mainRoutes';
 import { useLocation } from 'react-router-dom';
 import { useScroll } from './context/hooks/useScroll';
+import { useUserPresence } from './context/hooks/useUserPresente';
 
 const HeaderComponent = memo(Header);
 const FooterComponent = memo(Footer);
@@ -51,6 +52,8 @@ const App: React.FC = () => {
   const updateAvailable = useServiceWorkerUpdate();
   const location = useLocation();
   const { routesRef, scrollToTop } = useScroll();
+
+  useUserPresence();
 
   const handleUpdate = () => {
     window.location.reload(); // recarrega para pegar nova versão

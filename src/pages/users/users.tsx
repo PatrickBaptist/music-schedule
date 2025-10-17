@@ -6,11 +6,12 @@ import { UserCard, UsersContainer } from "./usersStyle";
 import { toast } from "sonner";
 import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope, FaTrash } from 'react-icons/fa';
 import LoadingScreen from "../../components/loading/LoadingScreen";
+import { Timestamp } from "firebase/firestore";
 
 const UsersCardsPage: React.FC = () => {
-  const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
+  const { users, updateUser, fetchUsers, deleteUser, listenUserStatus } = useUsersContext();
   const [isLoading, setIsLoading] = useState(true);
-
+  const [userStatuses, setUserStatuses] = useState<Record<string, { isOnline?: boolean; lastSeen?: string }>>({});
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -84,6 +85,47 @@ const UsersCardsPage: React.FC = () => {
     fetchData();
   }, [fetchUsers]);
 
+  useEffect(() => {
+    const unsubscribers = users.map((user) =>
+      listenUserStatus(user.id, (data) => {
+        setUserStatuses((prev) => ({
+          ...prev,
+          [user.id]: {
+            isOnline: data.isOnline,
+            lastSeen: data.lastSeen,
+          },
+        }));
+      })
+    );
+
+    return () => {
+      unsubscribers.forEach((unsub) => unsub && unsub());
+    };
+  }, [users, listenUserStatus]);
+
+  const getLastSeenLabel = (timestamp?: string | Timestamp) => {
+    if (!timestamp) return "nunca 😡";
+    
+    let date: Date;
+
+    if (timestamp instanceof Timestamp) {
+      date = timestamp.toDate();
+    } else {
+      date = new Date(timestamp);
+    }
+
+    const diff = Date.now() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (minutes < 1) return "Agora mesmo";
+    if (minutes < 60) return `Há ${minutes} min`;
+    if (hours < 24) return `Há ${hours}h`;
+    return `Há ${days} dia${days > 1 ? "s" : ""}`;
+
+  };
+
   const handleStatusChange = async (id: string, status: "enabled" | "disabled") => {
     const toastId = toast.loading("Aguarde...");
     try {
@@ -146,13 +188,23 @@ const UsersCardsPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
                 >
-                  <span><FaUser style={{ marginRight: '8px' }} /> <strong>{user.nickname || user.name}</strong></span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><FaUser style={{ marginRight: '8px' }} />
+                  <strong>{user.nickname || user.name}</strong>
+                  {userStatuses[user.id]?.isOnline ? (
+                    <span style={{ color: "green", fontWeight: 500, fontSize: '0.85rem' }}>🟢 Online</span>
+                  ) : (
+                    <span style={{ color: "gray", fontWeight: 500, fontSize: '0.85rem'}}>
+                      ⚪ Visto {getLastSeenLabel(userStatuses[user.id]?.lastSeen)}
+                    </span>
+                  )}
+                  </span>
                   <span><FaEnvelope style={{ marginRight: '8px' }} />{user.email}</span>
                   <span><FaCogs style={{ marginRight: '8px' }} /> {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}</span>
                   <span>
                     {user.status === "enabled" ? <FaCheckCircle style={{ color: 'green', marginRight: '8px' }} /> : <FaTimesCircle style={{ color: 'red', marginRight: '8px' }} />}
                     Status: {getStatusLabel(user.status!)}
                   </span>
+
 
                   <div className="actions-container">
                     {user.status !== "enabled" && (
