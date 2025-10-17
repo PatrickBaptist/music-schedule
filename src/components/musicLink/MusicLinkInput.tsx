@@ -150,9 +150,11 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
           rows={3}
           style={{
             width: '95%',
+            height: '150px',
             marginTop: '8px',
             marginBottom: '8px',
             padding: '8px',
+            fontSize: '16px',
             border: '1px solid #ccc',
             resize: 'none'
           }}
