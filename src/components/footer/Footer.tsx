@@ -50,7 +50,6 @@ const Footer: React.FC = () => {
           );
         })}
       </NavFooter>
-      <h5>© direitos reservados</h5>
     </ContainerFooter>
   );
 };

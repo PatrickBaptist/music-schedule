@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const ContainerFooter = styled.footer`
   width: 100%;
-  padding: 10px 0;
+  padding: 10px 0 25px 0;
   text-align: center;
   background-color: #000;
   border-top: 1px solid #444;
