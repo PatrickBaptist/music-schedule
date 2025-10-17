@@ -286,8 +286,7 @@ export const ListContainer = styled.ul`
 .modal-content {
   background: #fff;
   padding: 24px;
-  max-width: 90%;
-  width: 90%;
+  width: auto;
   max-height: 50vh;
   height: auto;
   overflow-y: auto;
@@ -296,6 +295,8 @@ export const ListContainer = styled.ul`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content h3 {
@@ -306,6 +307,7 @@ export const ListContainer = styled.ul`
 }
 
 .modal-text {
+  width: auto;
   white-space: pre-wrap;
   word-break: break-word;
   word-wrap: break-word;
