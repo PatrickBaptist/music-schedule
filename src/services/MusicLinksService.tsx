@@ -1,4 +1,12 @@
-import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useCallback,
+} from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 export interface MusicLink {
   id?: string;
@@ -14,54 +22,78 @@ export interface MusicLink {
 
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
-  fetchMusicLinks: () => Promise<void>;
-  addMusicLink: (musicLink: Omit<MusicLink, 'order'> & { id?: string }) => Promise<void>;
+  fetchMusicLinks: () => Promise<(() => void) | void>;
+  addMusicLink: (
+    musicLink: Omit<MusicLink, "order"> & { id?: string }
+  ) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
   updateMusicLink: (id: string, updated: MusicLink) => Promise<void>;
 }
 
-export const MusicLinksService = createContext<MusicLinksContextProps | undefined>(undefined);
+export const MusicLinksService = createContext<
+  MusicLinksContextProps | undefined
+>(undefined);
 
-export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [musicLinks, setMusicLinks] = useState<MusicLink[]>([]);
 
   const getHeaders = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
   };
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
+  // Fetch em tempo real
   const fetchMusicLinks = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/musicList`);
-      const data = await res.json();
-      const sorted = data.sort((a: MusicLink, b: MusicLink) => a.order - b.order);
-      setMusicLinks(sorted);
+      const q = query(collection(db, "musicLinks"), orderBy("order", "asc"));
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as MusicLink[];
+
+        setMusicLinks(data);
+      });
+
+      return unsubscribe;
     } catch (err) {
-      console.error('Erro ao buscar músicas:', err);
+      console.error("Erro ao conectar ao Firestore:", err);
       throw err;
     }
-  }, [API_URL]);
+  }, []);
 
   useEffect(() => {
-    fetchMusicLinks();
+    let unsubscribe: (() => void) | undefined;
+
+    (async () => {
+      unsubscribe = await fetchMusicLinks();
+    })();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [fetchMusicLinks]);
 
-  const addMusicLink = async (musicLink: Omit<MusicLink, 'order'> & { id?: string }) => {
+  const addMusicLink = async (
+    musicLink: Omit<MusicLink, "order"> & { id?: string }
+  ) => {
     try {
       const res = await fetch(`${API_URL}/musicList`, {
-        method: 'POST',
+        method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(musicLink),
       });
 
-      if (!res.ok) throw new Error('Erro ao adicionar música');
+      if (!res.ok) throw new Error("Erro ao adicionar música");
 
-      await fetchMusicLinks();
     } catch (err) {
       console.error(err);
       throw err;
@@ -70,13 +102,12 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const removeMusicLink = async (id: string) => {
     try {
-      const res = await fetch(`${API_URL}/musicList/${id}`, { 
-        method: 'DELETE', 
-        headers: getHeaders()
+      const res = await fetch(`${API_URL}/musicList/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
       });
-      
-      if (!res.ok) throw new Error('Erro ao deletar música');
-      await fetchMusicLinks();
+
+      if (!res.ok) throw new Error("Erro ao deletar música");
     } catch (err) {
       console.error(err);
       throw err;
@@ -86,13 +117,12 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
   const updateMusicLink = async (id: string, updated: MusicLink) => {
     try {
       const res = await fetch(`${API_URL}/musicList/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: getHeaders(),
         body: JSON.stringify(updated),
       });
 
-      if (!res.ok) throw new Error('Erro ao atualizar música');
-      await fetchMusicLinks();
+      if (!res.ok) throw new Error("Erro ao atualizar música");
     } catch (err) {
       console.error(err);
       throw err;
@@ -100,7 +130,15 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   return (
-    <MusicLinksService.Provider value={{ musicLinks, fetchMusicLinks, addMusicLink, removeMusicLink, updateMusicLink }}>
+    <MusicLinksService.Provider
+      value={{
+        musicLinks,
+        fetchMusicLinks,
+        addMusicLink,
+        removeMusicLink,
+        updateMusicLink,
+      }}
+    >
       {children}
     </MusicLinksService.Provider>
   );
