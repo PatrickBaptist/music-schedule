@@ -198,11 +198,12 @@ const MusicLinkList: React.FC = () => {
                       <div className="music-header">
                         <span className="span-order">{musicLink.order}</span>
                         <span className="span-music">
-                          {musicLink.name}
-                          <FaRegCommentDots
-                          className="icon-description"
-                          onClick={() => handleCardClick(musicLink.description!, musicLink.name)}
-                          />
+                          {musicLink.{musicLink.description?.trim() && (
+                            <FaRegCommentDots
+                              className="icon-description"
+                              onClick={() => handleCardClick(musicLink.description!, musicLink.name)}
+                            />
+                          )}
                         </span>
                         {musicLink.cifra && (
                           <span className="span-cifra">{musicLink.cifra}</span>
