@@ -119,10 +119,10 @@ const UsersCardsPage: React.FC = () => {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (minutes < 1) return "Agora mesmo";
-    if (minutes < 60) return `Há ${minutes} min`;
-    if (hours < 24) return `Há ${hours}h`;
-    return `Há ${days} dia${days > 1 ? "s" : ""}`;
+    if (minutes < 1) return "agora mesmo";
+    if (minutes < 60) return `há ${minutes} min`;
+    if (hours < 24) return `há ${hours}h`;
+    return `há ${days} dia${days > 1 ? "s" : ""}`;
 
   };
 
