@@ -55,22 +55,9 @@ const App: React.FC = () => {
 
   useUserPresence();
 
-  const handleUpdate = () => {
-    window.location.reload(); // recarrega para pegar nova versão
-  };
-
   useEffect(() => {
     if (updateAvailable) {
-      toast("Nova versão disponível!", {
-        action: {
-          label: "Atualizar",
-          onClick: handleUpdate,
-        },
-        duration: 10000,
-        richColors: true,
-        position: "bottom-center",
-        id: "update-toast",
-      });
+      window.location.reload();
     }
   }, [updateAvailable]);
 
