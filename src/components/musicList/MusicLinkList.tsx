@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import LoadingScreen from "../loading/LoadingScreen";
-import { FaEdit, FaFileAlt, FaRegCommentDots, FaSpotify, FaYoutube } from "react-icons/fa";
+import { FaEdit, FaEllipsisV, FaFileAlt, FaRegCommentDots, FaSpotify, FaYoutube } from "react-icons/fa";
 
 type Video = {
   url: string;
@@ -57,6 +57,7 @@ const MusicLinkList: React.FC = () => {
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<string | null>(null);
+  const [showButtons, setShowButtons] = useState<{ [key: string]: boolean }>({});
   
   const [name, setName] = useState("");
   const [link, setLink] = useState("");
@@ -174,6 +175,13 @@ const MusicLinkList: React.FC = () => {
     setSelectedDescription(null);
   };
 
+  const toggleButtons = (id: string) => {
+    setShowButtons(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   return (
     <ListContainer>
       <AnimatePresence>
@@ -196,99 +204,116 @@ const MusicLinkList: React.FC = () => {
                   ) : (
                     <>
                       <div className="music-header">
-                        <span className="span-order">{musicLink.order}</span>
-                        <span className="span-music">
-                          {musicLink.name}
+                        <span className="span-order">{musicLink.order}ª</span>
+                        <div className="span-music" style={{ width: '100%', display: "flex", justifyContent: 'space-between', padding: '0 6px' }}>
+                          <span className="span-name">
+                            {musicLink.name}
+                          </span>
                           {musicLink.description?.trim() && (
-                            <FaRegCommentDots
-                              className="icon-description"
-                              onClick={() => handleCardClick(musicLink.description!, musicLink.name)}
-                            />
+                            <span>
+                              <FaRegCommentDots
+                                className="icon-description"
+                                onClick={() => handleCardClick(musicLink.description!, musicLink.name)}
+                              />
+                            </span>
                           )}
-                        </span>
+                        </div>
                         {musicLink.cifra && (
                           <span className="span-cifra">{musicLink.cifra}</span>
                         )}
-                      </div>
-
-                      <div className="menu-buttons">
-                        {musicLink.link && (
-                          <motion.button
-                            className="btns youtube-btn"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() =>
-                              openLinkVideo({ url: musicLink.link || "" })
-                            }
-                            title="Assistir vídeo"
-                            >
-                            <FaYoutube size={16} />
-                          </motion.button>
-                        )}
-
-                        {musicLink.letter && (
-                          <motion.button
-                            className="btns letter-btn"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            style={{ backgroundColor: "#fff", color: "#333" }}
-                            onClick={() =>
-                              musicLink.letter &&
-                              window.open(musicLink.letter, "_blank")
-                            }
-                            title="Abrir letra"
-                          >
-                            <FaFileAlt size={16} />
-                          </motion.button>
-                        )}
-
-                        {musicLink.spotify && (
-                          <motion.button
-                            className="btns spotify-btn"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() =>
-                              musicLink.spotify &&
-                              window.open(musicLink.spotify, "_blank")
-                            }
-                            title="Abrir no Spotify"
-                          >
-                            <FaSpotify size={16} />
-                          </motion.button>
-                        )}
 
                         <motion.button
-                          className="btns edit-btn"
+                          className="btns toggle-btn"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => handleEditClick(index)}
-                          title="Editar"
+                          onClick={() => toggleButtons(musicLink.id!)}
+                          title={showButtons[musicLink.id!] ? "Ocultar botões" : "Mostrar botões"}
                         >
-                          <FaEdit size={16} />
+                          <FaEllipsisV size={14} />
                         </motion.button>
                       </div>
+
+                       <AnimatePresence>
+                        {showButtons[musicLink.id!] && (
+                          <motion.div
+                            className="menu-buttons"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {musicLink.link && (
+                              <motion.button
+                                className="btns youtube-btn"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() =>
+                                  openLinkVideo({ url: musicLink.link || "" })
+                                }
+                                title="Assistir vídeo"
+                                >
+                                <FaYoutube size={16} />
+                              </motion.button>
+                            )}
+
+                            {musicLink.letter && (
+                              <motion.button
+                                className="btns letter-btn"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() =>
+                                  musicLink.letter &&
+                                  window.open(musicLink.letter, "_blank")
+                                }
+                                title="Abrir letra"
+                              >
+                                <FaFileAlt size={16} />
+                              </motion.button>
+                            )}
+
+                            {musicLink.spotify && (
+                              <motion.button
+                                className="btns spotify-btn"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() =>
+                                  musicLink.spotify &&
+                                  window.open(musicLink.spotify, "_blank")
+                                }
+                                title="Abrir no Spotify"
+                              >
+                                <FaSpotify size={16} />
+                              </motion.button>
+                            )}
+
+                            <motion.button
+                              className="btns edit-btn"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleEditClick(index)}
+                              title="Editar"
+                            >
+                              <FaEdit size={16} />
+                            </motion.button>
+
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              className="btns delete-icon"
+                              onClick={() => handleDelete(musicLink.id!)}
+                              title="Deletar música"
+                            >
+                              <img
+                                style={{ width: "20px", height: "20px" }}
+                                src={Delete}
+                                alt="delete"
+                              />
+                            </motion.button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </>
                   )}
                 </div>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  className="btns delete-icon"
-                  onClick={() => handleDelete(musicLink.id!)}
-                  style={{
-                    backgroundColor: "#C0392B",
-                    width: "10px",
-                    height: "40px",
-                    border: "none",
-                  }}
-                  title="Deletar música"
-                >
-                  <img
-                    style={{ width: "20px", height: "20px" }}
-                    src={Delete}
-                    alt="delete"
-                  />
-                </motion.button>
               </div>
 
               {isEditing && (
@@ -396,13 +421,6 @@ const MusicLinkList: React.FC = () => {
                           style={{ backgroundColor: "#9e9e9e" }}
                         >
                           Cancelar
-                        </Button>
-                        <Button
-                          className="delete-edit"
-                          onClick={() => handleDelete(editIndex!)}
-                          style={{ backgroundColor: "#C0392B" }}
-                        >
-                          Delete
                         </Button>
                         <Button
                           onClick={handleSaveEdit}

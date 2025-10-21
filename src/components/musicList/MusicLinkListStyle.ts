@@ -10,11 +10,7 @@ export const ListContainer = styled.ul`
   box-sizing: border-box;
 
   .delete-edit {
-    display: none;
-
-    @media (max-width: 354px) {
-      display: inline-flex;
-    }
+    display: inline-flex;
   }
 
   .container-list {
@@ -34,37 +30,12 @@ export const ListContainer = styled.ul`
       box-sizing: border-box;
       gap: 8px;
 
-      .btns {
-        align-items: center;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
-        box-sizing: border-box;
-        cursor: pointer;
-        display: inline-flex;
-        font-size: 11px;
-        font-weight: 500;
-        justify-content: center;
-        padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
-        text-decoration: none;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-        vertical-align: baseline;
-        width: auto;
-        height: 14px;
-      }
-
-      .delete-icon {
-        @media (max-width: 354px) {
-          display: none;
-        }
-      }
     }
 
     .card {
       width: 100%;
       min-width: 100px;
+      height: 80px;
       background-color: #161b22;
       display: flex;
       flex-direction: column;
@@ -78,7 +49,6 @@ export const ListContainer = styled.ul`
 
       &:hover {
         transform: translateY(-1px);
-        background-color: #f180346b;
         transition: all 0.4s ease-in-out;
 
         .span-music {
@@ -106,31 +76,34 @@ export const ListContainer = styled.ul`
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      position: relative;
+      box-sizing: border-box;
 
       @media (max-width: 600px) {
         gap: 8px;
       }
     }
 
-    .span-music {
+    .span-name {
       flex: 1;
+      width: 100px;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 20px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
 
       @media (max-width: 600px) {
-        font-size: 14px;
+        font-size: 18px;
       }
     }
 
     .span-order {
       font-weight: bold;
       font-size: 20px;
-      color: #c9d1d9;
       min-width: 30px;
       text-align: center;
+      color: #f59e0b;
 
       @media (max-width: 600px) {
         font-size: 18px;
@@ -139,7 +112,7 @@ export const ListContainer = styled.ul`
 
     .span-cifra {
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
       color: #fff;
       min-width: 40px;
       text-align: center;
@@ -147,7 +120,7 @@ export const ListContainer = styled.ul`
       border-radius: 6px;
 
       @media (max-width: 600px) {
-        font-size: 16px;
+        font-size: 18px;
         padding: 3px 6px;
       }
     }
@@ -155,10 +128,11 @@ export const ListContainer = styled.ul`
     .menu-buttons {
       width: 100%;
       display: flex;
-      gap: 8px;
+      gap: 12px;
+      overflow: hidden;
 
       @media (max-width: 372px) {
-        gap: 4px;
+        gap: 10px;
       }
     }
 
@@ -179,8 +153,8 @@ export const ListContainer = styled.ul`
       -webkit-user-select: none;
       touch-action: manipulation;
       vertical-align: baseline;
-      width: 25px;
-      height: 25px;
+      width: 45px;
+      height: 15px;
       transition: all 0.3s ease;
     }
 
@@ -203,12 +177,8 @@ export const ListContainer = styled.ul`
     }
 
     .letter-btn {
-      background-color: #ffffff;
-      color: #333;
-    }
-
-    .letter-btn:hover {
-      background-color: #f0f0f0;
+      background-color: #333333ff;
+      color: #fff;
     }
 
     .edit-btn {
@@ -219,6 +189,20 @@ export const ListContainer = styled.ul`
     .edit-btn:hover {
       background-color: #1a6fd8;
     }
+
+    .delete-icon {
+      background-color: #C0392B;
+    }
+  }
+
+  .toggle-btn {
+    background-color: #6c757d !important;
+    color: white !important;
+    margin-left: 8px;
+  }
+
+  .toggle-btn:hover {
+    background-color: #5a6268 !important;
   }
 
   .edit-form {
