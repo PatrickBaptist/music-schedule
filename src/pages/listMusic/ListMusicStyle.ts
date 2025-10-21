@@ -88,7 +88,7 @@ export const ListContainer = styled.ul`
   .btns {
     align-items: center;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
     box-sizing: border-box;
     cursor: pointer;
@@ -96,14 +96,15 @@ export const ListContainer = styled.ul`
     font-size: 11px;
     font-weight: 500;
     justify-content: center;
-    padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+    padding: 10px;
     text-decoration: none;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
     vertical-align: baseline;
-    width: auto;
-    height: 14px;
+    width: 45px;
+    height: 15px;
+    transition: all 0.3s ease;
   }
 
   .youtube-btn {
