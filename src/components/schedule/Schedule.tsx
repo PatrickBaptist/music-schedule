@@ -97,8 +97,7 @@ const Schedule: React.FC = () => {
                 <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#58a6ff' }}>
                   {new Date(musician.date).toLocaleDateString("pt-BR")}
                 </h3>
-                <p><strong>Vocal 1: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
-                <p><strong>Vocal 2: </strong>{musician.músicos.vocal2 || 'Não definido'}</p>
+                <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
                 <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
                 <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
                 <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
