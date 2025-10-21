@@ -183,7 +183,7 @@ export const ListContainer = styled.ul`
 
     .edit-btn {
       background-color: #2f81f7;
-      color: white;
+      color: #fff;
     }
 
     .edit-btn:hover {
@@ -192,6 +192,7 @@ export const ListContainer = styled.ul`
 
     .delete-icon {
       background-color: #C0392B;
+      color: #fff;
     }
   }
 

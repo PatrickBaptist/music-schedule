@@ -6,6 +6,7 @@ export const InputContainer = styled.div`
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
+  position: relative;
 
   input {
     width: 350px;
@@ -29,6 +30,64 @@ export const InputContainer = styled.div`
 
     img {
       width: 20px;
+    }
+  }
+`;
+
+export const SuggestionsList = styled.ul`
+  background: #fff;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 4px;
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+
+  li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    .suggestion-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .music-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .add-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: #007bff;
+      font-weight: 600;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+
+      svg {
+        color: #007bff;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 `;

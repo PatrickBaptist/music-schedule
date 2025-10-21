@@ -1,7 +1,13 @@
-import React, { useState, useCallback, ReactNode, createContext } from "react";
+import React, {
+  useState,
+  useCallback,
+  ReactNode,
+  createContext,
+  useEffect,
+} from "react";
 import { FirestoreTimestamp } from "../helpers/helpers";
 
-interface AllMusicLink {
+export interface AllMusicLink {
   id: string;
   name: string;
   link?: string | null;
@@ -28,15 +34,24 @@ export interface AllMusicLinksContextProps {
   hasNextPage: boolean;
   hasPrevPage: boolean;
 
-  getAllMusicLinks: (params?: { page?: number; limit?: number; search?: string }) => Promise<void>;
+  getAllMusicLinks: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) => Promise<void>;
+  getAllMusicLinksFull: () => Promise<void>;
   addMusicLink: (data: Omit<AllMusicLink, "id" | "createdAt">) => Promise<void>;
   updateMusicLink: (id: string, data: Partial<AllMusicLink>) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
 }
 
-export const AllMusicLinksService = createContext<AllMusicLinksContextProps | undefined>(undefined);
+export const AllMusicLinksService = createContext<
+  AllMusicLinksContextProps | undefined
+>(undefined);
 
-export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [musicLinks, setMusicLinks] = useState<AllMusicLink[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +61,7 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
-  const getHeaders = () => {  
+  const getHeaders = () => {
     const token = localStorage.getItem("token");
     return {
       "Content-Type": "application/json",
@@ -63,16 +78,22 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
         if (params?.limit) query.append("limit", String(params.limit));
         if (params?.search) query.append("search", params.search);
 
-        const res = await fetch(`${API_URL}/allMusicLinks?${query.toString()}`, {
-          headers: getHeaders(),
-        });
+        const res = await fetch(
+          `${API_URL}/allMusicLinks?${query.toString()}`,
+          {
+            headers: getHeaders(),
+          }
+        );
 
-        const data: ApiResponse & { hasNextPage: boolean; hasPrevPage: boolean } = await res.json();
+        const data: ApiResponse & {
+          hasNextPage: boolean;
+          hasPrevPage: boolean;
+        } = await res.json();
 
         setMusicLinks(data.results);
         setHasNextPage(data.hasNextPage);
         setHasPrevPage(data.hasPrevPage);
-        setCurrentPage(data.page);  
+        setCurrentPage(data.page);
       } catch (err) {
         console.error(err);
         throw err;
@@ -83,7 +104,57 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
     [API_URL]
   );
 
-  const addMusicLink = async (music: Omit<AllMusicLink, "id" | "createdAt">) => {
+  const getAllMusicLinksFull = useCallback(
+    async (search?: string) => {
+      try {
+        setLoading(true);
+        let allResults: AllMusicLink[] = [];
+        let page = 1;
+        let hasNext = true;
+
+        while (hasNext) {
+          const query = new URLSearchParams();
+          query.append("page", String(page));
+          query.append("limit", "100");
+          if (search) query.append("search", search);
+
+          const res = await fetch(
+            `${API_URL}/allMusicLinks?${query.toString()}`,
+            {
+              headers: getHeaders(),
+            }
+          );
+
+          const data: ApiResponse = await res.json();
+
+          allResults = [...allResults, ...data.results];
+          hasNext = data.hasNextPage;
+          page++;
+        }
+
+        setMusicLinks(allResults);
+        setHasNextPage(false);
+        setHasPrevPage(false);
+        setCurrentPage(1);
+      } catch (err) {
+        console.error(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [API_URL]
+  );
+
+  useEffect(() => {
+    getAllMusicLinks().catch((err) =>
+      console.error("Erro ao carregar músicas:", err)
+    );
+  }, [getAllMusicLinks]);
+
+  const addMusicLink = async (
+    music: Omit<AllMusicLink, "id" | "createdAt">
+  ) => {
     try {
       const res = await fetch(`${API_URL}/allMusicLinks`, {
         method: "POST",
@@ -92,7 +163,7 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
       });
 
       if (!res.ok) throw new Error("Erro ao adicionar música");
-      
+
       await getAllMusicLinks();
     } catch (err) {
       console.error(err);
@@ -100,7 +171,10 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   };
 
-  const updateMusicLink = async (id?: string, music?: Partial<AllMusicLink>) => {
+  const updateMusicLink = async (
+    id?: string,
+    music?: Partial<AllMusicLink>
+  ) => {
     if (!id || !music) throw new Error("ID e dados da música são obrigatórios");
 
     try {
@@ -135,7 +209,18 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({ child
 
   return (
     <AllMusicLinksService.Provider
-      value={{ musicLinks, loading, hasNextPage, hasPrevPage, currentPage, getAllMusicLinks, addMusicLink, updateMusicLink, removeMusicLink }}
+      value={{
+        musicLinks,
+        loading,
+        hasNextPage,
+        hasPrevPage,
+        currentPage,
+        getAllMusicLinks,
+        getAllMusicLinksFull,
+        addMusicLink,
+        updateMusicLink,
+        removeMusicLink,
+      }}
     >
       {children}
     </AllMusicLinksService.Provider>

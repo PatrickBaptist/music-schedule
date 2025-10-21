@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
-import { InputContainer } from './MusicLinkInputStyle';
+import { InputContainer, SuggestionsList } from './MusicLinkInputStyle';
 import { SelectContainer } from '../musicList/MusicLinkListStyle';
 import { toast } from 'sonner';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import useUsersContext from '../../context/hooks/useUsersContext';
+import useAllMusicHistoryContext from '../../context/hooks/useAllMusicHistoryContext';
+import { FaPlus } from 'react-icons/fa';
+import { AllMusicLink } from '../../services/AllMusicHistory';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,15 +31,22 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [description, setDescription] = useState('');
   const [, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
+  const { musicLinks, getAllMusicLinksFull } = useAllMusicHistoryContext();
   const { user } = useAuthContext();
   const { users } = useUsersContext();
   const [ministerModalOpen, setMinisterModalOpen] = useState(false);
   const [ministerName, setMinisterName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const [suggestions, setSuggestions] = useState<AllMusicLink[]>([]);
+
 
   useEffect(() => {
     nameInputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    getAllMusicLinksFull().catch((err) => console.error("Erro ao carregar músicas:", err));
+  }, [getAllMusicLinksFull]);
 
   const handleAddLink = async () => {
     if (!name.trim()) {
@@ -91,18 +101,82 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     }
   }
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+
+    if (value.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    const filtered = musicLinks
+      .filter(m => m.name.toLowerCase().includes(value.toLowerCase()))
+      .slice(0, 5);
+
+    setSuggestions(filtered);
+  };
+
   const ministerUsers = users.filter((u) => u.roles?.includes(UserRole.Minister) || u.roles?.includes(UserRole.Guest));
+
+  const handleSelectSuggestion = async (music: AllMusicLink) => {
+    setSuggestions([]);
+    setIsModalOpen(false);
+
+    const toastId = toast.loading("Adicionando música...");
+
+    try {
+      await addMusicLink({
+        id: music.id,
+        name: music.name.trim(),
+        link: music.link || "",
+        letter: music.letter || "",
+        spotify: music.spotify || "",
+        cifra: music.cifra || "",
+        description: music.description || "",
+        ministeredBy: music.minister || ""
+      });
+
+      toast.success(`"${music.name}" adicionada com sucesso!`, { id: toastId });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error("Erro ao adicionar: " + err.message, { id: toastId });
+      } else {
+        toast.error("Erro desconhecido ao adicionar música", { id: toastId });
+      }
+    }
+  };
 
   return (
     <InputContainer>
       <input
         type="text"
         value={name}
-        onChange={(e) => setName(e.target.value)}
+        onChange={handleNameChange}
         placeholder="Ex.: Grande é o Senhor"
         ref={nameInputRef}
         onKeyDown={handleKeyPress}
       />
+      {suggestions.length > 0 && (
+        <SuggestionsList>
+          {suggestions.map((s) => (
+            <li
+              key={s.id}
+              onClick={() => handleSelectSuggestion(s)}
+            >
+              <div className="suggestion-content">
+                <span className="music-name">{s.name}</span>
+                <span className="music-minister" style={{ marginLeft: 8, fontSize: 12, color: "#aaa" }}>
+                  Ministro: {s.minister}
+                </span>
+                <span className="add-label" style={{ marginLeft: "auto" }}>
+                  Adicionar <FaPlus size={12} />
+                </span>
+              </div>
+            </li>
+          ))}
+        </SuggestionsList>
+      )}
       <input
         type="text"
         value={link}

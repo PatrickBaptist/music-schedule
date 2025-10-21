@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button from "../buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
-import Delete from "../../assets/imgs/delete.png";
 import {
   ContainerVd,
   ContentVd,
@@ -18,6 +17,7 @@ import {
   FaFileAlt,
   FaRegCommentDots,
   FaSpotify,
+  FaTrashAlt,
   FaYoutube,
 } from "react-icons/fa";
 
@@ -334,10 +334,8 @@ const MusicLinkList: React.FC = () => {
                               onClick={() => handleDelete(musicLink.id!)}
                               title="Deletar música"
                             >
-                              <img
-                                style={{ width: "20px", height: "20px" }}
-                                src={Delete}
-                                alt="delete"
+                              <FaTrashAlt
+                                size={16}
                               />
                             </motion.button>
                           </motion.div>
