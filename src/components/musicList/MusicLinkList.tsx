@@ -12,7 +12,14 @@ import {
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import LoadingScreen from "../loading/LoadingScreen";
-import { FaEdit, FaEllipsisV, FaFileAlt, FaRegCommentDots, FaSpotify, FaYoutube } from "react-icons/fa";
+import {
+  FaEdit,
+  FaEllipsisV,
+  FaFileAlt,
+  FaRegCommentDots,
+  FaSpotify,
+  FaYoutube,
+} from "react-icons/fa";
 
 type Video = {
   url: string;
@@ -57,8 +64,10 @@ const MusicLinkList: React.FC = () => {
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<string | null>(null);
-  const [showButtons, setShowButtons] = useState<{ [key: string]: boolean }>({});
-  
+  const [showButtons, setShowButtons] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+
   const [name, setName] = useState("");
   const [link, setLink] = useState("");
   const [letter, setLetter] = useState("");
@@ -66,11 +75,11 @@ const MusicLinkList: React.FC = () => {
   const [cifra, setCifra] = useState("");
   const [description, setDescription] = useState("");
   const [order, setOrder] = useState(0);
-  
+
   const [selectedDescription, setSelectedDescription] = useState<{
-     description: string;
-     name: string;
-   } | null>(null);
+    description: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchMusicLink = async () => {
@@ -134,7 +143,15 @@ const MusicLinkList: React.FC = () => {
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards((prev) => ({ ...prev, [editIndex]: true }));
-      const updatedLink = { name, link, letter, spotify, cifra, description, order };
+      const updatedLink = {
+        name,
+        link,
+        letter,
+        spotify,
+        cifra,
+        description,
+        order,
+      };
       setIsEditing(false);
 
       try {
@@ -164,9 +181,9 @@ const MusicLinkList: React.FC = () => {
 
   const handleCardClick = (description?: string, name?: string) => {
     if (name) {
-      setSelectedDescription({ 
+      setSelectedDescription({
         description: description || "Sem instruções ou descrições.",
-        name 
+        name,
       });
     }
   };
@@ -176,9 +193,9 @@ const MusicLinkList: React.FC = () => {
   };
 
   const toggleButtons = (id: string) => {
-    setShowButtons(prev => ({
+    setShowButtons((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -205,15 +222,26 @@ const MusicLinkList: React.FC = () => {
                     <>
                       <div className="music-header">
                         <span className="span-order">{musicLink.order}ª</span>
-                        <div className="span-music" style={{ width: '100%', display: "flex", justifyContent: 'space-between', padding: '0 6px' }}>
-                          <span className="span-name">
-                            {musicLink.name}
-                          </span>
+                        <div
+                          className="span-music"
+                          style={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            padding: "0 6px",
+                          }}
+                        >
+                          <span className="span-name">{musicLink.name}</span>
                           {musicLink.description?.trim() && (
                             <span>
                               <FaRegCommentDots
                                 className="icon-description"
-                                onClick={() => handleCardClick(musicLink.description!, musicLink.name)}
+                                onClick={() =>
+                                  handleCardClick(
+                                    musicLink.description!,
+                                    musicLink.name
+                                  )
+                                }
                               />
                             </span>
                           )}
@@ -227,13 +255,17 @@ const MusicLinkList: React.FC = () => {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => toggleButtons(musicLink.id!)}
-                          title={showButtons[musicLink.id!] ? "Ocultar botões" : "Mostrar botões"}
+                          title={
+                            showButtons[musicLink.id!]
+                              ? "Ocultar botões"
+                              : "Mostrar botões"
+                          }
                         >
                           <FaEllipsisV size={14} />
                         </motion.button>
                       </div>
 
-                       <AnimatePresence>
+                      <AnimatePresence>
                         {showButtons[musicLink.id!] && (
                           <motion.div
                             className="menu-buttons"
@@ -251,7 +283,7 @@ const MusicLinkList: React.FC = () => {
                                   openLinkVideo({ url: musicLink.link || "" })
                                 }
                                 title="Assistir vídeo"
-                                >
+                              >
                                 <FaYoutube size={16} />
                               </motion.button>
                             )}
@@ -389,22 +421,35 @@ const MusicLinkList: React.FC = () => {
                         </select>
                       </SelectContainer>
 
-                      <div style={{ width: '100%',display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                        <label htmlFor="description" style={{ fontSize: 14, fontWeight: 'bold' }}>Observações sobre a música</label>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          justifyContent: "flex-start",
+                        }}
+                      >
+                        <label
+                          htmlFor="description"
+                          style={{ fontSize: 14, fontWeight: "bold" }}
+                        >
+                          Observações sobre a música
+                        </label>
                         <textarea
                           value={description}
                           onChange={(e) => setDescription(e.target.value)}
                           placeholder="Observações sobre como será a música"
                           rows={3}
                           style={{
-                            width: '95%',
-                            height: '150px',
-                            marginTop: '8px',
-                            marginBottom: '8px',
-                            padding: '8px',
-                            fontSize: '16px',
-                            border: '1px solid #ccc',
-                            resize: 'none',
+                            width: "95%",
+                            height: "150px",
+                            marginTop: "8px",
+                            marginBottom: "8px",
+                            padding: "8px",
+                            fontSize: "16px",
+                            border: "1px solid #ccc",
+                            resize: "none",
                           }}
                         />
                       </div>
@@ -450,9 +495,16 @@ const MusicLinkList: React.FC = () => {
                     transition={{ duration: 0.2 }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h3>Informações da "<strong>{selectedDescription.name}</strong>"</h3>
-                    <pre className="modal-text" style={{ color: '#000' }}>{selectedDescription.description}</pre>
-                    <button onClick={closeModal} className="close-btn">Fechar</button>
+                    <h3>
+                      Informações da "
+                      <strong>{selectedDescription.name}</strong>"
+                    </h3>
+                    <pre className="modal-text" style={{ color: "#000" }}>
+                      {selectedDescription.description}
+                    </pre>
+                    <button onClick={closeModal} className="close-btn">
+                      Fechar
+                    </button>
                   </motion.div>
                 </motion.div>
               )}
