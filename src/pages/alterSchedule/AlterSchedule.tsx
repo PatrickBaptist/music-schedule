@@ -41,7 +41,8 @@ const ScheduleForm: React.FC = () => {
       ...users
         .filter((u) => u.roles?.includes(UserRole.Vocal))
         .map((u) => u.nickname!.trim()),
-      "Convidado",
+        "Convidado",
+        "Todos cantam",
     ],
     teclas: [
       ...users
@@ -81,8 +82,7 @@ const ScheduleForm: React.FC = () => {
     batera: "Bateria",
     bass: "Baixo",
     guita: "Guitarra",
-    vocal1: "Vocal 1",
-    vocal2: "Vocal 2",
+    vocal1: "Vocal",
   };
 
   const ordemCampos = [
@@ -92,7 +92,6 @@ const ScheduleForm: React.FC = () => {
     "bass",
     "guita",
     "vocal1",
-    "vocal2",
   ];
 
   const {

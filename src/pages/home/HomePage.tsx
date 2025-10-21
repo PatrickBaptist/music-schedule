@@ -72,7 +72,6 @@ const HomePage: React.FC = () => {
                   ) : nextSundaySchedule ? (
                     <div className='content-escala'>
                       <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal1 || 'Não definido'}</p>
-                      <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal2 || 'Não definido'}</p>
                       <p><strong>Teclas: </strong>{nextSundaySchedule.músicos.teclas || 'Não definido'}</p>
                       <p><strong>Violão: </strong>{nextSundaySchedule.músicos.violao || 'Não definido'}</p>
                       <p><strong>Batera: </strong>{nextSundaySchedule.músicos.batera || 'Não definido'}</p>

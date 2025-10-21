@@ -57,7 +57,6 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading 
               <p><strong>Evento:</strong> {escala.evento}</p>
               <p><strong>Data:</strong> {formatDateDDMMYYYY(escala.data)}</p>
               <p><strong>Vocal:</strong> {escala.vocal1 || "Não definido"}</p>
-              <p><strong>Vocal:</strong> {escala.vocal2 || "Não definido"}</p>
               <p><strong>Teclas:</strong> {escala.teclas || "Não definido"}</p>
               <p><strong>Violão:</strong> {escala.violao || "Não definido"}</p>
               <p><strong>Batera:</strong> {escala.batera || "Não definido"}</p>
