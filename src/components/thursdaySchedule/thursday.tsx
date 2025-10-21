@@ -1,9 +1,8 @@
 import React from "react";
 import { CardThursday, ContainerThursday, MinisterInfo } from "./thursdayStayle";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
-import { motion } from "motion/react";
 
-const vocals = ["🎤 Anna", "🎤 Anderson", "🎤 Taisa", "🎤 Sarah"];
+const vocals = ["Anna", "Anderson", "Taisa", "Sarah"];
 
 const ThursdaySchedule: React.FC = () => {
   const getThursdaysOfMonth = (month: number, year: number): Date[] => {
@@ -39,25 +38,30 @@ const ThursdaySchedule: React.FC = () => {
 
   return (
     <ContainerThursday>
-      {schedule.map((item, index) => (
-        <CardThursday
-            key={item.date}
-            initial={{ opacity: 0, y: 20, rotate: -5 }}
-            animate={{ opacity: 1, y: 0, rotate: 0 }}
-            transition={{ delay: index * 0.15, type: "spring", stiffness: 120 }}
-            whileHover={{ scale: 1.05, rotate: 2 }}
-        >
-          <span className="date">{item.date}</span>
-          <MinisterInfo
-            as={motion.div}
-            initial={{ scale: 1 }}
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ repeat: Infinity, duration: 2, delay: index * 0.3 }}
-        >
-            <span>{item.minister}</span>
-          </MinisterInfo>
-        </CardThursday>
-      ))}
+      <div className="content">
+          {schedule.map((item, index) => (
+            <CardThursday
+              key={item.date}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.15, type: "spring", stiffness: 120 }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="content-escala">
+                <p>
+                  <strong>Data: </strong>
+                  <span style={{ color: '#f59e0b' }}>{item.date}</span>
+                </p>
+                <p>
+                  <strong>Ministro: </strong>
+                  <MinisterInfo>
+                    {item.minister}
+                  </MinisterInfo>
+                </p>
+              </div>
+            </CardThursday>
+          ))}
+        </div>
     </ContainerThursday>
   );
 };

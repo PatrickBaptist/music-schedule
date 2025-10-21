@@ -2,46 +2,74 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 
 export const ContainerThursday = styled.div`
-  margin: 20px auto;
-  max-width: 420px;
-  padding: 20px;
-  border-radius: 16px;
-  background: #000;
-  color: #2ebef2;
-  text-align: center;
+  width: 100%;
+
+  .content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 12px 0;
+  }
 `;
 
 export const CardThursday = styled(motion.div)`
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  border-radius: 12px;
-  margin: 10px 0;
-  font-weight: bold;
-  border-bottom: 1px solid #2ebef2;
-  transition: all 0.2s ease;
+  justify-content: center;
+  margin: 8px 0;
 
-  .date {
-    font-size: 0.95rem;
-    color: #c4c4c4;
-    font-weight: 600;
+  .content-escala {
+    width: 90%;
+    max-width: 400px;
+    background-color: #161b22;
+    border-radius: 10px;
+    padding: 20px 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    color: #e0e0e0;
+
+    @media (max-width: 478px) {
+      max-width: 300px;
+      padding: 15px 20px;
+    }
   }
 
-  &:hover {
-    transform: translateY(-3px);
+  .content-escala p {
+    font-size: 16px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #333;
+    padding-bottom: 6px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .content-escala p:hover {
+    background-color: #f1803481;
+    border-radius: 5px;
+    padding: 8px;
+  }
+
+  .content-escala p:last-child {
+    border-bottom: none;
+  }
+
+  .content-escala strong {
+    color: #fff;
+    min-width: 90px;
+    text-align: left;
+  }
+
+  .content-escala span {
+    text-align: right;
+    flex: 1;
+    color: #e0e0e0;
   }
 `;
 
-export const MinisterInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  span {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #c4c4c4;
-  }
+export const MinisterInfo = styled.span`
+  display: inline-block;
+  color: #e0e0e0;
+  font-weight: 600;
 `;
-

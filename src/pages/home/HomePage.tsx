@@ -92,7 +92,7 @@ const HomePage: React.FC = () => {
               </div>
               <div className="coluna-2">
                   <div className='container-escala'>
-                    <h4>Escala de Quinta-Feira</h4>
+                    <h4>Escala de minístros (Quinta-Feira)</h4>
                     <div className='content'>
                       <div className='content-escala' style={{ backgroundColor: 'transparent' }}>
                         <ThursdaySchedule />
