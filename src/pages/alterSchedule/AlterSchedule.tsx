@@ -20,7 +20,9 @@ import useUsersContext from "../../context/hooks/useUsersContext";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const ScheduleForm: React.FC = () => {
-  const [month, setMonth] = useState<string>("01");
+  const [month, setMonth] = useState<string>(
+    (new Date().getMonth() + 1).toString().padStart(2, "0")
+  );
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [date, setDate] = useState("");
   const [músicos, setMúsicos] = useState<Musicos>({
