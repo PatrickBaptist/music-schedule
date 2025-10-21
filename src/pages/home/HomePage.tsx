@@ -77,6 +77,7 @@ const HomePage: React.FC = () => {
                       <p><strong>Batera: </strong>{nextSundaySchedule.músicos.batera || 'Não definido'}</p>
                       <p><strong>Bass: </strong>{nextSundaySchedule.músicos.bass || 'Não definido'}</p>
                       <p><strong>Guita: </strong>{nextSundaySchedule.músicos.guita || 'Não definido'}</p>
+                      <p><strong>Paleta de cores: </strong><span style={{ fontStyle: 'italic' }}>{nextSundaySchedule.músicos.outfitColor || 'Não definido'}</span></p>
                     </div>
                   ) : (
                     <p>Não há escala disponível</p>

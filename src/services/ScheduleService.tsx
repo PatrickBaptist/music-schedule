@@ -9,6 +9,7 @@ export interface Musicos {
   batera: string;
   bass: string;
   guita: string;
+  outfitColor?: string;
 }
 
 export interface SpecialSchedule {
@@ -22,6 +23,7 @@ export interface SpecialSchedule {
   batera: string;
   bass: string;
   guita: string;
+  outfitColor?: string;
 }
 
 interface PostSpecialSchedulesPayload {

@@ -31,6 +31,7 @@ const ScheduleForm: React.FC = () => {
     guita: "",
     vocal1: "",
     vocal2: "",
+    outfitColor: "",
   });
   const [sundays, setSundays] = useState<Date[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -113,6 +114,7 @@ const ScheduleForm: React.FC = () => {
     batera: "",
     bass: "",
     guita: "",
+    outfitColor: "",
   });
 
   // Buscar domingos do mês
@@ -160,6 +162,7 @@ const ScheduleForm: React.FC = () => {
         guita: "",
         vocal1: "",
         vocal2: "",
+        outfitColor: "",
       });
 
     setIsLoading(false);
@@ -197,6 +200,7 @@ const ScheduleForm: React.FC = () => {
         batera: "",
         bass: "",
         guita: "",
+        outfitColor: "",
       });
     } catch (err) {
       console.error(err);
@@ -422,6 +426,17 @@ const ScheduleForm: React.FC = () => {
                             </FormGroup>
                           );
                         })}
+                        <FormGroup>
+                          <DarkLabel>Cor da Roupa:</DarkLabel>
+                          <DarkInput
+                            type="text"
+                            value={músicos.outfitColor || ""}
+                            onChange={(e) =>
+                              setMúsicos((prev) => ({ ...prev, outfitColor: e.target.value }))
+                            }
+                            placeholder="Ex.: Preto e branco"
+                          />
+                        </FormGroup>
                         <div className="button-container">
                           <DarkButton type="submit">Salvar Escala</DarkButton>
                         </div>
@@ -522,6 +537,17 @@ const ScheduleForm: React.FC = () => {
                             </FormGroup>
                           );
                         })}
+                        <FormGroup>
+                          <DarkLabel>Cor da Roupa:</DarkLabel>
+                          <DarkInput
+                            type="text"
+                            value={specialMusicos.outfitColor || ""}
+                            onChange={(e) =>
+                              setSpecialMusicos((prev) => ({ ...prev, outfitColor: e.target.value }))
+                            }
+                            placeholder="Ex.: Preto e branco"
+                          />
+                        </FormGroup>
                         <div className="button-container">
                           <DarkButton
                             type="button"

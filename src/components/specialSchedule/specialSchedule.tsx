@@ -19,6 +19,7 @@ interface SpecialSchedulesProps {
     batera: string;
     bass: string;
     guita: string;
+    outfitColor?: string
   }[];
   loading?: boolean;
 }
@@ -62,6 +63,7 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading 
               <p><strong>Batera:</strong> {escala.batera || "Não definido"}</p>
               <p><strong>Bass:</strong> {escala.bass || "Não definido"}</p>
               <p><strong>Guita:</strong> {escala.guita || "Não definido"}</p>
+              <p><strong>Paleta de cores:</strong> <span style={{ fontStyle: 'italic' }}>{escala.outfitColor || "Não definido"}</span></p>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 className='btns'
