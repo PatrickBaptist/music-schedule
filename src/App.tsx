@@ -66,7 +66,7 @@ const App: React.FC = () => {
           label: "Atualizar",
           onClick: handleUpdate,
         },
-        duration: 10000,
+        duration: 100000,
         richColors: true,
         position: "bottom-center",
         id: "update-toast",
