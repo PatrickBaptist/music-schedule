@@ -55,6 +55,7 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
       await addMusicLink({
         name: name.trim(),
         link: link.trim() || "",
+        worshipMoment: "",
         letter: letter.trim() || "",
         spotify: spotify.trim() || "",
         cifra: cifra.trim() || "",
