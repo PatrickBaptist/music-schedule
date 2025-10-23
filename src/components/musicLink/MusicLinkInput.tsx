@@ -22,6 +22,15 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     'F', 'Fm', 'F#', 'F#m', 'G', 'Gm', 'G#', 'G#m', 'A', 'Am',
     'A#', 'A#m', 'B', 'Bm'
   ];
+
+  const worshipMoments = [
+    "Momento de Louvor",
+    "Dízimos e Ofertas",
+    "Batismo",
+    "Ceia",
+    "Final do Culto",
+    "Culto de Quinta",
+  ];
   
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
@@ -29,6 +38,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
   const [description, setDescription] = useState('');
+  const [worshipMoment, setWorshipMoment] = useState('');
   const [, setOrder] = useState(1);
   const { addMusicLink } = useMusicLinksContext();
   const { musicLinks, getAllMusicLinksFull } = useAllMusicHistoryContext();
@@ -38,7 +48,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [ministerName, setMinisterName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [suggestions, setSuggestions] = useState<AllMusicLink[]>([]);
-
+  const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
+  const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
 
   useEffect(() => {
     nameInputRef.current?.focus();
@@ -49,6 +60,12 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   }, [getAllMusicLinksFull]);
 
   const handleAddLink = async () => {
+
+    if (!worshipMoment.trim()) {
+      toast.error("O momento do louvor é obrigatório!");
+      return;
+    }
+
     if (!name.trim()) {
       toast.error("O nome da música é obrigatório!");
       return;
@@ -67,6 +84,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     await addMusicLink({ 
       name: name.trim(),
       link: link.trim() || "",
+      worshipMoment: worshipMoment.trim(),
       letter: letter.trim() || "",
       spotify: spotify.trim() || "",
       cifra: cifra.trim() || "",
@@ -76,6 +94,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
 
     setIsModalOpen(false);
     setName('');
+    setWorshipMoment('');
     setLink('');
     setLetter('');
     setSpotify('');
@@ -121,23 +140,36 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
 
   const handleSelectSuggestion = async (music: AllMusicLink) => {
     setSuggestions([]);
-    setIsModalOpen(false);
+    setSelectedMusic(music);
+    setWorshipMomentModalOpen(true);
+  };
+
+  const confirmAddWithMoment = async () => {
+    if (!selectedMusic || !worshipMoment.trim()) {
+      toast.error("Selecione o momento do louvor antes de continuar!");
+      return;
+    }
 
     const toastId = toast.loading("Adicionando música...");
 
     try {
       await addMusicLink({
-        id: music.id,
-        name: music.name.trim(),
-        link: music.link || "",
-        letter: music.letter || "",
-        spotify: music.spotify || "",
-        cifra: music.cifra || "",
-        description: music.description || "",
-        ministeredBy: music.minister || ""
+        id: selectedMusic.id,
+        name: selectedMusic.name.trim(),
+        worshipMoment: worshipMoment.trim(),
+        link: selectedMusic.link || "",
+        letter: selectedMusic.letter || "",
+        spotify: selectedMusic.spotify || "",
+        cifra: selectedMusic.cifra || "",
+        description: selectedMusic.description || "",
+        ministeredBy: selectedMusic.minister || ""
       });
 
-      toast.success(`"${music.name}" adicionada com sucesso!`, { id: toastId });
+      toast.success(`"${selectedMusic.name}" adicionada com sucesso!`, { id: toastId });
+      setWorshipMomentModalOpen(false);
+      setSelectedMusic(null);
+      setWorshipMoment('');
+      setIsModalOpen(false);
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error("Erro ao adicionar: " + err.message, { id: toastId });
@@ -167,7 +199,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
               <div className="suggestion-content">
                 <span className="music-name">{s.name}</span>
                 <span className="music-minister" style={{ marginLeft: 8, fontSize: 12, color: "#aaa" }}>
-                  Ministro: {s.minister}
+                  Min.: {s.minister}
                 </span>
                 <span className="add-label" style={{ marginLeft: "auto" }}>
                   Adicionar <FaPlus size={12} />
@@ -177,6 +209,22 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
           ))}
         </SuggestionsList>
       )}
+      <SelectContainer>
+        <label htmlFor="worshipMoment">Momento do Louvor</label>
+        <select
+          id="worshipMoment"
+          value={worshipMoment}
+          onChange={(e) => setWorshipMoment(e.target.value)}
+          onKeyDown={handleKeyPress}
+          >
+          <option value="">Selecione o momento</option>
+          {worshipMoments.map((moment) => (
+            <option key={moment} value={moment}>
+              {moment}
+            </option>
+          ))}
+        </select>
+      </SelectContainer>
       <input
         type="text"
         value={link}
@@ -264,6 +312,39 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
             <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
               Cancelar
             </Button>
+          </InputContainer>
+        </div>
+      )}
+      {worshipMomentModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <InputContainer style={{ backgroundColor: '#fff', padding: 24, borderRadius: 8 }}>
+            <h3>Selecione o momento do louvor</h3>
+            <SelectContainer>
+              <select
+                value={worshipMoment}
+                onChange={(e) => setWorshipMoment(e.target.value)}
+              >
+                <option value="">Selecione o momento</option>
+                {worshipMoments.map((moment) => (
+                  <option key={moment} value={moment}>
+                    {moment}
+                  </option>
+                ))}
+              </select>
+            </SelectContainer>
+
+            <div style={{ marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <Button onClick={confirmAddWithMoment}>Confirmar</Button>
+              <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+                Cancelar
+              </Button>
+            </div>
           </InputContainer>
         </div>
       )}

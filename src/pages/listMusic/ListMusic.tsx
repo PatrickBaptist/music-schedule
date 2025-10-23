@@ -13,11 +13,22 @@ import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { useScroll } from "../../context/hooks/useScroll";
 import { FaEdit, FaPlus, FaTrash, FaYoutube } from "react-icons/fa";
+import { AllMusicLink } from "../../services/AllMusicHistory";
+import { InputContainer } from "../../components/allMusicLink/AllMusicLinkInputStyle";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
   'F', 'Fm', 'F#', 'F#m', 'G', 'Gm', 'G#', 'G#m', 'A', 'Am',
   'A#', 'A#m', 'B', 'Bm'
+];
+
+const worshipMoments = [
+  "Momento de Louvor",
+  "Dízimos e Ofertas",
+  "Batismo",
+  "Ceia",
+  "Final do Culto",
+  "Culto de Quinta",
 ];
 
 const ListMusic: React.FC = () => {
@@ -31,8 +42,12 @@ const ListMusic: React.FC = () => {
   const { addMusicLink } = useMusicLinksContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { scrollToTop } = useScroll();
+  const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
+  const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
+  const [selectedWorshipMoment, setSelectedWorshipMoment] = useState("");
 
   const [name, setName] = useState('');
+  const [worshipMoment, setWorshipMoment] = useState('');
   const [link, setLink] = useState('');
   const [letter, setLetter] = useState('');
   const [spotify, setSpotify] = useState('');
@@ -83,26 +98,38 @@ const ListMusic: React.FC = () => {
       return;
     }
     
+    setSelectedMusic(music);
+    setWorshipMomentModalOpen(true);
+
+  };
+
+  const confirmAddWithMoment = async () => {
+    if (!selectedMusic || !selectedWorshipMoment.trim()) {
+      toast.error("Selecione o momento do louvor antes de continuar!");
+      return;
+    }
+
+    const toastId = toast.loading("Adicionando à lista de domingo...");
+
     try {
-      const toastId = toast.loading("Adicionando à lista de domingo...");
       await addMusicLink({
-        id: music.id,
-        name: music.name,
-        link: music.link || "",
-        cifra: music.cifra || "",
-        letter: music.letter  || "",
-        spotify: music.spotify || "",
-        description: music.description || "",
-        ministeredBy: music.minister
+        id: selectedMusic.id,
+        name: selectedMusic.name,
+        link: selectedMusic.link || "",
+        worshipMoment: selectedWorshipMoment.trim(),
+        cifra: selectedMusic.cifra || "",
+        letter: selectedMusic.letter || "",
+        spotify: selectedMusic.spotify || "",
+        description: selectedMusic.description || "",
+        ministeredBy: selectedMusic.minister
       });
 
       toast.success("Música adicionada ao domingo com sucesso!", { id: toastId });
+      setWorshipMomentModalOpen(false);
+      setSelectedWorshipMoment("");
+      setSelectedMusic(null);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error("Erro ao adicionar: " + err.message);
-      } else {
-        toast.error("Erro desconhecido ao adicionar");
-      }
+      toast.error("Erro ao adicionar música!", { id: toastId });
     }
   };
 
@@ -111,6 +138,7 @@ const ListMusic: React.FC = () => {
     if (!musicLink) return;
 
       setName(musicLink.name);
+      setWorshipMoment(musicLink.worshipMoment);
       setLink(musicLink.link || '');
       setLetter(musicLink.letter || '');
       setSpotify(musicLink.spotify || '');
@@ -124,7 +152,7 @@ const ListMusic: React.FC = () => {
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
-      const updatedLink = { name, link, letter, spotify, cifra, minister };
+      const updatedLink = { name, link, worshipMoment, letter, spotify, cifra, minister };
       setIsEditing(false);
 
       try {
@@ -415,6 +443,39 @@ const ListMusic: React.FC = () => {
                   />
               </ContentVd>
             </ContainerVd>
+          )}
+          {worshipMomentModalOpen && (
+            <div style={{
+              position: 'fixed',
+              top: 0, left: 0, width: '100%', height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 1000
+            }}>
+              <InputContainer style={{ backgroundColor: '#fff', padding: 24, borderRadius: 8 }}>
+                <h3>Selecione o momento do louvor</h3>
+                <SelectContainer>
+                  <select
+                    value={selectedWorshipMoment}
+                    onChange={(e) => setSelectedWorshipMoment(e.target.value)}
+                  >
+                    <option value="">Selecione o momento</option>
+                    {worshipMoments.map((moment) => (
+                      <option key={moment} value={moment}>
+                        {moment}
+                      </option>
+                    ))}
+                  </select>
+                </SelectContainer>
+
+                <div style={{ marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                  <Button onClick={confirmAddWithMoment}>Confirmar</Button>
+                  <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+                    Cancelar
+                  </Button>
+                </div>
+              </InputContainer>
+            </div>
           )}
         </PageWrapper>
       </Main>

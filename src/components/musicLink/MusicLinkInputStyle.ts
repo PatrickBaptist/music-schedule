@@ -36,7 +36,7 @@ export const InputContainer = styled.div`
 
 export const SuggestionsList = styled.ul`
   background: #fff;
-  width: 100%;
+  width: 360px;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-top: 4px;
@@ -45,6 +45,7 @@ export const SuggestionsList = styled.ul`
   max-height: 200px;
   overflow-y: auto;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 
   li {
     padding: 10px;

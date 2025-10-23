@@ -10,6 +10,7 @@ import { FirestoreTimestamp } from "../helpers/helpers";
 export interface AllMusicLink {
   id: string;
   name: string;
+  worshipMoment: string;
   link?: string | null;
   letter?: string | null;
   spotify?: string | null;

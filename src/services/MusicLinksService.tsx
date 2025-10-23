@@ -12,6 +12,7 @@ export interface MusicLink {
   id?: string;
   link: string | null;
   name: string;
+  worshipMoment: string;
   letter: string | null;
   spotify: string | null;
   cifra: string | null;

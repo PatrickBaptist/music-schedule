@@ -9,6 +9,15 @@ export const ListContainer = styled.ul`
   padding: 0 8px;
   box-sizing: border-box;
 
+  .music-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
   .delete-edit {
     display: inline-flex;
   }
@@ -35,17 +44,18 @@ export const ListContainer = styled.ul`
     .card {
       width: 100%;
       min-width: 100px;
-      height: 80px;
+      height: auto;
       background-color: #161b22;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 10px;
+      padding: 25px;
       border-radius: 12px;
       box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
       position: relative;
       gap: 12px;
+      cursor: pointer;
 
       &:hover {
         transform: translateY(-1px);
@@ -197,13 +207,9 @@ export const ListContainer = styled.ul`
   }
 
   .toggle-btn {
-    background-color: #6c757d !important;
+    background-color: transparent !important;
     color: white !important;
     margin-left: 8px;
-  }
-
-  .toggle-btn:hover {
-    background-color: #5a6268 !important;
   }
 
   .edit-form {
@@ -388,10 +394,11 @@ export const CloseButton = styled.button`
 `;
 
 export const SelectContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 
   label {
     font-size: 14px;
@@ -399,7 +406,7 @@ export const SelectContainer = styled.div`
   }
 
   select {
-    width: 350px;
+    width: 100%;
     height: 35px;
     padding: 6px;
     border: 1px solid rgba(0, 0, 0, 0.1);
