@@ -57,6 +57,19 @@ const ListMusic: React.FC = () => {
   const [ isEditing, setIsEditing ] = useState<boolean>(false);
   const [ editIndex, setEditIndex ] = useState<string | null>(null);
   const [ loadingCards, setLoadingCards ] = useState<{ [key: string]: boolean }>({});
+  const [filteredMusicLinks, setFilteredMusicLinks] = useState<AllMusicLink[]>([]);
+
+  const normalizeString = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+  };
+
+  useEffect(() => {
+    setFilteredMusicLinks(musicLinks);
+  }, [musicLinks]);
 
   useEffect(() => {
     const fetchMusic = async () => {
@@ -75,8 +88,9 @@ const ListMusic: React.FC = () => {
 
 
   const handleSearch = (term: string) => {
+    const normalized = normalizeString(term);
     setSearchTerm(term);
-    getAllMusicLinks({ page: 1, limit, search: term.toLowerCase() });
+    getAllMusicLinks({ page: 1, limit, search: normalized });
   };
 
   const handleOpenVideo = (url: string) => {
@@ -217,11 +231,6 @@ const ListMusic: React.FC = () => {
     return new Date(date).getTime();
   };
 
-  const sortedMusicLinks = [...musicLinks].sort((a, b) => 
-    getTime(b.createdAt) - getTime(a.createdAt)
-  );
-
-
   return (
     <Container>
 
@@ -327,14 +336,12 @@ const ListMusic: React.FC = () => {
                   </p>
                 )}
                 <AnimatePresence mode="wait">
-                  {sortedMusicLinks.map((music) => (
+                  {filteredMusicLinks
+                    .sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt))
+                    .map((music) => (
                     <motion.div
                       key={music.id}
                       className="container-card-music"
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -200 }}
-                      transition={{ duration: 0.4 }}
                     >
                       {loadingCards[music.id!] ? (
                         <p style={{ color: '#fff' }}>Aguarde..</p>

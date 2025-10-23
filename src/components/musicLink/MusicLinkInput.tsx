@@ -32,6 +32,14 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     "Culto de Quinta",
   ];
   
+  const normalizeString = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+  };
+
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
   const [letter, setLetter] = useState('');
@@ -129,8 +137,14 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       return;
     }
 
+    const normalizedValue = normalizeString(value);
+    const searchWords = normalizedValue.split(" ").filter(Boolean);
+
     const filtered = musicLinks
-      .filter(m => m.name.toLowerCase().includes(value.toLowerCase()))
+      .filter(m => {
+        const normalizedName = normalizeString(m.name);
+        return searchWords.every(word => normalizedName.includes(word));
+      })
       .slice(0, 5);
 
     setSuggestions(filtered);
