@@ -221,7 +221,7 @@ const MusicLinkList: React.FC = () => {
       <AnimatePresence>
         {isLoading ? (
           <LoadingScreen />
-        ) : (
+        ) : musicLinks && musicLinks.length > 0 ? (
           worshipMoments.map((moment) => {
             const musicInMoment = musicLinks
               .filter((link) => link.worshipMoment === moment)
@@ -597,6 +597,8 @@ const MusicLinkList: React.FC = () => {
               </div>
             );
           })
+        ) : (
+          <p>Nenhuma canção definida para esta semana</p>
         )}
       </AnimatePresence>
     </ListContainer>
