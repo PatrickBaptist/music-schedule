@@ -42,8 +42,7 @@ const MePage: React.FC = () => {
   }, [user?.roles, rolePriority]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center", justifyContent: "center" }}
-    >
+    <div style={{ marginTop: '150px' }}>
       {isLoading ? (
         <LoadingScreen />
       ) : (

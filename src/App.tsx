@@ -15,21 +15,21 @@ const FooterComponent = memo(Footer);
 const AppContainer = styled.div`
   height: 100dvh;
   width: 100%;
-  inset: 0;
-  position: fixed;
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
 `;
 
 const FixedHeader = styled.header`
-  position: static;
+  width: 100%;
+  position: fixed;
   top: 0;
   z-index: 9999;
 `;
 
 const FixedFooter = styled.footer`
-  position: static;
+  width: 100%;
+  position: fixed;
   bottom: 0;
   z-index: 9999;
 `;
@@ -38,6 +38,9 @@ const ContainerRoutes = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+
+  margin-top: 70px;
+  margin-bottom: 90px;
 
   &::-webkit-scrollbar {
     width: 5px;
