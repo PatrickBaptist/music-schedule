@@ -14,19 +14,22 @@ const FooterComponent = memo(Footer);
 
 const AppContainer = styled.div`
   height: 100dvh;
+  width: 100%;
+  inset: 0;
+  position: fixed;
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
 `;
 
 const FixedHeader = styled.header`
-  position: sticky;
+  position: static;
   top: 0;
   z-index: 9999;
 `;
 
 const FixedFooter = styled.footer`
-  position: sticky;
+  position: static;
   bottom: 0;
   z-index: 9999;
 `;
