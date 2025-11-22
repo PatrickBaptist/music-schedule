@@ -12,35 +12,35 @@ import { useUserPresence } from './context/hooks/useUserPresente';
 const HeaderComponent = memo(Header);
 const FooterComponent = memo(Footer);
 
-const AppContainer = styled.div`
+const AppContainer = styled.div<{ $hideLayout: boolean }>`
   height: 100dvh;
   width: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: ${props => props.$hideLayout ? '1fr' : '70px 1fr 90px'};
   overflow: hidden;
 `;
 
-const FixedHeader = styled.header`
-  width: 100%;
-  position: fixed;
+const HeaderSection = styled.header`
+  grid-row: 1;
+  z-index: 9999;
+  position: sticky;
   top: 0;
-  z-index: 9999;
 `;
 
-const FixedFooter = styled.footer`
-  width: 100%;
-  position: fixed;
+const FooterSection = styled.footer`
+  grid-row: 3;
+  z-index: 9999;
+  position: sticky;
   bottom: 0;
-  z-index: 9999;
 `;
 
-const ContainerRoutes = styled.div`
+const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
+  grid-row: ${props => props.$hideLayout ? '1' : '2'};
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-
-  margin-top: 70px;
-  margin-bottom: 90px;
+  overscroll-behavior: contain;
+  height: 100%;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -62,7 +62,7 @@ const App: React.FC = () => {
   useUserPresence();
 
   const handleUpdate = () => {
-    window.location.reload(); // recarrega para pegar nova versão
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -87,21 +87,24 @@ const App: React.FC = () => {
   const hideLayout = ["/login", "/register"].includes(location.pathname);
 
   return (
-    <AppContainer>
+    <AppContainer $hideLayout={hideLayout}>
       {!hideLayout && (
-        <FixedHeader>
+        <HeaderSection>
           <HeaderComponent />
-        </FixedHeader>
+        </HeaderSection>
       )}
 
-      <ContainerRoutes ref={routesRef}>
+      <ContainerRoutes 
+        ref={routesRef} 
+        $hideLayout={hideLayout}
+      >
         <MainRoutes />
       </ContainerRoutes>
 
       {!hideLayout && (
-        <FixedFooter>
+        <FooterSection>
           <FooterComponent />
-        </FixedFooter>
+        </FooterSection>
       )}
     </AppContainer>
   );
