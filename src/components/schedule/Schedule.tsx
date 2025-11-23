@@ -7,18 +7,17 @@ import PageWrapper from '../pageWrapper/pageWrapper';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
-  const currentMonth = today.getMonth() + 1;
-  const year = today.getFullYear();
 
-  const lastDayOfMonth = new Date(year, currentMonth, 0).getDate();
-  const daysLeftInMonth = lastDayOfMonth - today.getDate();
+  const nextSunday = new Date(today);
+  nextSunday.setDate(today.getDate() + ((7 - today.getDay()) % 7 || 7));
 
-  let targetMonth = daysLeftInMonth <= 7 ? currentMonth + 1 : currentMonth;
-  const targetYear = targetMonth > 12 ? year + 1 : year;
+  const nextSundayMonth = nextSunday.getMonth() + 1;
+  const nextSundayYear = nextSunday.getFullYear();
 
-  if (targetMonth > 12) targetMonth = 1;
-
-  return { targetMonth, targetYear };
+  return {
+    targetMonth: nextSundayMonth,
+    targetYear: nextSundayYear
+  };
 };
 
 const getFormattedMonth = (): string => {
@@ -56,7 +55,7 @@ const Schedule: React.FC = () => {
       setLoading(true);
 
       try {
-        await getScheduleForMonth("11-2025");
+        await getScheduleForMonth(currentMonth);
       } catch (err: unknown) {
         if (err instanceof Error) {
           if (!err.message.includes("404")) {
@@ -72,9 +71,6 @@ const Schedule: React.FC = () => {
 
     fetch();
   }, [getScheduleForMonth, currentMonth]);
-
-  console.log('escala do mÊs', currentMonth);
-
 
   const isNextSunday = (dateString: string) => {
     if (!nextSundaySchedule) return false;
