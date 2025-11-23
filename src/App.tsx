@@ -15,6 +15,8 @@ const FooterComponent = memo(Footer);
 const AppContainer = styled.div<{ $hideLayout: boolean }>`
   height: 100dvh;
   width: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 `;
 
@@ -23,6 +25,7 @@ const FixedHeader = styled.header`
   position: fixed;
   top: 0;
   z-index: 9999;
+  height: 70px;
 `;
 
 const FixedFooter = styled.footer`
@@ -30,14 +33,15 @@ const FixedFooter = styled.footer`
   position: fixed;
   bottom: 0;
   z-index: 9999;
+  height: 90px;
 `;
 
 const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
-  height: ${({ $hideLayout }) => $hideLayout ? '100dvh' : 'calc(100dvh - 150px)'};
-  width: 100%;
   position: fixed;
   top: ${({ $hideLayout }) => $hideLayout ? '0' : '70px'};
+  bottom: ${({ $hideLayout }) => $hideLayout ? '0' : '90px'};
   left: 0;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;

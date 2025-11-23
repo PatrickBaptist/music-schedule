@@ -56,7 +56,7 @@ const Schedule: React.FC = () => {
       setLoading(true);
 
       try {
-        await getScheduleForMonth(currentMonth);
+        await getScheduleForMonth("11-2025");
       } catch (err: unknown) {
         if (err instanceof Error) {
           if (!err.message.includes("404")) {
@@ -72,6 +72,8 @@ const Schedule: React.FC = () => {
 
     fetch();
   }, [getScheduleForMonth, currentMonth]);
+
+  console.log('escala do mÊs', currentMonth);
 
 
   const isNextSunday = (dateString: string) => {
