@@ -15,32 +15,33 @@ const FooterComponent = memo(Footer);
 const AppContainer = styled.div<{ $hideLayout: boolean }>`
   height: 100dvh;
   width: 100%;
-  display: grid;
-  grid-template-rows: ${props => props.$hideLayout ? '1fr' : '70px 1fr 90px'};
   overflow: hidden;
 `;
 
-const HeaderSection = styled.header`
-  grid-row: 1;
-  z-index: 9999;
-  position: sticky;
+const FixedHeader = styled.header`
+  width: 100%;
+  position: fixed;
   top: 0;
+  z-index: 9999;
 `;
 
-const FooterSection = styled.footer`
-  grid-row: 3;
-  z-index: 9999;
-  position: sticky;
+const FixedFooter = styled.footer`
+  width: 100%;
+  position: fixed;
   bottom: 0;
+  z-index: 9999;
 `;
 
 const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
-  grid-row: ${props => props.$hideLayout ? '1' : '2'};
+  height: ${({ $hideLayout }) => $hideLayout ? '100dvh' : 'calc(100dvh - 150px)'};
+  width: 100%;
+  position: fixed;
+  top: ${({ $hideLayout }) => $hideLayout ? '0' : '70px'};
+  left: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  height: 100%;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -89,9 +90,9 @@ const App: React.FC = () => {
   return (
     <AppContainer $hideLayout={hideLayout}>
       {!hideLayout && (
-        <HeaderSection>
+        <FixedHeader>
           <HeaderComponent />
-        </HeaderSection>
+        </FixedHeader>
       )}
 
       <ContainerRoutes 
@@ -102,9 +103,9 @@ const App: React.FC = () => {
       </ContainerRoutes>
 
       {!hideLayout && (
-        <FooterSection>
+        <FixedFooter>
           <FooterComponent />
-        </FooterSection>
+        </FixedFooter>
       )}
     </AppContainer>
   );
