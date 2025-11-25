@@ -210,24 +210,21 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         onKeyDown={handleKeyPress}
       />
 
-      {suggestionsLoading && (
-        <div style={{ margin: 20 }}>
-          <LoadingScreen />
-        </div>
-      )}
-
-      { name.trim() !== "" && (
+      {name.trim() !== "" && (
         <SuggestionsList>
-
-        {!suggestionsLoading && suggestions.length > 0 ? (
+        {suggestionsLoading ? (
+          <div style={{ margin: 20 }}>
+            <LoadingScreen />
+          </div>
+        ) : suggestions.length > 0 ? (
           suggestions.map((s) => (
-            <li
-              key={s.id}
-              onClick={() => handleSelectSuggestion(s)}
-            >
+            <li key={s.id} onClick={() => handleSelectSuggestion(s)}>
               <div className="suggestion-content">
                 <span className="music-name">{s.name}</span>
-                <span className="music-minister" style={{ marginLeft: 8, fontSize: 12, color: "#aaa" }}>
+                <span
+                  className="music-minister"
+                  style={{ marginLeft: 8, fontSize: 12, color: "#aaa" }}
+                >
                   Min.: {s.minister}
                 </span>
                 <span className="add-label" style={{ marginLeft: "auto" }}>
@@ -239,8 +236,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         ) : (
           <div style={{ padding: 10 }}>Nenhuma sugestão encontrada</div>
         )}
-        </SuggestionsList>
-      )}
+      </SuggestionsList>
+    )}
         
       <SelectContainer>
         <label htmlFor="worshipMoment">Momento do Louvor</label>
