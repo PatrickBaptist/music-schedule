@@ -63,7 +63,7 @@ export const Input = styled.input`
   padding: 12px 14px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   box-sizing: border-box;
 
@@ -79,7 +79,7 @@ export const StyledInputMask = styled(ReactInputMask)`
   padding: 12px 14px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
