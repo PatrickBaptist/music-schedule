@@ -49,12 +49,13 @@ export const Title = styled.h2`
 export const FieldContainer = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: center;
+  justify-content: center;
+  flex-direction: column;
   gap: 5px;
 `;
 
 export const Label = styled.label`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
 `;
 
