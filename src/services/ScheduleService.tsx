@@ -1,4 +1,6 @@
+import { doc, onSnapshot } from 'firebase/firestore';
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { db } from '../firebaseConfig';
 
 export interface Musicos {
   date?: string;
@@ -45,7 +47,7 @@ interface UpsertScheduleParams {
 export interface ScheduleContextProps {
   nextSundaySchedule: Schedule | null;
   monthlySchedule: Schedule[] | null;
-  getScheduleForMonth: (monthId: string) => Promise<void>;
+  getScheduleForMonth: (monthId: string) => void;
   saveOrUpdateSchedule: (data: UpsertScheduleParams) => Promise<void>;
 
   specialSchedules: SpecialSchedule[] | null;
@@ -71,41 +73,86 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
   };
 
-  const fetchNextSundaySchedule = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_URL}/schedule/next-sunday`);
-      
-      if (!res.ok) throw new Error('Erro ao buscar escala do próximo domingo');
-      const data = await res.json();
+  const fetchNextSundaySchedule = useCallback(() => {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = (7 - day) % 7;
 
-      const { date, ...músicos } = data;
-      setNextSundaySchedule({ date, músicos });
+    const nextSunday = new Date(today);
+    nextSunday.setDate(today.getDate() + diff);
+    nextSunday.setHours(0, 0, 0, 0);
 
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  }, [API_URL]);
+    const nextSundayISO = nextSunday.toISOString().split("T")[0];
 
-  const getScheduleForMonth = useCallback(async (monthId: string) => {
-      try {
-        const res = await fetch(`${API_URL}/schedule/${monthId}`);
-        if (!res.ok) {
-          if (res.status === 404) {
-            setMonthlySchedule([]);
-            return;
-          }
-          throw new Error('Erro ao buscar escala do mês');
-        }
-        const data = await res.json();
-        setMonthlySchedule(data.sundays || []);
-      } catch (err) {
-        console.error(err);
-        throw err;
+    const month = String(nextSunday.getMonth() + 1).padStart(2, "0");
+    const year = nextSunday.getFullYear();
+    const monthId = `${month}-${year}`;
+
+    const docRef = doc(db, "schedules", monthId);
+
+    const unsubscribe = onSnapshot(docRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        setNextSundaySchedule(null);
+        return;
       }
+
+      const data = snapshot.data();
+      const sundays = Array.isArray(data?.sundays) ? data.sundays : [];
+
+    const match = sundays.find((s) => {
+      const firebaseDate = new Date(s.date).toISOString().split("T")[0];
+      return firebaseDate === nextSundayISO;
+    });
+
+    if (!match) {
+      setNextSundaySchedule(null);
+      return;
+    }
+
+    setNextSundaySchedule({
+      date: nextSundayISO,
+      músicos: match.músicos,
+    });
+  });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsub = fetchNextSundaySchedule();
+    return () => unsub && unsub();
+  }, [fetchNextSundaySchedule]);
+
+  const getScheduleForMonth = useCallback((monthId: string) => {
+    const docRef = doc(db, "schedules", monthId);
+
+    const unsubscribe = onSnapshot(docRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        setMonthlySchedule([]);
+        return;
+      }
+
+      const data = snapshot.data();
+      const sundays = Array.isArray(data?.sundays) ? data.sundays : [];
+
+      setMonthlySchedule(sundays);
     },
-    [API_URL]
+    (error) => {
+      console.error("Erro ao buscar escala do mês:", error);
+      setMonthlySchedule([]);
+    }
   );
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+    const formatted = `${String(month).padStart(2, "0")}-${year}`;
+
+    getScheduleForMonth(formatted);
+  }, [getScheduleForMonth]);
 
   // Criar ou atualizar uma escala
   const saveOrUpdateSchedule = async (schedule: UpsertScheduleParams) => {
@@ -117,17 +164,11 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
       });
 
       if (!res.ok) throw new Error('Erro ao salvar escala');
-      await fetchNextSundaySchedule(); // Atualiza a escala do próximo domingo se necessário
-      await getScheduleForMonth(`${schedule.month}-${schedule.year}`); // Atualiza mês
     } catch (err) {
       console.error(err);
       throw err;
     }
   };
-
-  useEffect(() => {
-    fetchNextSundaySchedule();
-  }, [fetchNextSundaySchedule]);
 
   // Escalas especiais
   const getSpecialSchedules = useCallback(async () => {

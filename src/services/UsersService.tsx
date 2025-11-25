@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from "react";
-import { doc, updateDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp, onSnapshot, collection } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 export interface User {
@@ -17,7 +17,7 @@ export interface User {
 
 export interface UsersContextProps {
   users: User[];
-  fetchUsers: () => Promise<void>;
+  fetchUsers: () => void;
   getUserById: (id: string) => Promise<User | null>;
   updateUser: (id: string, updated: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
@@ -40,21 +40,25 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
   };
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_URL}/users`, {
-        headers: getHeaders(),
-      });
+  const fetchUsers = useCallback(() => {
+    const ref = collection(db, "users");
 
-      if (!res.ok) throw new Error("Erro ao buscar usuários");
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      const list = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      })) as User[];
 
-      const data: User[] = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  }, [API_URL]);
+      setUsers(list);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsub = fetchUsers();
+    return () => unsub();
+  }, [fetchUsers]);
 
   const getUserById = async (id: string) => {
     try {
@@ -78,7 +82,6 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         body: JSON.stringify(updated),
       });
       if (!res.ok) throw new Error("Erro ao atualizar usuário");
-      await fetchUsers();
     } catch (err) {
       console.error(err);
       throw err;
@@ -92,16 +95,11 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         headers: getHeaders(),
       });
       if (!res.ok) throw new Error("Erro ao deletar usuário");
-      await fetchUsers();
     } catch (err) {
       console.error(err);
       throw err;
     }
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
 
   const setUserOnlineStatus = async (id: string, isOnline: boolean) => {
     try {
@@ -124,10 +122,6 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     });
     return unsubscribe;
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
 
   return (
     <UsersService.Provider value={{ users, fetchUsers, getUserById, updateUser, deleteUser, setUserOnlineStatus, listenUserStatus }}>
