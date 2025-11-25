@@ -10,6 +10,7 @@ import useUsersContext from '../../context/hooks/useUsersContext';
 import useAllMusicHistoryContext from '../../context/hooks/useAllMusicHistoryContext';
 import { FaPlus } from 'react-icons/fa';
 import { AllMusicLink } from '../../services/AllMusicHistory';
+import LoadingScreen from '../loading/LoadingScreen';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,7 +56,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [ministerModalOpen, setMinisterModalOpen] = useState(false);
   const [ministerName, setMinisterName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const [suggestions, setSuggestions] = useState<AllMusicLink[]>([]);
+  const [suggestions, setSuggestions] = useState<AllMusicLink[]>([])
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
 
@@ -134,8 +136,11 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
 
     if (value.trim() === "") {
       setSuggestions([]);
+      setSuggestionsLoading(false);
       return;
     }
+
+    setSuggestionsLoading(true);
 
     const normalizedValue = normalizeString(value);
     const searchWords = normalizedValue.split(" ").filter(Boolean);
@@ -148,6 +153,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       .slice(0, 5);
 
     setSuggestions(filtered);
+    setSuggestionsLoading(false);
   };
 
   const ministerUsers = users.filter((u) => u.roles?.includes(UserRole.Minister) || u.roles?.includes(UserRole.Guest));
@@ -203,9 +209,18 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         ref={nameInputRef}
         onKeyDown={handleKeyPress}
       />
-      {suggestions.length > 0 && (
+
+      {suggestionsLoading && (
+        <div style={{ margin: 20 }}>
+          <LoadingScreen />
+        </div>
+      )}
+
+      { name.trim() !== "" && (
         <SuggestionsList>
-          {suggestions.map((s) => (
+
+        {!suggestionsLoading && suggestions.length > 0 ? (
+          suggestions.map((s) => (
             <li
               key={s.id}
               onClick={() => handleSelectSuggestion(s)}
@@ -220,9 +235,13 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
                 </span>
               </div>
             </li>
-          ))}
+          ))
+        ) : (
+          <div style={{ padding: 10 }}>Nenhuma sugestão encontrada</div>
+        )}
         </SuggestionsList>
       )}
+        
       <SelectContainer>
         <label htmlFor="worshipMoment">Momento do Louvor</label>
         <select
