@@ -10,8 +10,7 @@ export const ContainerRegiter = styled.div`
 `;
 
 export const FormWrapper = styled.form`
-  width: 90vw;
-  height: 100%;
+  width: 50vw;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   display: flex;
@@ -29,6 +28,10 @@ export const FormWrapper = styled.form`
     align-items: center; 
     justify-content: flex-start; 
     gap: 5px; }
+
+    @media (max-width: 768px) {
+      width: 90vw;
+    }
 `;
 
 export const Logo = styled.img`
