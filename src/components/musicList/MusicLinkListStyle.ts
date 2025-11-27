@@ -345,6 +345,7 @@ export const ContainerVd = styled.div`
   top: 0;
   left: 0;
   z-index: 2024;
+  background-color: rgba(0, 0, 0, 0.8);
 `;
 
 export const ContentVd = styled.div`

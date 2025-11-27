@@ -10,7 +10,6 @@ import {
 } from "./MusicLinkListStyle";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
-import LoadingScreen from "../loading/LoadingScreen";
 import {
   FaEdit,
   FaEllipsisV,
@@ -67,7 +66,6 @@ const MusicLinkList: React.FC = () => {
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [loadingCards, setLoadingCards] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -93,13 +91,10 @@ const MusicLinkList: React.FC = () => {
 
   useEffect(() => {
     const fetchMusicLink = async () => {
-      setIsLoading(true);
       try {
         await fetchMusicLinks();
       } catch (err) {
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -219,9 +214,7 @@ const MusicLinkList: React.FC = () => {
   return (
     <ListContainer>
       <AnimatePresence>
-        {isLoading ? (
-          <LoadingScreen />
-        ) : musicLinks && musicLinks.length > 0 ? (
+        {musicLinks.length > 0 ? (
           worshipMoments.map((moment) => {
             const musicInMoment = musicLinks
               .filter((link) => link.worshipMoment === moment)
@@ -380,225 +373,224 @@ const MusicLinkList: React.FC = () => {
                         )}
                       </div>
                     </div>
-
-                    {isEditing && (
-                      <motion.div
-                        className="edit-form"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="edit-content">
-                          <div className="input-container">
-                            <input
-                              type="text"
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
-                              placeholder="Nome da música"
-                              onKeyDown={handleKeyPress}
-                            />
-                            <SelectContainer>
-                              <label htmlFor="worshipMoment">
-                                Momento do Louvor
-                              </label>
-                              <select
-                                id="worshipMoment"
-                                value={worshipMoment}
-                                onChange={(e) =>
-                                  setWorshipMoment(e.target.value)
-                                }
-                                onKeyDown={handleKeyPress}
-                              >
-                                <option value="">Selecione o momento</option>
-                                {worshipMoments.map((moment) => (
-                                  <option key={moment} value={moment}>
-                                    {moment}
-                                  </option>
-                                ))}
-                              </select>
-                            </SelectContainer>
-                            <input
-                              type="text"
-                              value={link}
-                              onChange={(e) => setLink(e.target.value)}
-                              placeholder="Link da música"
-                              onKeyDown={handleKeyPress}
-                            />
-                            <input
-                              type="text"
-                              value={letter}
-                              onChange={(e) => setLetter(e.target.value)}
-                              placeholder="Link da letra"
-                              onKeyDown={handleKeyPress}
-                            />
-                            <input
-                              type="text"
-                              value={spotify}
-                              onChange={(e) => setSpotify(e.target.value)}
-                              placeholder="Link do Spotify"
-                              onKeyDown={handleKeyPress}
-                            />
-                            <label
-                              htmlFor="cifra"
-                              style={{
-                                width: "100%",
-                                fontSize: "14px",
-                                fontWeight: "bold",
-                                textAlign: "left",
-                              }}
-                            >
-                              Ordem da música
-                            </label>
-                            <input
-                              type="text"
-                              value={order}
-                              onChange={(e) => setOrder(Number(e.target.value))}
-                              placeholder="Ordem da música"
-                              onKeyDown={handleKeyPress}
-                            />
-
-                            <SelectContainer>
-                              <label htmlFor="cifra">Tom da Música</label>
-                              <select
-                                id="cifra"
-                                value={cifra}
-                                onChange={(e) => setCifra(e.target.value)}
-                              >
-                                <option value="">Selecione o tom</option>
-                                {tons.map((tom, index) => (
-                                  <option key={index} value={tom}>
-                                    {tom}
-                                  </option>
-                                ))}
-                              </select>
-                            </SelectContainer>
-
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "flex-start",
-                                justifyContent: "flex-start",
-                              }}
-                            >
-                              <label
-                                htmlFor="description"
-                                style={{ fontSize: 14, fontWeight: "bold" }}
-                              >
-                                Observações sobre a música
-                              </label>
-                              <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Observações sobre como será a música"
-                                rows={3}
-                                style={{
-                                  width: "95%",
-                                  height: "150px",
-                                  marginTop: "8px",
-                                  marginBottom: "8px",
-                                  padding: "8px",
-                                  fontSize: "16px",
-                                  border: "1px solid #ccc",
-                                  resize: "none",
-                                }}
-                              />
-                            </div>
-
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Button
-                                onClick={handleCancelEdit}
-                                style={{ backgroundColor: "#9e9e9e" }}
-                              >
-                                Cancelar
-                              </Button>
-                              <Button
-                                onClick={handleSaveEdit}
-                                style={{ backgroundColor: "#007BFF" }}
-                              >
-                                Salvar
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {selectedDescription && (
-                      <motion.div
-                        className="description-modal"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={closeModal}
-                      >
-                        <motion.div
-                          className="modal-content"
-                          initial={{ scale: 0.8 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0.8 }}
-                          transition={{ duration: 0.2 }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <h3>
-                            Informações da "
-                            <strong>{selectedDescription.name}</strong>"
-                          </h3>
-                          <pre className="modal-text" style={{ color: "#000" }}>
-                            {selectedDescription.description}
-                          </pre>
-                          <button onClick={closeModal} className="close-btn">
-                            Fechar
-                          </button>
-                        </motion.div>
-                      </motion.div>
-                    )}
-
-                    {openVideo && currentVideo && (
-                      <ContainerVd onClick={handleVideoClick}>
-                        <ContentVd>
-                          {loading && (
-                            <div className="loading-screen">
-                              <img
-                                src={Loading}
-                                alt="Loading"
-                                style={{ width: "150px" }}
-                              />
-                            </div>
-                          )}
-
-                          <iframe
-                            width="560"
-                            height="315"
-                            src={currentVideo.url}
-                            title="YouTube video player"
-                            style={{
-                              border: "none",
-                              display: loading ? "none" : "block",
-                            }}
-                            onLoad={() => setLoading(false)}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                          />
-                        </ContentVd>
-                      </ContainerVd>
-                    )}
-                  </motion.div>
+                    </motion.div>
                 ))}
               </div>
             );
           })
         ) : (
           <p>Nenhuma canção definida para esta semana</p>
+        )}
+        {isEditing && (
+          <motion.div
+            className="edit-form"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="edit-content">
+              <div className="input-container">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Nome da música"
+                  onKeyDown={handleKeyPress}
+                />
+                <SelectContainer>
+                  <label htmlFor="worshipMoment">
+                    Momento do Louvor
+                  </label>
+                  <select
+                    id="worshipMoment"
+                    value={worshipMoment}
+                    onChange={(e) =>
+                      setWorshipMoment(e.target.value)
+                    }
+                    onKeyDown={handleKeyPress}
+                  >
+                    <option value="">Selecione o momento</option>
+                    {worshipMoments.map((moment) => (
+                      <option key={moment} value={moment}>
+                        {moment}
+                      </option>
+                    ))}
+                  </select>
+                </SelectContainer>
+                <input
+                  type="text"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  placeholder="Link da música"
+                  onKeyDown={handleKeyPress}
+                />
+                <input
+                  type="text"
+                  value={letter}
+                  onChange={(e) => setLetter(e.target.value)}
+                  placeholder="Link da letra"
+                  onKeyDown={handleKeyPress}
+                />
+                <input
+                  type="text"
+                  value={spotify}
+                  onChange={(e) => setSpotify(e.target.value)}
+                  placeholder="Link do Spotify"
+                  onKeyDown={handleKeyPress}
+                />
+                <label
+                  htmlFor="cifra"
+                  style={{
+                    width: "100%",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    textAlign: "left",
+                  }}
+                >
+                  Ordem da música
+                </label>
+                <input
+                  type="text"
+                  value={order}
+                  onChange={(e) => setOrder(Number(e.target.value))}
+                  placeholder="Ordem da música"
+                  onKeyDown={handleKeyPress}
+                />
+
+                <SelectContainer>
+                  <label htmlFor="cifra">Tom da Música</label>
+                  <select
+                    id="cifra"
+                    value={cifra}
+                    onChange={(e) => setCifra(e.target.value)}
+                  >
+                    <option value="">Selecione o tom</option>
+                    {tons.map((tom, index) => (
+                      <option key={index} value={tom}>
+                        {tom}
+                      </option>
+                    ))}
+                  </select>
+                </SelectContainer>
+
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <label
+                    htmlFor="description"
+                    style={{ fontSize: 14, fontWeight: "bold" }}
+                  >
+                    Observações sobre a música
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Observações sobre como será a música"
+                    rows={3}
+                    style={{
+                      width: "95%",
+                      height: "150px",
+                      marginTop: "8px",
+                      marginBottom: "8px",
+                      padding: "8px",
+                      fontSize: "16px",
+                      border: "1px solid #ccc",
+                      resize: "none",
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    onClick={handleCancelEdit}
+                    style={{ backgroundColor: "#9e9e9e" }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleSaveEdit}
+                    style={{ backgroundColor: "#007BFF" }}
+                  >
+                    Salvar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {selectedDescription && (
+          <motion.div
+            className="description-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+          >
+            <motion.div
+              className="modal-content"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>
+                Informações da "
+                <strong>{selectedDescription.name}</strong>"
+              </h3>
+              <pre className="modal-text" style={{ color: "#000" }}>
+                {selectedDescription.description}
+              </pre>
+              <button onClick={closeModal} className="close-btn">
+                Fechar
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {openVideo && currentVideo && (
+          <ContainerVd onClick={handleVideoClick}>
+            <ContentVd>
+              {loading && (
+                <div className="loading-screen">
+                  <img
+                    src={Loading}
+                    alt="Loading"
+                    style={{ width: "150px" }}
+                  />
+                </div>
+              )}
+
+              <iframe
+                width="560"
+                height="315"
+                src={currentVideo.url}
+                title="YouTube video player"
+                style={{
+                  border: "none",
+                  display: loading ? "none" : "block",
+                }}
+                onLoad={() => setLoading(false)}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </ContentVd>
+          </ContainerVd>
         )}
       </AnimatePresence>
     </ListContainer>
