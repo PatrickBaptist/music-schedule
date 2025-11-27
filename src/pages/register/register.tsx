@@ -46,8 +46,9 @@ const RegisterPage: React.FC = () => {
       toast.success("Cadastro realizado com sucesso!", { id: toastId });
       navigate("/login");
     } catch (err: unknown) {
-      if (err instanceof Error) toast.error(err.message);
-      else toast.error("Erro desconhecido ao cadastrar", { id: toastId });
+      const message =
+        err instanceof Error ? err.message : "Erro desconhecido ao cadastrar";
+      toast.error(message, { id: toastId });
     }
   };
 
