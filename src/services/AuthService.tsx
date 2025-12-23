@@ -47,31 +47,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
   useEffect(() => {
-  if (token) {
-    (async () => {
-      try {
-        const res = await fetch(`${API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser({ 
-            id: data.id,
-            name: data.name,
-            nickname: data.nickname,
-            email: data.email,
-            roles: data.roles 
+    if (token) {
+      (async () => {
+        try {
+          const res = await fetch(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
           });
-        } else {
+          if (res.ok) {
+            const data = await res.json();
+            setUser({ 
+              id: data.id,
+              name: data.name,
+              nickname: data.nickname,
+              email: data.email,
+              roles: data.roles 
+            });
+          } else {
+            logout();
+          }
+        } catch (err) {
+          console.error("Erro ao validar token:", err);
           logout();
         }
-      } catch (err) {
-        console.error("Erro ao validar token:", err);
-        logout();
-      }
-    })();
-  }
-}, [token, API_URL]);
+      })();
+    }
+  }, [token, API_URL]);
 
   const login = async (email: string, password: string) => {
     try {
