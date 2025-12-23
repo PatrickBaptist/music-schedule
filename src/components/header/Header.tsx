@@ -5,17 +5,19 @@ import { Link, useLocation } from 'react-router-dom';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import Logout from '../../assets/imgs/logout.png'
 import { motion } from "framer-motion";
+import { UserRole } from '../../types/UserRole';
 
 const Header: React.FC = () => {
 
   const { user, logout } = useAuthContext();
   const location = useLocation();
+  const isLeader = user?.roles?.includes(UserRole.Leader || UserRole.Admin);
 
   const menuItems = [
     { name: "Início", path: "/" },
     { name: "Escala", path: "/schedule" },
     { name: "Canções", path: "/listMusic" },
-    { name: "Gerenciador", path: "/alter" },
+    ...(isLeader ? [{ name: "Gerenciador", path: "/alter", }] : []),
     { name: "Usuários", path: "/users" },
     { name: "Perfil", path: "/profile" },
   ];

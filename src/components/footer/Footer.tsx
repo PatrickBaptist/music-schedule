@@ -13,7 +13,7 @@ import useAuthContext from "../../context/hooks/useAuthContext";
 const Footer: React.FC = () => {
   const location = useLocation();
   const user = useAuthContext();
-  const isLeader = user.user?.roles?.includes(UserRole.Leader);
+  const isLeader = user.user?.roles?.includes(UserRole.Leader || UserRole.Admin);
 
   const menuItems = [
     { name: "Início", path: "/", icon: Home },
