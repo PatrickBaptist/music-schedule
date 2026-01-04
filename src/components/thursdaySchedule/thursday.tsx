@@ -1,10 +1,9 @@
-import React from "react";
 import { CardThursday, ContainerThursday, MinisterInfo } from "./thursdayStayle";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
 
-const vocals = ["Anna", "Anderson", "Taisa", "Sarah"];
+const vocals = ["Anna", "Anderson", "Taisa", "Sarah", "Jorge"];
 
-const ThursdaySchedule: React.FC = () => {
+const ThursdaySchedule = () => {
   const getThursdaysOfMonth = (month: number, year: number): Date[] => {
     const thursdays: Date[] = [];
     const date = new Date(year, month - 1, 1);
@@ -25,9 +24,15 @@ const ThursdaySchedule: React.FC = () => {
   ): { date: string; minister: string }[] => {
     const thursdays = getThursdaysOfMonth(month, year);
 
+    let totalPreviousThursdays = 0;
+
+    for (let m = 1; m < month; m++) {
+      totalPreviousThursdays += getThursdaysOfMonth(m, year).length;
+    }
+
     return thursdays.map((thursday, index) => ({
-      date: formatDateDDMMYYYY(thursday.toISOString()),
-      minister: vocals[index % vocals.length],
+      date: formatDateDDMMYYYY(thursday),
+      minister: vocals[(totalPreviousThursdays + index) % vocals.length],
     }));
   };
 
