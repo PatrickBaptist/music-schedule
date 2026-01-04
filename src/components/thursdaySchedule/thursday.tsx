@@ -31,7 +31,7 @@ const ThursdaySchedule = () => {
     }
 
     return thursdays.map((thursday, index) => ({
-      date: formatDateDDMMYYYY(thursday),
+      date: formatDateDDMMYYYY(thursday.toISOString()),
       minister: vocals[(totalPreviousThursdays + index) % vocals.length],
     }));
   };
