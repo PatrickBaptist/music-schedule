@@ -6,6 +6,7 @@ import {
   ContainerVd,
   ContentVd,
   ListContainer,
+  MusicGroup,
   SelectContainer,
 } from "./MusicLinkListStyle";
 import { toast } from "sonner";
@@ -60,6 +61,27 @@ const MusicLinkList: React.FC = () => {
     "Final do Culto",
     "Culto de Quinta",
   ];
+
+  const momentBackgrounds: Record<string, string> = {
+  "Momento de Louvor":
+    "linear-gradient(135deg, rgba(30, 60, 114, 0.15), rgba(42, 82, 152, 0.15))",
+
+  "Dízimos e Ofertas":
+    "linear-gradient(135deg, rgba(19, 78, 94, 0.15), rgba(113, 178, 128, 0.15))",
+
+  "Batismo":
+    "linear-gradient(135deg, rgba(0, 78, 146, 0.15), rgba(0, 4, 40, 0.15))",
+
+  "Ceia":
+    "linear-gradient(135deg, rgba(66, 39, 90, 0.15), rgba(115, 75, 109, 0.15))",
+
+  "Final do Culto":
+    "linear-gradient(135deg, rgba(35, 37, 38, 0.18), rgba(65, 67, 69, 0.18))",
+
+  "Culto de Quinta":
+    "linear-gradient(135deg, rgba(92, 67, 36, 0.16), rgba(158, 122, 64, 0.16))",
+};
+
 
   const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } =
     useMusicLinksContext();
@@ -223,7 +245,7 @@ const MusicLinkList: React.FC = () => {
             if (musicInMoment.length === 0) return null;
 
             return (
-              <div key={moment} className="music-group">
+              <MusicGroup key={moment} style={{ background: momentBackgrounds[moment] }}>
                 <h4 style={{ margin: "16px 0" }}>{moment}</h4>
 
                 {musicInMoment.map((musicLink, index) => (
@@ -375,7 +397,7 @@ const MusicLinkList: React.FC = () => {
                     </div>
                     </motion.div>
                 ))}
-              </div>
+              </MusicGroup>
             );
           })
         ) : (

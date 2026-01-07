@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ListContainer = styled.ul`
+export const ListContainer = styled.ul<{ bg?: string }>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -8,15 +8,6 @@ export const ListContainer = styled.ul`
   justify-content: center;
   padding: 0 8px;
   box-sizing: border-box;
-
-  .music-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
 
   .delete-edit {
     display: inline-flex;
@@ -259,83 +250,96 @@ export const ListContainer = styled.ul`
     }
   }
 
-.description-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  .description-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .modal-content {
+    padding: 24px;
+    width: auto !important;
+    max-height: 50vh;
+    height: auto;
+    overflow-y: auto;
+    text-align: left;
+    background: #fff;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+  }
+
+  .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .modal-text {
+    width: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 1rem;
+    line-height: 1.5;
+    flex: 1;
+    overflow-y: auto;
+    margin: 0;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+  }
+
+  .modal-text::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .modal-text::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .modal-text::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+  }
+
+  .close-btn {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background: #9e9e9e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    align-self: flex-end;
+  }
+
+  .close-btn:hover {
+    background: #c2c2c2ff;
+  }
+`;
+
+export const MusicGroup = styled.div<{ $bg?: string }>`
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.modal-content {
-  padding: 24px;
-  width: auto !important;
-  max-height: 50vh;
-  height: auto;
-  overflow-y: auto;
-  text-align: left;
-  background: #fff;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-}
-
-.modal-content h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.modal-text {
-  width: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  font-size: 1rem;
-  line-height: 1.5;
-  flex: 1;
-  overflow-y: auto;
-  margin: 0;
-  padding: 8px 0;
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
-}
-
-.modal-text::-webkit-scrollbar {
-  width: 6px;
-}
-
-.modal-text::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.modal-text::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
-}
-
-.close-btn {
-  margin-top: 16px;
-  padding: 8px 16px;
-  background: #9e9e9e;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  align-self: flex-end;
-}
-
-.close-btn:hover {
-  background: #c2c2c2ff;
-}
+  gap: 8px;
+  padding: 12px 8px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  background: ${({ $bg }) => $bg || "transparent"};
 `;
 
 export const ContainerVd = styled.div`
