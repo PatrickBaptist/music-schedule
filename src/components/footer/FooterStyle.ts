@@ -2,11 +2,15 @@ import styled from 'styled-components'
 
 export const ContainerFooter = styled.footer`
   width: 100%;
+  height: 50px;
   padding: 10px 0 25px 0;
   text-align: center;
   background-color: #000;
   border-top: 1px solid #444;
   z-index: 9999;
+  position: fixed;
+  bottom: 0;
+  left: 0;
 `;
 
 export const NavFooter = styled.nav`
