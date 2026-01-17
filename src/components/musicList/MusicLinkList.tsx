@@ -64,22 +64,22 @@ const MusicLinkList: React.FC = () => {
 
   const momentBackgrounds: Record<string, string> = {
   "Momento de Louvor":
-    "linear-gradient(135deg, rgba(30, 60, 114, 0.15), rgba(42, 82, 152, 0.15))",
+    "linear-gradient(135deg, rgba(30, 59, 114, 0.644), rgb(57, 113, 209))",
 
   "Dízimos e Ofertas":
-    "linear-gradient(135deg, rgba(19, 78, 94, 0.15), rgba(113, 178, 128, 0.15))",
+    "linear-gradient(135deg, rgba(19, 78, 94, 0.555), rgba(113, 178, 128, 0.5))",
 
   "Batismo":
-    "linear-gradient(135deg, rgba(0, 78, 146, 0.15), rgba(0, 4, 40, 0.15))",
+    "linear-gradient(135deg, rgba(0, 78, 146, 0.685), rgb(0, 4, 40))",
 
   "Ceia":
-    "linear-gradient(135deg, rgba(66, 39, 90, 0.15), rgba(115, 75, 109, 0.15))",
+    "linear-gradient(135deg, rgba(66, 39, 90, 0.979), rgba(115, 75, 109, 0.178))",
 
   "Final do Culto":
-    "linear-gradient(135deg, rgba(35, 37, 38, 0.18), rgba(65, 67, 69, 0.18))",
+    "linear-gradient(135deg, rgba(35, 37, 38, 0.616), rgb(65, 67, 69))",
 
   "Culto de Quinta":
-    "linear-gradient(135deg, rgba(92, 67, 36, 0.16), rgba(158, 122, 64, 0.16))",
+    "linear-gradient(135deg, rgba(92, 67, 36, 0.979), rgba(158, 122, 64, 0.288))",
 };
 
 
