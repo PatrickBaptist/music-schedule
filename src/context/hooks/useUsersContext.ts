@@ -4,7 +4,7 @@ import { UsersService } from "../../services/UsersService";
 const useUsersContext = ()  => {
    const context = useContext(UsersService);
   if (!context) {
-    throw new Error('useMusicLinksContext must be used within a MusicLinksProvider');
+    throw new Error('useUsersContext must be used within a UsersProvider');
   }
   return context;
 };

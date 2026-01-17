@@ -16,33 +16,33 @@ import { ScrollProvider } from './context/scrollContext';
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-          <UsersProvider>
-            <AllMusicLinksProvider>
-              <MusicLinksProvider>
-                <SchedulesProvider>
-                  <NotificationProvider>
-                    <GlobalStyle />
-                      <LayoutWrapper>
-                        <ScrollProvider>
-                          <App />
-                        </ScrollProvider>
-                      </LayoutWrapper>
-                  </NotificationProvider>
-                </SchedulesProvider>
-              </MusicLinksProvider>
-              <Toaster 
-                richColors
-                position='top-right'
-                toastOptions={{
-                  actionButtonStyle: {
-                    backgroundColor: 'red'
-                  }
-                }}
-              />
-            </AllMusicLinksProvider>
-          </UsersProvider>
-      </AuthProvider>
+      <UsersProvider>
+        <AuthProvider>
+          <AllMusicLinksProvider>
+            <MusicLinksProvider>
+              <SchedulesProvider>
+                <NotificationProvider>
+                  <GlobalStyle />
+                    <LayoutWrapper>
+                      <ScrollProvider>
+                        <App />
+                      </ScrollProvider>
+                    </LayoutWrapper>
+                </NotificationProvider>
+              </SchedulesProvider>
+            </MusicLinksProvider>
+            <Toaster 
+              richColors
+              position='top-right'
+              toastOptions={{
+                actionButtonStyle: {
+                  backgroundColor: 'red'
+                }
+              }}
+            />
+          </AllMusicLinksProvider>
+        </AuthProvider>
+      </UsersProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

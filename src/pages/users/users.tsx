@@ -7,11 +7,14 @@ import { toast } from "sonner";
 import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope, FaTrash } from 'react-icons/fa';
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { Timestamp } from "firebase/firestore";
+import useAuthContext from "../../context/hooks/useAuthContext";
 
 const UsersCardsPage: React.FC = () => {
-  const { users, updateUser, fetchUsers, deleteUser, listenUserStatus } = useUsersContext();
+  const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
   const [isLoading, setIsLoading] = useState(true);
-  const [userStatuses, setUserStatuses] = useState<Record<string, { isOnline?: boolean; lastSeen?: string }>>({});
+  const { user: loggedUser } = useAuthContext();
+
+  const loggedUserId = loggedUser?.id;
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -85,26 +88,8 @@ const UsersCardsPage: React.FC = () => {
     fetchData();
   }, [fetchUsers]);
 
-  useEffect(() => {
-    const unsubscribers = users.map((user) =>
-      listenUserStatus(user.id, (data) => {
-        setUserStatuses((prev) => ({
-          ...prev,
-          [user.id]: {
-            isOnline: data.isOnline,
-            lastSeen: data.lastSeen,
-          },
-        }));
-      })
-    );
-
-    return () => {
-      unsubscribers.forEach((unsub) => unsub && unsub());
-    };
-  }, [users, listenUserStatus]);
-
   const getLastSeenLabel = (timestamp?: string | Timestamp) => {
-    if (!timestamp) return "nunca 😡";
+    if (!timestamp) return "nunca";
     
     let date: Date;
 
@@ -142,6 +127,12 @@ const UsersCardsPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string, userName: string) => {
+
+    if (id === loggedUserId) {
+      toast.error("Você não pode deletar o próprio usuário.");
+      return;
+    }
+
     toast(
       `Deseja realmente deletar o usuário "${userName}"?`,
       {
@@ -164,6 +155,21 @@ const UsersCardsPage: React.FC = () => {
         },
       }
     );
+  };
+
+  const isUserOnline = (lastSeen?: Timestamp | string) => {
+    if (!lastSeen) return false;
+
+    let date: Date;
+
+    if (lastSeen instanceof Timestamp) {
+      date = lastSeen.toDate();
+    } else {
+      date = new Date(lastSeen);
+    }
+
+    const diff = Date.now() - date.getTime();
+    return diff < 5 * 60 * 1000; // 5 minutos
   };
 
   return (
@@ -190,11 +196,22 @@ const UsersCardsPage: React.FC = () => {
                 >
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><FaUser style={{ marginRight: '8px' }} />
                   <strong>{user.nickname || user.name}</strong>
-                  {userStatuses[user.id]?.isOnline ? (
-                    <span style={{ color: "green", fontWeight: 500, fontSize: '0.85rem' }}>🟢 Online</span>
+                  {user.id === loggedUserId ? (
+                    <span style={{ 
+                      fontSize: "0.75rem",
+                      color: "#9ca3af",
+                      marginLeft: "6px",
+                      fontStyle: "italic",
+                     }}>
+                      (você)
+                    </span>
+                  ) : isUserOnline(user.lastSeen) ? (
+                    <span style={{ color: "green", fontWeight: 500, fontSize: "0.85rem" }}>
+                      🟢 Online
+                    </span>
                   ) : (
-                    <span style={{ color: "gray", fontWeight: 500, fontSize: '0.85rem'}}>
-                      ⚪ Visto {getLastSeenLabel(userStatuses[user.id]?.lastSeen)}
+                    <span style={{ color: "gray", fontWeight: 500, fontSize: "0.85rem" }}>
+                      ⚪ Visto {getLastSeenLabel(user.lastSeen)}
                     </span>
                   )}
                   </span>
@@ -206,25 +223,27 @@ const UsersCardsPage: React.FC = () => {
                   </span>
 
 
-                  <div className="actions-container">
-                    {user.status !== "enabled" && (
-                      <button onClick={() => handleStatusChange(user.id, "enabled")}>
-                        <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
-                      </button>
-                    )}
+                  {user.id !== loggedUserId && (
+                    <div className="actions-container">
+                      {user.status !== "enabled" && (
+                        <button onClick={() => handleStatusChange(user.id, "enabled")}>
+                          <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
+                        </button>
+                      )}
 
-                    {user.status !== "disabled" && (
-                      <button onClick={() => handleStatusChange(user.id, "disabled")}>
-                        <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
-                      </button>
-                    )}
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(user.id, user.nickname || user.name)}
-                    >
-                      <FaTrash style={{ marginRight: '6px' }} /> Deletar
-                    </button>
-                  </div>
+                      {user.status !== "disabled" && (
+                        <button onClick={() => handleStatusChange(user.id, "disabled")}>
+                          <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
+                        </button>
+                      )}
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(user.id, user.nickname || user.name)}
+                        >
+                          <FaTrash style={{ marginRight: '6px' }} /> Deletar
+                        </button>
+                    </div>
+                  )}
                 </UserCard>
               ))}
             </UsersContainer>

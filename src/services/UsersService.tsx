@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from "react";
-import { doc, updateDoc, serverTimestamp, onSnapshot, collection } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp, onSnapshot, collection, Timestamp } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 export interface User {
@@ -11,7 +11,7 @@ export interface User {
   birthDate?: string;
   status?: string;
   isOnline?: boolean;
-  lastSeen?: string;
+  lastSeen?: Timestamp | string;
 
 }
 
@@ -21,8 +21,7 @@ export interface UsersContextProps {
   getUserById: (id: string) => Promise<User | null>;
   updateUser: (id: string, updated: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
-  setUserOnlineStatus: (id: string, isOnline: boolean) => Promise<void>;
-  listenUserStatus: (id: string, callback: (user: Partial<User>) => void) => () => void;
+  setUserOnlineStatus: (id: string) => Promise<void>;
 }
 
 export const UsersService = createContext<UsersContextProps | undefined>(undefined);
@@ -101,7 +100,16 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
-  const setUserOnlineStatus = async (id: string, isOnline: boolean) => {
+  const setUserOnlineStatus = useCallback(async (id: string) => {
+    const userRef = doc(db, "users", id);
+    console.log("last seen:", id);
+    await updateDoc(userRef, {
+      lastSeen: serverTimestamp(),
+    });
+  }, []);
+
+
+  /*const setUserOnlineStatus = async (id: string, isOnline: boolean) => {
     try {
       const userRef = doc(db, "users", id);
       await updateDoc(userRef, {
@@ -121,10 +129,10 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }
     });
     return unsubscribe;
-  };
+  };*/
 
   return (
-    <UsersService.Provider value={{ users, fetchUsers, getUserById, updateUser, deleteUser, setUserOnlineStatus, listenUserStatus }}>
+    <UsersService.Provider value={{ users, fetchUsers, getUserById, updateUser, deleteUser, setUserOnlineStatus }}>
       {children}
     </UsersService.Provider>
   );
