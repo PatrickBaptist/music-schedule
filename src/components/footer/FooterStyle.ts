@@ -29,7 +29,8 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
   align-items: center;
   a {
     text-decoration: none;
-    color: ${(props) => (props.$active ? "#2f81f7" : "#555")};
+    color: ${(props) => (props.$active ? "#2EBEF2" : "#555")};
+    font-weight: ${(props) => (props.$active ? "600" : "400")};
     font-size: 12px;
     display: flex;
     flex-direction: column;

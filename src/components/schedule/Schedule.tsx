@@ -92,7 +92,7 @@ const Schedule: React.FC = () => {
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map((musician, index) => (
               <SeeScale key={index}>
-                <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#58a6ff' }}>
+                <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#2EBEF2' }}>
                   {new Date(musician.date).toLocaleDateString("pt-BR")}
                 </h3>
                 <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>

@@ -35,13 +35,18 @@ const Footer: React.FC = () => {
                 <motion.img
                   src={item.icon}
                   alt={item.name}
-                  initial={{ y: 0 }}
                   whileHover={{
-                    y: [-2, -5, -2], // leve sobe e desce
-                    scale: [1, 1.2, 1], // aumenta e volta ao normal
+                    y: -5,
+                    scale: 1.15,
                   }}
-                  animate={isActive ? { y: [0, -5, 0] } : { y: 0 }}
-                  transition={isActive ? { duration: 0.6, repeat: Infinity, repeatType: "loop" } : { duration: 0 }}
+                  animate={{
+                    y: isActive ? -4 : 0,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                  }}
                   style={{ width: 30, height: 30, marginBottom: 2 }}
                 />
                 <span>{item.name}</span>
