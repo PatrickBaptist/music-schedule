@@ -1,20 +1,17 @@
 import styled from 'styled-components';
 
-export const DarkWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
 export const ContainerForm = styled.div`
   width: 100%;
+  max-width: 1024px;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  gap: 45px;
-  padding: 70px 20px 40px 20px;
+  padding: 0 150px;
+
+  @media (max-width: 768px) {
+    padding: 70px 50px 0px 50px;
+  }
 
    /* Layout para mobile (default) */
   .form-row {
@@ -47,7 +44,7 @@ export const ContainerForm = styled.div`
     margin-top: auto;
     padding-top: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
   }
 
   /* Media query para desktop */
@@ -104,6 +101,7 @@ export const FormGroup = styled.div`
 
 export const DarkInput = styled.input`
   width: 100%;
+  height: 25px;
   font-size: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
@@ -119,6 +117,7 @@ export const DarkInput = styled.input`
 
 export const DarkSelect = styled.select`
   width: 100%;
+  min-height: 25px;
   font-size: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
@@ -129,6 +128,27 @@ export const DarkSelect = styled.select`
   &:focus {
     border-color: #2EBEF2;
     box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
+  }
+`;
+
+export const DarkButtonCancel = styled.button`
+  max-width: 400px;
+  background-color: #555;
+  color: #fff;
+  font-size: 13px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 10px 10px;
+
+  &:hover {
+    background-color: #acacac;
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ContainerEscala } from "./specialScheduleStyle";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
 import { toast } from "sonner";
@@ -6,6 +6,8 @@ import Delete from '../../assets/imgs/delete.png'
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { motion } from "framer-motion";
 import LoadingScreen from "../loading/LoadingScreen";
+import { FaPlus } from "react-icons/fa";
+import EspecialScheduleInput from "../especialScheduleInput/EspecialScheduleInput";
 
 interface SpecialSchedulesProps {
   schedules: {
@@ -26,6 +28,7 @@ interface SpecialSchedulesProps {
 
 const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading }) => {
   const { deleteSpecialSchedules } = useSchedulesContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDelete = async (id: string, evento: string) => {
     toast(
@@ -48,7 +51,26 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading 
 
   return (
     <ContainerEscala>
-      <h4>Escalas Especiais</h4>
+      <div className='add-schedule'>
+        <h4>Escalas Especiais</h4>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="add-btn"
+          onClick={() => setIsModalOpen(true)}
+          >
+          <FaPlus size={12} />
+        </motion.button>
+      </div>
+
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <EspecialScheduleInput setIsModalOpen={setIsModalOpen}/>
+          </div>
+        </div>
+      )}
+      
       <div className="escala-content">
         {loading ? (
           <LoadingScreen />

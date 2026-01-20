@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
+import { motion } from "framer-motion";
 import { CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import { toast } from 'sonner';
 import PageWrapper from '../pageWrapper/pageWrapper';
+import { FaPlus } from 'react-icons/fa';
+import ScheduleInput from '../scheduleInput/ScheduleInput';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -46,6 +49,7 @@ const formatDateToYYYYMMDD = (date: string | Date): string => {
 const Schedule: React.FC = () => {
   const { monthlySchedule, getScheduleForMonth, nextSundaySchedule } = useSchedulesContext();
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const currentMonth = getFormattedMonth();
   const nameMonth = getNameMonth();
@@ -82,6 +86,25 @@ const Schedule: React.FC = () => {
       <PageWrapper>
         <ScheduleContent>
           <h1>Escala de {nameMonth}</h1>
+          <div className='add-schedule'>
+            <h4>Adicionar escala</h4>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="btns add-btn"
+              onClick={() => setIsModalOpen(true)}
+              >
+              <FaPlus size={12} />
+            </motion.button>
+          </div>
+
+          {isModalOpen && (
+            <div className="modal">
+              <div className="modal-content">
+                <ScheduleInput setIsModalOpen={setIsModalOpen}/>
+              </div>
+            </div>
+          )}
 
           {loading ? (
                 <LoadingScreen />

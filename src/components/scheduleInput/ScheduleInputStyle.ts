@@ -1,70 +1,16 @@
-import { motion } from "framer-motion";
-import styled from "styled-components";
-
-export const ProfileTitle = styled(motion.h1)`
-  font-size: 2.2rem;
-  margin-bottom: 25px;
-  text-align: center;
-`;
-
-export const ProfileList = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; // tudo à esquerda
-`;
-
-export const ProfileItem = styled(motion.div)`
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-
-  strong {
-    color: #1e90ff;
-    font-weight: 600;
-    margin-right: 6px;
-  }
-`;
-
-export const Badge = styled.span`
-  background-color: #ff7f50;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  margin-left: 6px;
-  margin-top: 4px;
-  font-size: 0.9rem;
-  display: inline-block;
-  transition: all 0.2s;
-
-  &:hover {
-    transform: scale(1.1);
-    background-color: #ff4500;
-  }
-`;
-
-export const DarkWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+import styled from 'styled-components';
 
 export const ContainerForm = styled.div`
   width: 100%;
+  max-width: 1024px;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  gap: 45px;
-  padding: 70px 20px 40px 20px;
+  padding: 0 150px;
 
-  .form-row {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 45px;
+  @media (max-width: 768px) {
+    padding: 70px 50px 0px 50px;
   }
 
   .form-column {
@@ -90,7 +36,7 @@ export const ContainerForm = styled.div`
     margin-top: auto;
     padding-top: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
   }
 
   /* Media query para desktop */
@@ -126,11 +72,11 @@ export const ContainerForm = styled.div`
   }
 `;
 
-export const DarkForm = styled(motion.form)`
+export const DarkForm = styled.form`
   width: 100%;
-  flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  flex: 1;
   gap: 18px;
 `;
 
@@ -147,6 +93,7 @@ export const FormGroup = styled.div`
 
 export const DarkInput = styled.input`
   width: 100%;
+  height: 25px;
   font-size: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
@@ -162,6 +109,7 @@ export const DarkInput = styled.input`
 
 export const DarkSelect = styled.select`
   width: 100%;
+  min-height: 25px;
   font-size: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
@@ -172,6 +120,27 @@ export const DarkSelect = styled.select`
   &:focus {
     border-color: #2EBEF2;
     box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
+  }
+`;
+
+export const DarkButtonCancel = styled.button`
+  max-width: 400px;
+  background-color: #555;
+  color: #fff;
+  font-size: 13px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 10px 10px;
+
+  &:hover {
+    background-color: #acacac;
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -197,7 +166,7 @@ export const DarkButton = styled.button`
 `;
 
 export const DarkLabel = styled.label`
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
   margin-bottom: 5px;
   letter-spacing: 0.5px;
