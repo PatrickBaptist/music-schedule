@@ -11,13 +11,11 @@ const Header: React.FC = () => {
 
   const { user, logout } = useAuthContext();
   const location = useLocation();
-  const isLeader = user?.roles?.includes(UserRole.Leader || UserRole.Admin);
 
   const menuItems = [
     { name: "Início", path: "/" },
     { name: "Escala", path: "/schedule" },
     { name: "Canções", path: "/listMusic" },
-    ...(isLeader ? [{ name: "Gerenciador", path: "/alter", }] : []),
     { name: "Usuários", path: "/users" },
     { name: "Perfil", path: "/profile" },
   ];
