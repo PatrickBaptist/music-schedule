@@ -45,12 +45,6 @@ export const CardThursday = styled(motion.div)`
     transition: all 0.3s ease-in-out;
   }
 
-  .content-escala p:hover {
-    background-color: #f1803481;
-    border-radius: 5px;
-    padding: 8px;
-  }
-
   .content-escala p:last-child {
     border-bottom: none;
   }
