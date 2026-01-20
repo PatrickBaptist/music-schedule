@@ -179,4 +179,35 @@ export const ContainerHome = styled.div`
         }
       }
     }
+
+  .btns {
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 500;
+    justify-content: center;
+    padding: 10px;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
+    width: 40px;
+    height: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .add-btn {
+    background-color: #1db954;
+    color: white;
+  }
+
+  .add-btn:hover {
+    background-color: #1aa34a;
+  }
 `

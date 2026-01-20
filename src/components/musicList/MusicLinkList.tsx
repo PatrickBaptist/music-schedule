@@ -17,6 +17,7 @@ import {
   FaFileAlt,
   FaRegCommentDots,
   FaSpotify,
+  FaTimes,
   FaTrashAlt,
   FaYoutube,
 } from "react-icons/fa";
@@ -258,11 +259,9 @@ const MusicLinkList: React.FC = () => {
                     transition={{ duration: 0.4 }}
                   >
                     <div className="container-card">
-                      <div className="card"
-                      onClick={() => toggleButtons(musicLink.id!)}
-                      >
+                      <div className="card">
                         {loadingCards[musicLink.id!] ? (
-                          <p style={{ color: "#fff" }}>Aguarde..</p>
+                          <p style={{ fontWeight: "bold", color: "#fff" }}>Aguarde..</p>
                         ) : (
                           <>
                             <div className="music-header">
@@ -310,8 +309,13 @@ const MusicLinkList: React.FC = () => {
                                     ? "Ocultar botões"
                                     : "Mostrar botões"
                                 }
+                                onClick={() => toggleButtons(musicLink.id!)}
                               >
-                                <FaEllipsisV size={14} />
+                                {showButtons[musicLink.id!] ? (
+                                  <FaTimes size={16} />
+                                ) : (
+                                  <FaEllipsisV size={16} />
+                                )}
                               </motion.button>
                             </div>
 

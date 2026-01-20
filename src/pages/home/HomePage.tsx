@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from "framer-motion";
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
 import MusicLinkList from '../../components/musicList/MusicLinkList';
 import { Container, ContainerHome } from './HomePageStyle';
-import EditLink from '../../assets/imgs/edit.png';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
-import Button from '../../components/buttons/Buttons';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
 import Aviso from '../../components/warnings/warnings';
@@ -13,6 +12,7 @@ import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { SpecialSchedule } from '../../services/ScheduleService';
 import ThursdaySchedule from '../../components/thursdaySchedule/thursday';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
+import { FaPlus } from 'react-icons/fa';
 
 const HomePage: React.FC = () => {
 
@@ -47,9 +47,14 @@ const HomePage: React.FC = () => {
               <div className="coluna-1">
                 <div className='content-louvores'>
                   <h4>Adicionar louvor</h4>
-                  <Button className='btn-write' onClick={() => setIsModalOpen(true)}>
-                      <img src={EditLink} alt="editLink" />
-                  </Button>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btns add-btn"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <FaPlus size={12} />
+                  </motion.button>
                 </div>
 
                 {isModalOpen && (

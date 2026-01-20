@@ -46,16 +46,10 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
       position: relative;
       gap: 12px;
-      cursor: pointer;
 
       &:hover {
         transform: translateY(-1px);
         transition: all 0.4s ease-in-out;
-
-        .span-music {
-          color: white;
-          transition: all 0.4s ease-in-out;
-        }
       }
 
       .icon-description {

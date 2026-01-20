@@ -5,7 +5,6 @@ import Button from "../../components/buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
 import { Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
 import { FirestoreTimestamp } from "../../helpers/helpers";
-import EditLink from '../../assets/imgs/edit.png';
 import { toast } from "sonner";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
@@ -15,6 +14,7 @@ import { useScroll } from "../../context/hooks/useScroll";
 import { FaEdit, FaPlus, FaTrash, FaYoutube } from "react-icons/fa";
 import { AllMusicLink } from "../../services/AllMusicHistory";
 import { InputContainer } from "../../components/allMusicLink/AllMusicLinkInputStyle";
+import { MdPlaylistAdd } from "react-icons/md";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -248,9 +248,14 @@ const ListMusic: React.FC = () => {
 
             <div className='content-louvores'>
               <h4>Adicionar louvor</h4>
-              <Button className='btn-write' onClick={() => setIsModalOpen(true)}>
-                <img src={EditLink} alt="editLink" />
-              </Button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="btns add-btn"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <FaPlus size={12} />
+              </motion.button>
             </div>
 
             {isModalOpen && (
@@ -393,7 +398,7 @@ const ListMusic: React.FC = () => {
                               className="btns add-btn"
                               onClick={() => handleAddToSunday(music.id)}
                             >
-                              <FaPlus size={14} />
+                              <MdPlaylistAdd size={14} />
                             </motion.button>
                           </div>
                         </>
