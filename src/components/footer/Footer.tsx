@@ -29,12 +29,9 @@ const Footer: React.FC = () => {
                 <motion.img
                   src={item.icon}
                   alt={item.name}
-                  whileHover={{
-                    y: -5,
-                    scale: 1.15,
-                  }}
                   animate={{
                     y: isActive ? -4 : 0,
+                    scale: 1,
                   }}
                   transition={{
                     type: "spring",
