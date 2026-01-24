@@ -17,6 +17,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [date, setDate] = useState("");
   const [músicos, setMúsicos] = useState<Musicos>({
+    minister: "",
     teclas: "",
     violao: "",
     batera: "",
@@ -32,6 +33,12 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
   const { users } = useUsersContext();
 
   const musiciansBySkill: Record<string, string[]> = {
+    minister: [
+      ...users
+        .filter((u) => u.roles?.includes(UserRole.Minister))
+        .map((u) => u.nickname!.trim()),
+      "Convidado",
+    ],
     vocal: [
       ...users
         .filter((u) => u.roles?.includes(UserRole.Vocal))
@@ -78,6 +85,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
   };
 
   const labels: Record<string, string> = {
+    minister: "Ministro",
     teclas: "Teclado",
     violao: "Violão",
     batera: "Bateria",
@@ -88,6 +96,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
   };
 
   const ordemCampos = [
+    "minister",
     "teclas",
     "violao",
     "batera",
@@ -137,6 +146,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     if (found) setMúsicos(found.músicos);
     else
       setMúsicos({
+        minister: "",
         teclas: "",
         violao: "",
         batera: "",

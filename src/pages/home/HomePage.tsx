@@ -76,6 +76,7 @@ const HomePage: React.FC = () => {
                       <LoadingScreen />
                   ) : nextSundaySchedule ? (
                     <div className='content-escala'>
+                      <p style={{ fontWeight: 'bold', color: '#f59e0b' }}><strong>Ministro: </strong>{nextSundaySchedule.músicos.minister || 'Não definido'}</p>
                       <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal1 || 'Não definido'}</p>
                       <p><strong>Teclas: </strong>{nextSundaySchedule.músicos.teclas || 'Não definido'}</p>
                       <p><strong>Violão: </strong>{nextSundaySchedule.músicos.violao || 'Não definido'}</p>

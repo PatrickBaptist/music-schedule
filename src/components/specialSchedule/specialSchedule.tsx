@@ -13,7 +13,8 @@ interface SpecialSchedulesProps {
   schedules: {
     id: string;
     evento: string; 
-    data: string; 
+    data: string;
+    minister: string;
     vocal1: string;
     vocal2: string;
     teclas: string;
@@ -80,6 +81,7 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading 
             <div key={index} className="escala-content-escala">
               <p><strong>Evento:</strong> {escala.evento}</p>
               <p><strong>Data:</strong> {formatDateDDMMYYYY(escala.data)}</p>
+              <p style={{ fontWeight: 'bold', color: '#f59e0b' }}><strong>Ministro:</strong> {escala.minister || "Não definido"}</p>
               <p><strong>Vocal:</strong> {escala.vocal1 || "Não definido"}</p>
               <p><strong>Teclas:</strong> {escala.teclas || "Não definido"}</p>
               <p><strong>Violão:</strong> {escala.violao || "Não definido"}</p>

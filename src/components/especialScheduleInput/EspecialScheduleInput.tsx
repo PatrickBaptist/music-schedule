@@ -18,6 +18,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
   const [year] = useState<number>(new Date().getFullYear());
   const [date] = useState("");
   const [, setMusicos] = useState<Musicos>({
+    minister: "",
     teclas: "",
     violao: "",
     batera: "",
@@ -33,6 +34,12 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
   const { users } = useUsersContext();
 
   const musiciansBySkill: Record<string, string[]> = {
+    minister: [
+      ...users
+        .filter((u) => u.roles?.includes(UserRole.Minister))
+        .map((u) => u.nickname!.trim()),
+      "Convidado",
+    ],
     vocal: [
       ...users
         .filter((u) => u.roles?.includes(UserRole.Vocal))
@@ -79,6 +86,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
   };
 
   const labels: Record<string, string> = {
+    minister: "Ministro",
     teclas: "Teclado",
     violao: "Violão",
     batera: "Bateria",
@@ -89,6 +97,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
   };
 
   const ordemCampos = [
+    "minister",
     "teclas",
     "violao",
     "batera",
@@ -109,6 +118,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     id: "",
     evento: "",
     data: "",
+    minister: "",
     vocal1: "",
     vocal2: "",
     teclas: "",
@@ -158,6 +168,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     if (found) setMusicos(found.músicos);
     else
       setMusicos({
+        minister: "",
         teclas: "",
         violao: "",
         batera: "",
@@ -199,6 +210,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
         id: "",
         evento: "",
         data: "",
+        minister: "",
         vocal1: "",
         vocal2: "",
         teclas: "",

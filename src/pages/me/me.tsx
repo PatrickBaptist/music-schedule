@@ -61,6 +61,7 @@ const MePage: React.FC = () => {
     const [year] = useState<number>(new Date().getFullYear());
     const [date] = useState("");
     const [, setMúsicos] = useState<Musicos>({
+      minister: "",
       teclas: "",
       violao: "",
       batera: "",
@@ -120,6 +121,7 @@ const MePage: React.FC = () => {
       if (found) setMúsicos(found.músicos);
       else
         setMúsicos({
+          minister: "",
           teclas: "",
           violao: "",
           batera: "",

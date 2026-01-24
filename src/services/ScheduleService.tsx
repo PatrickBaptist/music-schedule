@@ -4,6 +4,7 @@ import { db } from '../firebaseConfig';
 
 export interface Musicos {
   date?: string;
+  minister: string;
   vocal1: string;
   vocal2: string;
   teclas: string;
@@ -19,6 +20,7 @@ export interface SpecialSchedule {
   id: string;
   evento: string;
   data: string;
+  minister: string;
   vocal1: string;
   vocal2: string;
   teclas: string;
