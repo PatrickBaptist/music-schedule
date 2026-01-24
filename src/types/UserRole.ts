@@ -28,5 +28,5 @@ export const roleOptions = [
   { label: "Iluminação", value: UserRole.Lighting },
   { label: "Mídia", value: UserRole.Midia },
   { label: "Datashow", value: UserRole.DataShow },
-  { label: "Operdador de som", value: UserRole.Sound },
+  { label: "Operador de som", value: UserRole.Sound },
 ];

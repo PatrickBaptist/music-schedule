@@ -11,6 +11,7 @@ export interface Musicos {
   batera: string;
   bass: string;
   guita: string;
+  sound: string;
   outfitColor?: string;
 }
 
@@ -25,6 +26,7 @@ export interface SpecialSchedule {
   batera: string;
   bass: string;
   guita: string;
+  sound: string;
   outfitColor?: string;
 }
 

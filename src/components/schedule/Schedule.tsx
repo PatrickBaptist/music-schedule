@@ -124,6 +124,7 @@ const Schedule: React.FC = () => {
                 <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
                 <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
                 <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
+                <p><strong>Op. Som: </strong>{musician.músicos.sound || 'Não definido'}</p>
               </SeeScale>
             ))}
             </CardsGrid>

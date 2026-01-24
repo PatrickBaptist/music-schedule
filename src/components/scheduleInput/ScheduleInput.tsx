@@ -24,6 +24,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     guita: "",
     vocal1: "",
     vocal2: "",
+    sound: "",
     outfitColor: "",
   });
   const [sundays, setSundays] = useState<Date[]>([]);
@@ -68,6 +69,12 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
+    sound: [
+      ...users
+        .filter((u) => u.roles?.includes(UserRole.Sound))
+        .map((u) => u.nickname!.trim()),
+      "Convidado",
+    ],
   };
 
   const labels: Record<string, string> = {
@@ -76,6 +83,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     batera: "Bateria",
     bass: "Baixo",
     guita: "Guitarra",
+    sound: "Op. Som",
     vocal1: "Vocal",
   };
 
@@ -85,6 +93,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     "batera",
     "bass",
     "guita",
+    "sound",
     "vocal1",
   ];
 
@@ -135,6 +144,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
         guita: "",
         vocal1: "",
         vocal2: "",
+        sound: "",
         outfitColor: "",
       });
 

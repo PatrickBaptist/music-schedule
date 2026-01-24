@@ -23,6 +23,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     batera: "",
     bass: "",
     guita: "",
+    sound: "",
     vocal1: "",
     vocal2: "",
     outfitColor: "",
@@ -69,6 +70,12 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
+    sound: [
+      ...users
+        .filter((u) => u.roles?.includes(UserRole.Sound))
+        .map((u) => u.nickname!.trim()),
+      "Convidado",
+    ],
   };
 
   const labels: Record<string, string> = {
@@ -77,6 +84,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     batera: "Bateria",
     bass: "Baixo",
     guita: "Guitarra",
+    sound: "Op. Som",
     vocal1: "Vocal",
   };
 
@@ -86,6 +94,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     "batera",
     "bass",
     "guita",
+    "sound",
     "vocal1",
   ];
 
@@ -107,6 +116,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     batera: "",
     bass: "",
     guita: "",
+    sound: "",
     outfitColor: "",
   });
 
@@ -153,6 +163,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
         batera: "",
         bass: "",
         guita: "",
+        sound: "",
         vocal1: "",
         vocal2: "",
         outfitColor: "",
@@ -195,6 +206,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
         batera: "",
         bass: "",
         guita: "",
+        sound: "",
         outfitColor: "",
       });
     } catch (err) {

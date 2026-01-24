@@ -8,6 +8,7 @@ export const ContainerForm = styled.div`
   align-items: center;
   box-sizing: border-box;
   padding: 0 150px;
+  margin: 100px 0;
 
   @media (max-width: 768px) {
     padding: 70px 50px 0px 50px;
