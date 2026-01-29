@@ -464,12 +464,13 @@ const ListMusic: React.FC = () => {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 1000
             }}>
-              <InputContainer style={{ backgroundColor: '#fff', padding: 24, borderRadius: 8 }}>
+              <InputContainer style={{ backgroundColor: '#000000', padding: 24, borderRadius: 8 }}>
                 <h3>Selecione o momento do louvor</h3>
                 <SelectContainer>
                   <select
                     value={selectedWorshipMoment}
                     onChange={(e) => setSelectedWorshipMoment(e.target.value)}
+                    style={{ backgroundColor: '#000000', color: '#fff', border: '1px solid #555' }}
                   >
                     <option value="">Selecione o momento</option>
                     {worshipMoments.map((moment) => (
@@ -480,11 +481,11 @@ const ListMusic: React.FC = () => {
                   </select>
                 </SelectContainer>
 
-                <div style={{ marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                  <Button onClick={confirmAddWithMoment}>Confirmar</Button>
+                <div style={{ width: '100%', marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
                   <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
                     Cancelar
                   </Button>
+                  <Button onClick={confirmAddWithMoment}>Confirmar</Button>
                 </div>
               </InputContainer>
             </div>

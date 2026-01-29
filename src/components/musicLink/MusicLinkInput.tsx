@@ -329,6 +329,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
               <select
                 value={ministerName}
                 onChange={(e) => setMinisterName(e.target.value)}
+                style={{ backgroundColor: '#000000', color: '#ffffff', border: '1px solid #555' }}
               >
                 <option value="">Selecione o ministro</option>
                 {ministerUsers.map((m) => (
@@ -336,12 +337,14 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
                 ))}
               </select>
             </SelectContainer>
-            <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
-              Confirmar
-            </Button>
-            <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
-              Cancelar
-            </Button>
+            <div style={{ width: '100%', marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
+              <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+                Cancelar
+              </Button>
+              <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
+                Confirmar
+              </Button>
+            </div>
           </InputContainer>
         </div>
       )}
