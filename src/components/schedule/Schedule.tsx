@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import PageWrapper from '../pageWrapper/pageWrapper';
 import { FaPlus } from 'react-icons/fa';
 import ScheduleInput from '../scheduleInput/ScheduleInput';
+import { UserRole } from '../../types/UserRole';
+import useAuthContext from '../../context/hooks/useAuthContext';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -50,9 +52,14 @@ const Schedule: React.FC = () => {
   const { monthlySchedule, getScheduleForMonth, nextSundaySchedule } = useSchedulesContext();
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user: loggedUser } = useAuthContext();
 
   const currentMonth = getFormattedMonth();
   const nameMonth = getNameMonth();
+
+  const loggedRoles = loggedUser?.roles || [];
+  const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Minister];
+  const canAddSchedule = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
 
   useEffect(() => {
     const fetch = async () => {
@@ -86,17 +93,19 @@ const Schedule: React.FC = () => {
       <PageWrapper>
         <ScheduleContent>
           <h1>Escala de {nameMonth}</h1>
-          <div className='add-schedule'>
-            <h4>Adicionar escala</h4>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="btns add-btn"
-              onClick={() => setIsModalOpen(true)}
-              >
-              <FaPlus size={12} />
-            </motion.button>
-          </div>
+          {canAddSchedule && (
+            <div className='add-schedule'>
+              <h4>Adicionar escala</h4>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="btns add-btn"
+                onClick={() => setIsModalOpen(true)}
+                >
+                <FaPlus size={12} />
+              </motion.button>
+            </div>
+          )}
 
           {isModalOpen && (
             <div className="modal">

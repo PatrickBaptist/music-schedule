@@ -16,6 +16,7 @@ const UsersCardsPage: React.FC = () => {
 
   const loggedUserId = loggedUser?.id;
   const loggedUserRoles = loggedUser?.roles || [];
+  const isAdminOrLeader = loggedUserRoles.some(role => role === UserRole.Admin || role === UserRole.Leader);
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -173,9 +174,6 @@ const UsersCardsPage: React.FC = () => {
     return diff < 5 * 60 * 1000; // 5 minutos
   };
 
-  const isAdminOrLeader = loggedUserRoles.some(role => role === UserRole.Admin || role === UserRole.Leader);
-  const isNotMe = loggedUserId && processedUsers.find(user => user.id === loggedUserId);
-
   return (
     <div
       style={{
@@ -230,8 +228,7 @@ const UsersCardsPage: React.FC = () => {
                     Status: {getStatusLabel(user.status!)}
                   </span>
 
-
-                  {isNotMe && isAdminOrLeader && (
+                  {user.id !== loggedUserId && isAdminOrLeader && (
                     <div className="actions-container">
                       {user.status !== "enabled" && (
                         <button onClick={() => handleStatusChange(user.id, "enabled")}>

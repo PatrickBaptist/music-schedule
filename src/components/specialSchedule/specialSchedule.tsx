@@ -8,8 +8,10 @@ import { motion } from "framer-motion";
 import LoadingScreen from "../loading/LoadingScreen";
 import { FaPlus } from "react-icons/fa";
 import EspecialScheduleInput from "../especialScheduleInput/EspecialScheduleInput";
+import { UserRole } from "../../types/UserRole";
 
 interface SpecialSchedulesProps {
+  usersRoles: string[];
   schedules: {
     id: string;
     evento: string; 
@@ -28,9 +30,12 @@ interface SpecialSchedulesProps {
   loading?: boolean;
 }
 
-const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading }) => {
+const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ usersRoles, schedules, loading }) => {
   const { deleteSpecialSchedules } = useSchedulesContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const allowedRoles = [UserRole.Leader, UserRole.Admin];
+  const canAddSchedule = usersRoles.some(role => allowedRoles.includes(role as UserRole));
 
   const handleDelete = async (id: string, evento: string) => {
     toast(
@@ -55,14 +60,16 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ schedules, loading 
     <ContainerEscala>
       <div className='add-schedule'>
         <h4>Escalas Especiais</h4>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="add-btn"
-          onClick={() => setIsModalOpen(true)}
-          >
-          <FaPlus size={12} />
-        </motion.button>
+        {canAddSchedule && (
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="add-btn"
+            onClick={() => setIsModalOpen(true)}
+            >
+            <FaPlus size={12} />
+          </motion.button>
+        )}
       </div>
 
       {isModalOpen && (

@@ -11,10 +11,12 @@ import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { useScroll } from "../../context/hooks/useScroll";
-import { FaEdit, FaPlus, FaTrash, FaYoutube } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSpotify, FaTrash, FaYoutube } from "react-icons/fa";
 import { AllMusicLink } from "../../services/AllMusicHistory";
 import { InputContainer } from "../../components/allMusicLink/AllMusicLinkInputStyle";
 import { MdPlaylistAdd } from "react-icons/md";
+import { UserRole } from "../../types/UserRole";
+import useAuthContext from "../../context/hooks/useAuthContext";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -45,6 +47,14 @@ const ListMusic: React.FC = () => {
   const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
   const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
   const [selectedWorshipMoment, setSelectedWorshipMoment] = useState("");
+  const { user: loggedUser } = useAuthContext();
+
+  const loggedRoles = loggedUser?.roles || [];
+  const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
+  const canAddMusic = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
+
+  const allowedRolesBtns = [UserRole.Leader, UserRole.Minister, UserRole.Admin];
+  const canDeleteMusic = loggedRoles.some(role => allowedRolesBtns.includes(role as UserRole));
 
   const [name, setName] = useState('');
   const [worshipMoment, setWorshipMoment] = useState('');
@@ -241,7 +251,7 @@ const ListMusic: React.FC = () => {
       <Main>
         <PageWrapper>
           <ListContainer>
-            <div style={{ width: "90%", maxWidth: "600px", display: "flex", alignItems: "center" }}>
+            <div style={{ width: "90%", maxWidth: "600px", display: "flex", alignItems: "center", marginBottom: "40px" }}>
               <Input
                 type="text"
                 value={searchTerm}
@@ -250,17 +260,19 @@ const ListMusic: React.FC = () => {
               />
             </div>
 
-            <div className='content-louvores'>
-              <h4>Adicionar louvor</h4>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="btns add-btn"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <FaPlus size={12} />
-              </motion.button>
-            </div>
+            {canAddMusic && (
+              <div className='content-louvores'>
+                <h4>Adicionar louvor</h4>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="btns add-btn"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <FaPlus size={12} />
+                </motion.button>
+              </div>
+              )}
 
             {isModalOpen && (
               <div className="modal">
@@ -376,6 +388,21 @@ const ListMusic: React.FC = () => {
                               </motion.button>
                             )}
 
+                            {music.spotify && (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="btns spotify-btn"
+                                onClick={() =>
+                                  music.spotify &&
+                                  window.open(music.spotify, "_blank")
+                                }
+                                title="Abrir no Spotify"
+                              >
+                                <FaSpotify size={16} />
+                              </motion.button>
+                            )}
+
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
@@ -385,23 +412,27 @@ const ListMusic: React.FC = () => {
                               <FaEdit size={14} />
                             </motion.button>
 
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              className="btns delete-btn"
-                              onClick={() => handleDelete(music.id, music.name)}
-                            >
-                              <FaTrash size={14} />
-                            </motion.button>
+                            {canDeleteMusic && (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="btns delete-btn"
+                                onClick={() => handleDelete(music.id, music.name)}
+                              >
+                                <FaTrash size={14} />
+                              </motion.button>
+                            )}
 
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              className="btns add-btn"
-                              onClick={() => handleAddToSunday(music.id)}
-                            >
-                              <MdPlaylistAdd size={14} />
-                            </motion.button>
+                            {canAddMusic && (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="btns add-btn"
+                                onClick={() => handleAddToSunday(music.id)}
+                              >
+                                <MdPlaylistAdd size={14} />
+                              </motion.button>
+                            )}
                           </div>
                         </>
                       )}

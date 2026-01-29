@@ -13,6 +13,8 @@ import { SpecialSchedule } from '../../services/ScheduleService';
 import ThursdaySchedule from '../../components/thursdaySchedule/thursday';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
 import { FaPlus } from 'react-icons/fa';
+import useAuthContext from '../../context/hooks/useAuthContext';
+import { UserRole } from '../../types/UserRole';
 
 const HomePage: React.FC = () => {
 
@@ -20,6 +22,11 @@ const HomePage: React.FC = () => {
   const { nextSundaySchedule, specialSchedules, getSpecialSchedules } = useSchedulesContext();
   const { warning, getWarning } = useNotificationContext()
   const [ isLoading, setIsLoading ] = useState(true);
+  const { user: loggedUser } = useAuthContext();
+
+  const loggedRoles = loggedUser?.roles || [];
+  const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
+  const canAddMusic = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,17 +52,19 @@ const HomePage: React.FC = () => {
 
             <div className="desktop-layout">
               <div className="coluna-1">
-                <div className='content-louvores'>
-                  <h4>Adicionar louvor</h4>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btns add-btn"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <FaPlus size={12} />
-                  </motion.button>
-                </div>
+                {canAddMusic && (
+                  <div className='content-louvores'>
+                    <h4>Adicionar louvor</h4>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="btns add-btn"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      <FaPlus size={12} />
+                    </motion.button>
+                  </div>
+                )}
 
                 {isModalOpen && (
                   <div className="modal">
@@ -65,7 +74,7 @@ const HomePage: React.FC = () => {
                   </div>
                 )}
 
-                <MusicLinkList />
+                <MusicLinkList canDelete={loggedRoles} />
               </div>
 
               <div className="coluna-2">
@@ -96,7 +105,7 @@ const HomePage: React.FC = () => {
             
             <div className="desktop-layout-row-2">
               <div className="coluna-1">
-                  {specialSchedules && <SpecialSchedules schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
+                  {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
               </div>
               <div className="coluna-2">
                   <div className='container-escala'>

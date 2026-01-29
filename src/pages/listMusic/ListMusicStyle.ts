@@ -114,6 +114,15 @@ export const ListContainer = styled.ul`
     .youtube-btn:hover {
       background-color: #cc0000;
     }
+    
+    .spotify-btn {
+      background-color: #1db954;
+      color: white;
+    }
+
+    .spotify-btn:hover {
+      background-color: #1aa34a;
+    }
 
     .edit-btn {
       background-color: #2f81f7;

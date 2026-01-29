@@ -21,12 +21,17 @@ import {
   FaTrashAlt,
   FaYoutube,
 } from "react-icons/fa";
+import { UserRole } from "../../types/UserRole";
 
 type Video = {
   url: string;
 };
 
-const MusicLinkList: React.FC = () => {
+interface SpecialSchedulesProps {
+  canDelete: string[];
+}
+
+const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   const tons = [
     "C",
     "Cm",
@@ -106,6 +111,9 @@ const MusicLinkList: React.FC = () => {
   const [cifra, setCifra] = useState("");
   const [description, setDescription] = useState("");
   const [order, setOrder] = useState(0);
+
+  const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin];
+  const canDeleteMusic = canDelete.some(role => allowedRoles.includes(role as UserRole));
 
   const [selectedDescription, setSelectedDescription] = useState<{
     description: string;
@@ -384,14 +392,16 @@ const MusicLinkList: React.FC = () => {
                                     <FaEdit size={16} />
                                   </motion.button>
 
-                                  <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    className="btns delete-icon"
-                                    onClick={() => handleDelete(musicLink.id!)}
-                                    title="Deletar música"
-                                  >
-                                    <FaTrashAlt size={16} />
-                                  </motion.button>
+                                  {canDeleteMusic && (
+                                    <motion.button
+                                      whileHover={{ scale: 1.1 }}
+                                      className="btns delete-icon"
+                                      onClick={() => handleDelete(musicLink.id!)}
+                                      title="Deletar música"
+                                    >
+                                      <FaTrashAlt size={16} />
+                                    </motion.button>
+                                  )}
                                 </motion.div>
                               )}
                             </AnimatePresence>

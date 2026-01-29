@@ -24,6 +24,10 @@ const MePage: React.FC = () => {
   const [notificationText, setNotificationText] = useState<string>("");
   const [warningText, setWarningText] = useState<string>("");
 
+  const loggedRoles = user?.roles || [];
+  const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
+  const canAddwarning = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
+
   useEffect(() => {
     setIsLoading(!user);
   }, [user]);
@@ -255,65 +259,67 @@ const MePage: React.FC = () => {
         </PageWrapper>
       )}
 
-      <ContainerForm>
-        <div className="form-row">
-          <div className="form-column">
-            <div className="form-container">
-              <div className="form-content">
-                <DarkForm
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <FormGroup>
-                    <DarkLabel>Mensagem da Notificação:</DarkLabel>
-                    <DarkInput
-                      type="text"
-                      value={notificationText}
-                      onChange={(e) =>
-                        setNotificationText(e.target.value)
-                      }
-                      placeholder="Digite a mensagem da notificação"
-                    />
-                  </FormGroup>
-                  <div className="button-container">
-                    <DarkButton type="button" onClick={handleSendNotification}>
-                      Enviar
-                    </DarkButton>
-                 </div>
-                </DarkForm>
-              </div>
-            </div>
-          </div>
-
-          <div className="form-column">
-            <div className="form-container">
-              <div className="form-content">
-                <DarkForm
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <FormGroup>
-                    <DarkLabel>Mensagem de Aviso:</DarkLabel>
-                    <DarkInput
-                      type="text"
-                      value={warningText}
-                      onChange={(e) => setWarningText(e.target.value)}
-                      placeholder="Digite a mensagem do aviso"
-                    />
-                  </FormGroup>
-                  <div className="button-container">
-                    <DarkButton type="button" onClick={handleSendWarning}>
-                      Enviar
-                    </DarkButton>
+      {canAddwarning && (
+        <ContainerForm>
+          <div className="form-row">
+            <div className="form-column">
+              <div className="form-container">
+                <div className="form-content">
+                  <DarkForm
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <FormGroup>
+                      <DarkLabel>Mensagem da Notificação:</DarkLabel>
+                      <DarkInput
+                        type="text"
+                        value={notificationText}
+                        onChange={(e) =>
+                          setNotificationText(e.target.value)
+                        }
+                        placeholder="Digite a mensagem da notificação"
+                      />
+                    </FormGroup>
+                    <div className="button-container">
+                      <DarkButton type="button" onClick={handleSendNotification}>
+                        Enviar
+                      </DarkButton>
                   </div>
-                </DarkForm>
+                  </DarkForm>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-column">
+              <div className="form-container">
+                <div className="form-content">
+                  <DarkForm
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <FormGroup>
+                      <DarkLabel>Mensagem de Aviso:</DarkLabel>
+                      <DarkInput
+                        type="text"
+                        value={warningText}
+                        onChange={(e) => setWarningText(e.target.value)}
+                        placeholder="Digite a mensagem do aviso"
+                      />
+                    </FormGroup>
+                    <div className="button-container">
+                      <DarkButton type="button" onClick={handleSendWarning}>
+                        Enviar
+                      </DarkButton>
+                    </div>
+                  </DarkForm>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </ContainerForm>
+        </ContainerForm>
+      )}
     </div>
   );
 };
