@@ -138,17 +138,22 @@ export const SeeScale = styled.div`
     margin-bottom: 12px;
   }
 
-  p {
-    font-size: 1rem;
-    margin: 0;
+  .content-escala p {
+    font-size: 16px;
+    margin: 10px 0;
     display: flex;
-    justify-content: flex-start;
-    gap: 6px;
+    justify-content: space-between;
+    border-bottom: 1px solid #333;
+    padding-bottom: 6px;
   }
 
-  strong {
-    min-width: 70px;
+  .content-escala p:last-child {
+    border-bottom: none;
+  }
+
+  .content-escala strong {
     color: #fff;
+    min-width: 90px;
   }
 
   &:hover {

@@ -102,7 +102,6 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const setUserOnlineStatus = useCallback(async (id: string) => {
     const userRef = doc(db, "users", id);
-    console.log("last seen:", id);
     await updateDoc(userRef, {
       lastSeen: serverTimestamp(),
     });

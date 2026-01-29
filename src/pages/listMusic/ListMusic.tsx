@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useAllMusicHistoryContext from "../../context/hooks/useAllMusicHistoryContext";
 import Button from "../../components/buttons/Buttons";
@@ -231,6 +231,10 @@ const ListMusic: React.FC = () => {
     return new Date(date).getTime();
   };
 
+  const sortedMusic = useMemo(() => {
+    return [...filteredMusicLinks].sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
+  }, [filteredMusicLinks]);
+
   return (
     <Container>
 
@@ -340,10 +344,8 @@ const ListMusic: React.FC = () => {
                       : `Mostrando ${musicLinks.length} músicas`}
                   </p>
                 )}
-                <AnimatePresence mode="wait">
-                  {filteredMusicLinks
-                    .sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt))
-                    .map((music) => (
+                <AnimatePresence>
+                  {sortedMusic.map((music) => (
                     <motion.div
                       key={music.id}
                       className="container-card-music"

@@ -118,14 +118,16 @@ const Schedule: React.FC = () => {
                 <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#2EBEF2' }}>
                   {new Date(musician.date).toLocaleDateString("pt-BR")}
                 </h3>
-                <p style={{ fontWeight: '500', color: '#f59e0b' }}><strong>Ministro: </strong>{musician.músicos.minister || 'Não definido'}</p>
-                <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
-                <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
-                <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
-                <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
-                <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
-                <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
-                <p><strong>Op. Som: </strong>{musician.músicos.sound || 'Não definido'}</p>
+                <div className='content-escala'>
+                  <p style={{ fontWeight: '500', color: '#f59e0b' }}><strong>Ministro: </strong>{musician.músicos.minister || 'Não definido'}</p>
+                  <p><strong>Vocal: </strong>{musician.músicos.vocal1 || 'Não definido'}</p>
+                  <p><strong>Teclas: </strong>{musician.músicos.teclas || 'Não definido'}</p>
+                  <p><strong>Violão: </strong>{musician.músicos.violao || 'Não definido'}</p>
+                  <p><strong>Batera: </strong>{musician.músicos.batera || 'Não definido'}</p>
+                  <p><strong>Bass: </strong>{musician.músicos.bass || 'Não definido'}</p>
+                  <p><strong>Guita: </strong>{musician.músicos.guita || 'Não definido'}</p>
+                  <p><strong>Op. Som: </strong>{musician.músicos.sound || 'Não definido'}</p>
+                </div>
               </SeeScale>
             ))}
             </CardsGrid>

@@ -15,6 +15,7 @@ const UsersCardsPage: React.FC = () => {
   const { user: loggedUser } = useAuthContext();
 
   const loggedUserId = loggedUser?.id;
+  const loggedUserRoles = loggedUser?.roles || [];
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -172,6 +173,9 @@ const UsersCardsPage: React.FC = () => {
     return diff < 5 * 60 * 1000; // 5 minutos
   };
 
+  const isAdminOrLeader = loggedUserRoles.some(role => role === UserRole.Admin || role === UserRole.Leader);
+  const isNotMe = loggedUserId && processedUsers.find(user => user.id === loggedUserId);
+
   return (
     <div
       style={{
@@ -209,6 +213,10 @@ const UsersCardsPage: React.FC = () => {
                     <span style={{ color: "green", fontWeight: 500, fontSize: "0.85rem" }}>
                       🟢 Online
                     </span>
+                  )  : user.status === "disabled" ? (
+                    <span style={{ color: "gray", fontWeight: 500, fontSize: "0.85rem" }}>
+                      🔴 Conta desativada {getLastSeenLabel(user.lastSeen)}
+                    </span>
                   ) : (
                     <span style={{ color: "gray", fontWeight: 500, fontSize: "0.85rem" }}>
                       ⚪ Visto {getLastSeenLabel(user.lastSeen)}
@@ -223,7 +231,7 @@ const UsersCardsPage: React.FC = () => {
                   </span>
 
 
-                  {user.id !== loggedUserId && (
+                  {isNotMe && isAdminOrLeader && (
                     <div className="actions-container">
                       {user.status !== "enabled" && (
                         <button onClick={() => handleStatusChange(user.id, "enabled")}>
