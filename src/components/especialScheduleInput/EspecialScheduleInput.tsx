@@ -36,50 +36,50 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
   const musiciansBySkill: Record<string, string[]> = {
     minister: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Minister))
+        .filter((u) => u.roles?.includes(UserRole.Minister) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
     vocal: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Vocal))
+        .filter((u) => u.roles?.includes(UserRole.Vocal) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
         "Convidado",
         "Todos cantam",
     ],
     teclas: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Keyboard))
+        .filter((u) => u.roles?.includes(UserRole.Keyboard) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
     violao: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Violao))
+        .filter((u) => u.roles?.includes(UserRole.Violao) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
     bass: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Bass))
+        .filter((u) => u.roles?.includes(UserRole.Bass) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
     guita: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Guitar))
+        .filter((u) => u.roles?.includes(UserRole.Guitar) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
     batera: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Drums))
+        .filter((u) => u.roles?.includes(UserRole.Drums) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],
     sound: [
       ...users
-        .filter((u) => u.roles?.includes(UserRole.Sound))
+        .filter((u) => u.roles?.includes(UserRole.Sound) && u.status === 'enabled')
         .map((u) => u.nickname!.trim()),
       "Convidado",
     ],

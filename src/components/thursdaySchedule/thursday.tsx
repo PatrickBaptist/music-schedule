@@ -1,9 +1,21 @@
 import { CardThursday, ContainerThursday, MinisterInfo } from "./thursdayStyle";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
-
-const vocals = ["Anna", "Anderson", "Taisa", "Sarah", "Jorge"];
+import useUsersContext from "../../context/hooks/useUsersContext";
+import { useMemo } from "react";
+import { UserRole } from "../../types/UserRole";
 
 const ThursdaySchedule = () => {
+  const { users } = useUsersContext();
+
+  const ministersFromDb = useMemo(() => {
+    return users
+      .filter(user => 
+        user.roles.includes(UserRole.Minister) &&
+        user.status === 'enabled'
+      )
+      .map(user => user.name);
+  }, [users]);
+
   const getThursdaysOfMonth = (month: number, year: number): Date[] => {
     const thursdays: Date[] = [];
     const date = new Date(year, month - 1, 1);
@@ -23,6 +35,7 @@ const ThursdaySchedule = () => {
     year: number
   ): { date: string; minister: string }[] => {
     const thursdays = getThursdaysOfMonth(month, year);
+    if (ministersFromDb.length === 0) return [];
 
     let totalPreviousThursdays = 0;
 
@@ -32,7 +45,7 @@ const ThursdaySchedule = () => {
 
     return thursdays.map((thursday, index) => ({
       date: formatDateDDMMYYYY(thursday.toISOString()),
-      minister: vocals[(totalPreviousThursdays + index) % vocals.length],
+      minister: ministersFromDb[(totalPreviousThursdays + index) % ministersFromDb.length],
     }));
   };
 
