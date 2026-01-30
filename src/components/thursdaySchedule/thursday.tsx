@@ -13,7 +13,7 @@ const ThursdaySchedule = () => {
         user.roles.includes(UserRole.Minister) &&
         user.status === 'enabled'
       )
-      .map(user => user.name);
+      .map(user => user.nickname);
   }, [users]);
 
   const getThursdaysOfMonth = (month: number, year: number): Date[] => {
