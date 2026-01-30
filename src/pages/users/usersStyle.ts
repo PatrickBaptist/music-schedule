@@ -1,6 +1,19 @@
 import { motion } from "motion/react";
 import styled from "styled-components";
 
+export const Input = styled.input`
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  &:focus {
+    border-color: #2EBEF2;
+    box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
+  }
+`;
+
 export const UsersContainer = styled.div`
   width: 100%;
   display: grid;

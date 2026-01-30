@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
     const toastId = toast.loading("Aguarde...");
     try {
       await login(email, password);
-      toast.success("Login realizado com sucesso!", { id: toastId });
+      toast.dismiss(toastId);
       navigate("/");
     } catch (err: unknown) {
         if (err instanceof Error) {

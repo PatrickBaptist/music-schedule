@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { roleOptions, UserRole } from "../../types/UserRole";
-import { UserCard, UsersContainer } from "./usersStyle";
+import { Input, UserCard, UsersContainer } from "./usersStyle";
 import { toast } from "sonner";
 import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope, FaTrash } from 'react-icons/fa';
 import LoadingScreen from "../../components/loading/LoadingScreen";
@@ -12,6 +12,7 @@ import useAuthContext from "../../context/hooks/useAuthContext";
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user: loggedUser } = useAuthContext();
 
   const loggedUserId = loggedUser?.id;
@@ -61,6 +62,17 @@ const UsersCardsPage: React.FC = () => {
 
     return usersWithSortedRoles;
   }, [users, rolePriority]);
+
+  const filteredUsers = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return processedUsers.filter((user) => 
+      (user.name?.toLowerCase().includes(term)) ||
+      (user.nickname?.toLowerCase().includes(term)) ||
+      (user.email?.toLowerCase().includes(term)) ||
+      (user.roles.some((role) => role.toLowerCase().includes(term))) ||
+      (user.status?.toLowerCase().includes(term))
+    );
+  }, [searchTerm, processedUsers]);
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -185,11 +197,21 @@ const UsersCardsPage: React.FC = () => {
     >
       <PageWrapper>
         <h1>Usuários</h1>
+
+        <div style={{ width: "90%", maxWidth: "600px", display: "flex", alignItems: "center", marginBottom: "40px" }}>
+          <Input
+            type="text"
+            placeholder="Pesquisar por nome, e-mail ou função..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         {isLoading ? (
           <LoadingScreen /> 
         ) : (
             <UsersContainer>
-              {processedUsers.map((user, index) => (
+              {filteredUsers.map((user, index) => (
                 <UserCard
                   key={user.id}
                   initial={{ opacity: 0, y: 30 }}
@@ -251,6 +273,7 @@ const UsersCardsPage: React.FC = () => {
                   )}
                 </UserCard>
               ))}
+              {filteredUsers.length === 0 && <p>Nenhum usuário encontrado.</p>}
             </UsersContainer>
         )}
       </PageWrapper>
