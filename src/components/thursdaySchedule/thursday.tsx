@@ -1,4 +1,4 @@
-import { CardThursday, ContainerThursday, MinisterInfo } from "./thursdayStayle";
+import { CardThursday, ContainerThursday, MinisterInfo } from "./thursdayStyle";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
 
 const vocals = ["Anna", "Anderson", "Taisa", "Sarah", "Jorge"];
