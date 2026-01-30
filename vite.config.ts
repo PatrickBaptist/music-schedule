@@ -7,7 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate', // atualiza automaticamente quando houver push
-      includeAssets: ['logo-192.png', 'logo-512.png', 'logo-1280x720.png', 'logo-720x1280.png' ], // arquivos públicos para cache
+      injectRegister: 'auto',
+      devOptions: {
+        enabled: false,
+        type: 'module',
+      },
+      includeAssets: ['logo-192.png', 'logo-512.png', 'logo-1280-720.png', 'logo-720-1280.png' ], // arquivos públicos para cache
       manifest: {
         name: 'Ministério de louvor Manancial',
         short_name: 'Min. Manancial',
@@ -44,6 +49,11 @@ export default defineConfig({
       },
       workbox: {
         runtimeCaching: [
+          {
+            // Regra específica para o ping: SEMPRE rede, NUNCA cache
+            urlPattern: ({ url }) => url.pathname.includes('/ping'),
+            handler: 'NetworkOnly', 
+          },
           {
             urlPattern: /^https?.*/,
             handler: 'NetworkFirst',

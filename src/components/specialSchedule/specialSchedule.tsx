@@ -97,14 +97,16 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ usersRoles, schedul
               <p><strong>Guita:</strong> {escala.guita || "Não definido"}</p>
               <p><strong>Op. som: </strong>{escala.sound || 'Não definido'}</p>
               <p><strong>Paleta de cores:</strong> <span style={{ fontStyle: 'italic' }}>{escala.outfitColor || "Não definido"}</span></p>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                className='btns'
-                onClick={() => handleDelete(escala.id, escala.evento)}
-                style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', border: 'none' }}
-              >
-                <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
-              </motion.button>
+              {canAddSchedule && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  className='btns'
+                  onClick={() => handleDelete(escala.id, escala.evento)}
+                  style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', border: 'none' }}
+                >
+                  <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
+                </motion.button>
+              )}
             </div>
           ))
         ) : (

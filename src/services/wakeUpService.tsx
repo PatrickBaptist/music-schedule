@@ -20,7 +20,17 @@ export const ServerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const checkServer = async () => {
       try {
-        const response = await fetch(`${API_URL}/ping`);
+        const response = await fetch(`${API_URL}/ping?t=${Date.now()}`, { 
+          // 1. Diz ao navegador para não usar cache e não salvar a resposta no cache
+          cache: 'no-store', 
+          
+          // 2. Garante que cabeçalhos de cache antigos não interfiram
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+
         if (response.ok) {
           clearInterval(interval);
           setProgress(100);
