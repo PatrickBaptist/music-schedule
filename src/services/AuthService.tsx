@@ -34,6 +34,7 @@ export interface AuthContextProps {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
+  loginGuest: () => Promise<void>;
   logout: () => void;
   registerUser: (payload: RegisterPayload) => Promise<RegisterResponse>;
   isAuthenticated: boolean;
@@ -155,8 +156,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const loginGuest = async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/guest`, {
+        method: "POST"
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.message || "Erro ao entrar como convidado");
+      }
+
+      const data = await res.json();
+
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+    } catch (err) {
+      console.error("Erro no login:", err);
+      throw err;
+    }
+  };
+
   return (
-    <AuthService.Provider value={{ user, token, login, logout, registerUser, isAuthenticated: !!token }}>
+    <AuthService.Provider value={{ user, token, login, logout, registerUser, loginGuest, isAuthenticated: !!token }}>
       {children}
     </AuthService.Provider>
   );

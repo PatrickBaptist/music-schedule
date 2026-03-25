@@ -28,6 +28,8 @@ const MePage: React.FC = () => {
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
   const canAddwarning = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
 
+  const isGuest = user?.roles?.includes(UserRole.Guest);
+
   useEffect(() => {
     setIsLoading(!user);
   }, [user]);
@@ -216,32 +218,36 @@ const MePage: React.FC = () => {
 
           {user && (
             <ProfileList>
-              <ProfileItem
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <FaUser style={{ marginRight: "8px", color: "#1e90ff" }} />
-                <strong>Nome:</strong> {user.name}
-              </ProfileItem>
+              {!isGuest && (
+                <>
+                  <ProfileItem
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <FaUser style={{ marginRight: "8px", color: "#1e90ff" }} />
+                    <strong>Nome:</strong> {user.name}
+                  </ProfileItem>
 
-              <ProfileItem
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <FaTag style={{ marginRight: "8px", color: "#ff7f50" }} />
-                <strong>Apelido:</strong> {user.nickname}
-              </ProfileItem>
+                  <ProfileItem
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <FaTag style={{ marginRight: "8px", color: "#ff7f50" }} />
+                    <strong>Apelido:</strong> {user.nickname}
+                  </ProfileItem>
 
-              <ProfileItem
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <FaEnvelope style={{ marginRight: "8px", color: "#32cd32" }} />
-                <strong>Email:</strong> {user.email}
-              </ProfileItem>
+                  <ProfileItem
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <FaEnvelope style={{ marginRight: "8px", color: "#32cd32" }} />
+                    <strong>Email:</strong> {user.email}
+                  </ProfileItem>
+                </>
+              )}
 
               <ProfileItem
                 initial={{ opacity: 0, x: -50 }}

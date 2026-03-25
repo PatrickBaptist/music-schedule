@@ -9,7 +9,7 @@ import PageWrapper from "../../components/pageWrapper/pageWrapper";
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuthContext();
+  const { login, loginGuest } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -17,6 +17,21 @@ const LoginPage: React.FC = () => {
     const toastId = toast.loading("Aguarde...");
     try {
       await login(email, password);
+      toast.dismiss(toastId);
+      navigate("/");
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            toast.error(err.message, { id: toastId });
+        } else {
+            toast.error("Erro desconhecido ao fazer login", { id: toastId });
+        }
+    }
+  };
+
+  const handleLoginGuest = async () => {
+    const toastId = toast.loading("Aguarde...");
+    try {
+      await loginGuest();
       toast.dismiss(toastId);
       navigate("/");
     } catch (err: unknown) {
@@ -61,6 +76,9 @@ const LoginPage: React.FC = () => {
           <RegisterPrompt>
             Não possui conta?
             <Link to="/register">Cadastre-se</Link>
+          </RegisterPrompt>
+          <RegisterPrompt onClick={handleLoginGuest} style={{ cursor: "pointer" }}>
+            Entrar como convidado
           </RegisterPrompt>
         </FormWrapper>
       </Container>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button, ContainerRegiter, FieldContainer, FormWrapper, Input, Label, LoginPrompt, RoleItem, RolesContainer, RolesLabel, StyledInputMask, Title } from "./registerStyle";
-import { roleOptions } from "../../types/UserRole";
+import { roleOptions, UserRole } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import { motion } from "framer-motion";
@@ -87,8 +87,9 @@ const RegisterPage: React.FC = () => {
               </RolesLabel>
           </FieldContainer>
           <RolesContainer>
-
-              {roleOptions.map((role) => (
+              {roleOptions
+                .filter(role => role.value !== UserRole.Guest)
+                .map((role) => (
                   <RoleItem key={role.value}>
                     <motion.input
                       type="checkbox"

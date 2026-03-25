@@ -10,12 +10,14 @@ const Header: React.FC = () => {
 
   const { user, logout } = useAuthContext();
   const location = useLocation();
+  
+  const isGuest = user?.roles?.includes("guest");
 
   const menuItems = [
     { name: "Início", path: "/" },
     { name: "Escala", path: "/schedule" },
-    { name: "Canções", path: "/listMusic" },
-    { name: "Usuários", path: "/users" },
+    { name: "Canções", path: "/listMusic", blocked: isGuest },
+    { name: "Usuários", path: "/users", blocked: isGuest },
     { name: "Perfil", path: "/profile" },
   ];
 
@@ -30,29 +32,41 @@ const Header: React.FC = () => {
           const isActive = location.pathname === item.path;
           return (
             <HeaderItem key={item.name}>
-              <Link to={item.path}>
-                <span>{item.name}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="underline"
-                    style={{
-                      height: 2,
-                      background: "#2EBEF2",
-                      marginTop: 2,
-                      borderRadius: 1,
-                      width: '100%',
-                    }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </Link>
+              {item.blocked ? (
+                <span style={{ opacity: 0.5, cursor: "not-allowed" }}>
+                  {item.name} 🔒
+                </span>
+              ) : (
+                <Link to={item.path}>
+                  <span>{item.name}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="underline"
+                      style={{
+                        height: 2,
+                        background: "#2EBEF2",
+                        marginTop: 2,
+                        borderRadius: 1,
+                        width: '100%',
+                      }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              )}
             </HeaderItem>
           );
         })}
       </NavHeader>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-        <span style={{ color: '#fff', fontWeight: 600 }}>Olá, <span style={{ color: '#2EBEF2' }}>{user?.nickname || user?.name}</span></span>
+        {!isGuest && (
+          <span style={{ color: '#fff', fontWeight: 600 }}>
+            Olá, <span style={{ color: '#2EBEF2' }}>
+              {user?.nickname || user?.name}
+            </span>
+          </span>
+        )}
         <motion.button
           onClick={logout}
           title='Sair'
