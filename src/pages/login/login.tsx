@@ -73,12 +73,12 @@ const LoginPage: React.FC = () => {
             >
             Entrar
           </Button>
+          <RegisterPrompt onClick={handleLoginGuest} style={{ cursor: "pointer" }}>
+            Continuar como visitante
+          </RegisterPrompt>
           <RegisterPrompt>
             Não possui conta?
             <Link to="/register">Cadastre-se</Link>
-          </RegisterPrompt>
-          <RegisterPrompt onClick={handleLoginGuest} style={{ cursor: "pointer" }}>
-            Entrar como convidado
           </RegisterPrompt>
         </FormWrapper>
       </Container>
