@@ -8,12 +8,13 @@ import UserIcon from "../../assets/imgs/perfil.png";
 import { motion } from "framer-motion";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import { FaBan } from "react-icons/fa";
+import { UserRole } from "../../types/UserRole";
 
 const Footer: React.FC = () => {
   const location = useLocation();
 
   const { user } = useAuthContext();
-  const isGuest = user?.roles?.includes("guest");
+  const isGuest = user?.roles?.includes(UserRole.Guest);
 
   const menuItems = [
     { name: "Início", path: "/", icon: Home },

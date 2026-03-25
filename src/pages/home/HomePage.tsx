@@ -24,6 +24,8 @@ const HomePage: React.FC = () => {
   const [ isLoading, setIsLoading ] = useState(true);
   const { user: loggedUser } = useAuthContext();
 
+  const isGuest = loggedUser?.roles?.includes(UserRole.Guest);
+
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
   const canAddMusic = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
@@ -119,7 +121,7 @@ const HomePage: React.FC = () => {
               </div>
             </div>
             
-            <BirthdaysThisMonth />
+            {!isGuest && <BirthdaysThisMonth />}
 
           </PageWrapper> 
         </ContainerHome>
