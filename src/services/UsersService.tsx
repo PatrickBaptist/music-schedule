@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from "react";
-import { doc, updateDoc, serverTimestamp, onSnapshot, collection, Timestamp } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 export interface User {
@@ -39,24 +39,26 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
   };
 
-  const fetchUsers = useCallback(() => {
-    const ref = collection(db, "users");
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    const unsubscribe = onSnapshot(ref, (snap) => {
-      const list = snap.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      })) as User[];
+      if (!res.ok) throw new Error("Erro ao buscar usuários");
 
-      setUsers(list);
-    });
-
-    return unsubscribe;
-  }, []);
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [ API_URL ]);
 
   useEffect(() => {
-    const unsub = fetchUsers();
-    return () => unsub();
+    fetchUsers();
   }, [fetchUsers]);
 
   const getUserById = async (id: string) => {
