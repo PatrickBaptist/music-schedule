@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
 import { InputContainer, SuggestionsList } from './MusicLinkInputStyle';
@@ -55,15 +55,10 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const { users } = useUsersContext();
   const [ministerModalOpen, setMinisterModalOpen] = useState(false);
   const [ministerName, setMinisterName] = useState('');
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const [suggestions, setSuggestions] = useState<AllMusicLink[]>([])
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
-
-  useEffect(() => {
-    nameInputRef.current?.focus();
-  }, []);
 
   useEffect(() => {
     getAllMusicLinksFull().catch((err) => console.error("Erro ao carregar músicas:", err));
@@ -113,7 +108,6 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     setOrder(1);
     setMinisterName('');
 
-    nameInputRef.current?.focus();
     toast.success("Música adicionada com sucesso!", { id: toastId });
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -206,7 +200,6 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         value={name}
         onChange={handleNameChange}
         placeholder="Ex.: Grande é o Senhor"
-        ref={nameInputRef}
         onKeyDown={handleKeyPress}
       />
 

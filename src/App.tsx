@@ -34,6 +34,10 @@ const FixedFooter = styled.footer`
   bottom: 0;
   z-index: 9999;
   height: 90px;
+
+  @media (min-width: 670px) {
+    display: none;
+  }
 `;
 
 const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
@@ -56,6 +60,10 @@ const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
   &::-webkit-scrollbar-thumb {
     background-color: #58a6ff;
     border-radius: 1em;
+  }
+
+  @media (min-width: 670px) {
+    bottom: 0;
   }
 `;
 
