@@ -20,6 +20,12 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     flex-direction: column;
     justify-content: center;
     margin-bottom: 5px;
+    touch-action: none;
+
+    &.is-dragging {
+      opacity: 0.45;
+      z-index: 0;
+    }
 
     .container-card {
       width: 100%;
@@ -29,7 +35,29 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       align-items: center;
       box-sizing: border-box;
       gap: 8px;
+    }
 
+    .drag-handle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 8px 4px;
+      color: #8b949e;
+      cursor: grab;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      touch-action: none;
+
+      &:hover {
+        color: #f59e0b;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
     }
 
     .card {
@@ -323,7 +351,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   }
 `;
 
-export const MusicGroup = styled.div<{ $bg?: string }>`
+export const MusicGroup = styled.div<{ $bg?: string; $isOver?: boolean }>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -334,6 +362,10 @@ export const MusicGroup = styled.div<{ $bg?: string }>`
   margin-bottom: 12px;
   border-radius: 5px;
   background: ${({ $bg }) => $bg || "transparent"};
+  outline: ${({ $isOver }) =>
+    $isOver ? "2px dashed rgba(245, 158, 11, 0.8)" : "2px dashed transparent"};
+  transition: outline-color 0.2s ease;
+  min-height: ${({ $isOver }) => ($isOver ? "48px" : "auto")};
 `;
 
 export const ContainerVd = styled.div`

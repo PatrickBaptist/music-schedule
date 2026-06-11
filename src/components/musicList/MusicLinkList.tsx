@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button from "../buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
@@ -15,6 +15,7 @@ import {
   FaEdit,
   FaEllipsisV,
   FaFileAlt,
+  FaGripVertical,
   FaRegCommentDots,
   FaSpotify,
   FaTimes,
@@ -22,6 +23,26 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import { UserRole } from "../../types/UserRole";
+import { MusicLink } from "../../services/MusicLinksService";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCorners,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type Video = {
   url: string;
@@ -30,6 +51,57 @@ type Video = {
 interface SpecialSchedulesProps {
   canDelete: string[];
 }
+
+type GroupedMusic = Record<string, MusicLink[]>;
+
+const worshipMoments = [
+  "Momento de Louvor",
+  "Dízimos e Ofertas",
+  "Batismo",
+  "Ceia",
+  "Final do Culto",
+  "Culto de Quinta",
+];
+
+const momentBackgrounds: Record<string, string> = {
+  "Momento de Louvor":
+    "linear-gradient(135deg, rgba(30, 59, 114, 0.644), rgb(57, 113, 209))",
+
+  "Dízimos e Ofertas":
+    "linear-gradient(135deg, rgba(19, 78, 94, 0.555), rgba(113, 178, 128, 0.5))",
+
+  Batismo:
+    "linear-gradient(135deg, rgba(0, 78, 146, 0.685), rgb(0, 4, 40))",
+
+  Ceia:
+    "linear-gradient(135deg, rgba(66, 39, 90, 0.979), rgba(115, 75, 109, 0.178))",
+
+  "Final do Culto":
+    "linear-gradient(135deg, rgba(35, 37, 38, 0.616), rgb(65, 67, 69))",
+
+  "Culto de Quinta":
+    "linear-gradient(135deg, rgba(92, 67, 36, 0.979), rgba(158, 122, 64, 0.288))",
+};
+
+const buildGroupedMusic = (links: MusicLink[]): GroupedMusic => {
+  const grouped: GroupedMusic = {};
+
+  worshipMoments.forEach((moment) => {
+    grouped[moment] = links
+      .filter((link) => link.worshipMoment === moment)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+  });
+
+  return grouped;
+};
+
+const findContainer = (id: string, grouped: GroupedMusic): string | undefined => {
+  if (worshipMoments.includes(id)) return id;
+
+  return worshipMoments.find((moment) =>
+    grouped[moment]?.some((item) => item.id === id)
+  );
+};
 
 const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   const tons = [
@@ -59,36 +131,6 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     "Bm",
   ];
 
-  const worshipMoments = [
-    "Momento de Louvor",
-    "Dízimos e Ofertas",
-    "Batismo",
-    "Ceia",
-    "Final do Culto",
-    "Culto de Quinta",
-  ];
-
-  const momentBackgrounds: Record<string, string> = {
-  "Momento de Louvor":
-    "linear-gradient(135deg, rgba(30, 59, 114, 0.644), rgb(57, 113, 209))",
-
-  "Dízimos e Ofertas":
-    "linear-gradient(135deg, rgba(19, 78, 94, 0.555), rgba(113, 178, 128, 0.5))",
-
-  "Batismo":
-    "linear-gradient(135deg, rgba(0, 78, 146, 0.685), rgb(0, 4, 40))",
-
-  "Ceia":
-    "linear-gradient(135deg, rgba(66, 39, 90, 0.979), rgba(115, 75, 109, 0.178))",
-
-  "Final do Culto":
-    "linear-gradient(135deg, rgba(35, 37, 38, 0.616), rgb(65, 67, 69))",
-
-  "Culto de Quinta":
-    "linear-gradient(135deg, rgba(92, 67, 36, 0.979), rgba(158, 122, 64, 0.288))",
-};
-
-
   const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } =
     useMusicLinksContext();
   const [openVideo, setOpenVideo] = useState(false);
@@ -99,9 +141,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<string | null>(null);
-  const [showButtons, setShowButtons] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [worshipMoment, setWorshipMoment] = useState("");
@@ -114,6 +154,19 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin];
   const canDeleteMusic = canDelete.some(role => allowedRoles.includes(role as UserRole));
+  const reorderRoles = [
+    UserRole.Leader,
+    UserRole.Minister,
+    UserRole.Admin,
+    UserRole.Vocal,
+  ];
+  const canReorder = canDelete.some((role) =>
+    reorderRoles.includes(role as UserRole)
+  );
+  const [groupedMusic, setGroupedMusic] = useState<GroupedMusic>(() =>
+    buildGroupedMusic([])
+  );
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   const [selectedDescription, setSelectedDescription] = useState<{
     description: string;
@@ -131,6 +184,172 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
     fetchMusicLink();
   }, [fetchMusicLinks]);
+
+  useEffect(() => {
+    setGroupedMusic(buildGroupedMusic(musicLinks));
+  }, [musicLinks]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const persistOrderChanges = useCallback(
+    async (nextGrouped: GroupedMusic) => {
+      const updates: { id: string; data: MusicLink }[] = [];
+
+      worshipMoments.forEach((moment) => {
+        nextGrouped[moment]?.forEach((item, index) => {
+          const newOrder = index + 1;
+          const original = musicLinks.find((music) => music.id === item.id);
+
+          if (!original || !item.id) return;
+
+          if (
+            original.order !== newOrder ||
+            original.worshipMoment !== moment
+          ) {
+            updates.push({
+              id: item.id,
+              data: {
+                ...original,
+                order: newOrder,
+                worshipMoment: moment,
+              },
+            });
+          }
+        });
+      });
+
+      if (updates.length === 0) return;
+
+      setIsSavingOrder(true);
+
+      try {
+        await Promise.all(
+          updates.map(({ id, data }) => updateMusicLink(id, data))
+        );
+        toast.success("Ordem atualizada!");
+      } catch (err: unknown) {
+        setGroupedMusic(buildGroupedMusic(musicLinks));
+
+        if (err instanceof Error) {
+          toast.error("Sem premissão! " + err.message);
+        } else {
+          toast.error("Erro ao atualizar ordem");
+        }
+      } finally {
+        setIsSavingOrder(false);
+      }
+    },
+    [musicLinks, updateMusicLink]
+  );
+
+  const handleDragOver = (event: DragOverEvent) => {
+    if (!canReorder || isSavingOrder) return;
+
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    setGroupedMusic((prev) => {
+      const activeContainer = findContainer(activeId, prev);
+      const overContainer = findContainer(overId, prev);
+
+      if (!activeContainer || !overContainer) return prev;
+      if (activeContainer === overContainer) return prev;
+
+      const activeItems = [...prev[activeContainer]];
+      const overItems = [...prev[overContainer]];
+      const activeIndex = activeItems.findIndex((item) => item.id === activeId);
+      const overIndex = overItems.findIndex((item) => item.id === overId);
+
+      if (activeIndex === -1) return prev;
+
+      const newIndex = overIndex >= 0 ? overIndex : overItems.length;
+      const [movedItem] = activeItems.splice(activeIndex, 1);
+
+      return {
+        ...prev,
+        [activeContainer]: activeItems,
+        [overContainer]: [
+          ...overItems.slice(0, newIndex),
+          { ...movedItem, worshipMoment: overContainer },
+          ...overItems.slice(newIndex),
+        ],
+      };
+    });
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    if (!canReorder || isSavingOrder) return;
+
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    let nextGrouped: GroupedMusic | null = null;
+
+    setGroupedMusic((prev) => {
+      const activeContainer = findContainer(activeId, prev);
+      const overContainer = findContainer(overId, prev);
+
+      if (!activeContainer || !overContainer) return prev;
+
+      if (activeContainer === overContainer) {
+        const items = [...prev[activeContainer]];
+        const oldIndex = items.findIndex((item) => item.id === activeId);
+        const newIndex = items.findIndex((item) => item.id === overId);
+
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) {
+          return prev;
+        }
+
+        nextGrouped = {
+          ...prev,
+          [activeContainer]: arrayMove(items, oldIndex, newIndex),
+        };
+
+        return nextGrouped;
+      }
+
+      if (prev[overContainer].some((item) => item.id === activeId)) {
+        nextGrouped = prev;
+        return prev;
+      }
+
+      const activeItems = [...prev[activeContainer]];
+      const overItems = [...prev[overContainer]];
+      const activeIndex = activeItems.findIndex((item) => item.id === activeId);
+      const overIndex = overItems.findIndex((item) => item.id === overId);
+
+      if (activeIndex === -1) return prev;
+
+      const newIndex = overIndex >= 0 ? overIndex : overItems.length;
+      const [movedItem] = activeItems.splice(activeIndex, 1);
+
+      nextGrouped = {
+        ...prev,
+        [activeContainer]: activeItems,
+        [overContainer]: [
+          ...overItems.slice(0, newIndex),
+          { ...movedItem, worshipMoment: overContainer },
+          ...overItems.slice(newIndex),
+        ],
+      };
+
+      return nextGrouped;
+    });
+
+    await persistOrderChanges(nextGrouped ?? groupedMusic);
+  };
 
   const handleVideoClick = () => {
     setOpenVideo(false);
@@ -236,184 +455,55 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   };
 
   const toggleButtons = (id: string) => {
-    setShowButtons((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setOpenMenuId((prev) => (prev === id ? null : id));
   };
 
   return (
     <ListContainer>
       <AnimatePresence>
         {musicLinks.length > 0 ? (
-          worshipMoments.map((moment) => {
-            const musicInMoment = musicLinks
-              .filter((link) => link.worshipMoment === moment)
-              .sort((a, b) => (a.order || 0) - (b.order || 0));
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            {worshipMoments.map((moment) => {
+              const musicInMoment = groupedMusic[moment] || [];
 
-            if (musicInMoment.length === 0) return null;
+              if (musicInMoment.length === 0) return null;
 
-            return (
-              <MusicGroup key={moment} style={{ background: momentBackgrounds[moment] }}>
-                <h4 style={{ margin: "16px 0" }}>{moment}</h4>
-
-                {musicInMoment.map((musicLink, index) => (
-                  <motion.div
-                    key={index}
-                    className="container-list"
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -200 }}
-                    transition={{ duration: 0.4 }}
+              return (
+                <DroppableMusicGroup
+                  key={moment}
+                  moment={moment}
+                  background={momentBackgrounds[moment]}
+                >
+                  <SortableContext
+                    items={musicInMoment.map((music) => music.id!)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <div className="container-card">
-                      <div className="card">
-                        {loadingCards[musicLink.id!] ? (
-                          <p style={{ fontWeight: "bold", color: "#fff" }}>Aguarde..</p>
-                        ) : (
-                          <>
-                            <div className="music-header">
-                              <span className="span-order">
-                                {musicLink.order}ª
-                              </span>
-                              <div
-                                className="span-music"
-                                style={{
-                                  width: "100%",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  padding: "0 6px",
-                                }}
-                              >
-                                <span className="span-name">
-                                  {musicLink.name}
-                                </span>
-                                {musicLink.description?.trim() && (
-                                  <span>
-                                    <FaRegCommentDots
-                                      className="icon-description"
-                                      onClick={() =>
-                                        handleCardClick(
-                                          musicLink.description!,
-                                          musicLink.name
-                                        )
-                                      }
-                                    />
-                                  </span>
-                                )}
-                              </div>
-                              {musicLink.cifra && (
-                                <span className="span-cifra">
-                                  {musicLink.cifra}
-                                </span>
-                              )}
-
-                              <motion.button
-                                className="btns toggle-btn"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                title={
-                                  showButtons[musicLink.id!]
-                                    ? "Ocultar botões"
-                                    : "Mostrar botões"
-                                }
-                                onClick={() => toggleButtons(musicLink.id!)}
-                              >
-                                {showButtons[musicLink.id!] ? (
-                                  <FaTimes size={16} />
-                                ) : (
-                                  <FaEllipsisV size={16} />
-                                )}
-                              </motion.button>
-                            </div>
-
-                            <AnimatePresence>
-                              {showButtons[musicLink.id!] && (
-                                <motion.div
-                                  className="menu-buttons"
-                                  initial={{ opacity: 0, height: 0 }}
-                                  animate={{ opacity: 1, height: "auto" }}
-                                  exit={{ opacity: 0, height: 0 }}
-                                  transition={{ duration: 0.3 }}
-                                >
-                                  {musicLink.link && (
-                                    <motion.button
-                                      className="btns youtube-btn"
-                                      whileHover={{ scale: 1.1 }}
-                                      whileTap={{ scale: 0.95 }}
-                                      onClick={() =>
-                                        openLinkVideo({
-                                          url: musicLink.link || "",
-                                        })
-                                      }
-                                      title="Assistir vídeo"
-                                    >
-                                      <FaYoutube size={16} />
-                                    </motion.button>
-                                  )}
-
-                                  {musicLink.letter && (
-                                    <motion.button
-                                      className="btns letter-btn"
-                                      whileHover={{ scale: 1.1 }}
-                                      whileTap={{ scale: 0.95 }}
-                                      onClick={() =>
-                                        musicLink.letter &&
-                                        window.open(musicLink.letter, "_blank")
-                                      }
-                                      title="Abrir letra"
-                                    >
-                                      <FaFileAlt size={16} />
-                                    </motion.button>
-                                  )}
-
-                                  {musicLink.spotify && (
-                                    <motion.button
-                                      className="btns spotify-btn"
-                                      whileHover={{ scale: 1.1 }}
-                                      whileTap={{ scale: 0.95 }}
-                                      onClick={() =>
-                                        musicLink.spotify &&
-                                        window.open(musicLink.spotify, "_blank")
-                                      }
-                                      title="Abrir no Spotify"
-                                    >
-                                      <FaSpotify size={16} />
-                                    </motion.button>
-                                  )}
-
-                                  <motion.button
-                                    className="btns edit-btn"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => handleEditClick(musicLink.id!)}
-                                    title="Editar"
-                                  >
-                                    <FaEdit size={16} />
-                                  </motion.button>
-
-                                  {canDeleteMusic && (
-                                    <motion.button
-                                      whileHover={{ scale: 1.1 }}
-                                      className="btns delete-icon"
-                                      onClick={() => handleDelete(musicLink.id!)}
-                                      title="Deletar música"
-                                    >
-                                      <FaTrashAlt size={16} />
-                                    </motion.button>
-                                  )}
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    </motion.div>
-                ))}
-              </MusicGroup>
-            );
-          })
+                    {musicInMoment.map((musicLink, index) => (
+                      <SortableMusicCard
+                        key={musicLink.id}
+                        musicLink={musicLink}
+                        orderDisplay={index + 1}
+                        canReorder={canReorder && !isSavingOrder}
+                        canDeleteMusic={canDeleteMusic}
+                        loadingCards={loadingCards}
+                        openMenuId={openMenuId}
+                        toggleButtons={toggleButtons}
+                        handleCardClick={handleCardClick}
+                        openLinkVideo={openLinkVideo}
+                        handleEditClick={handleEditClick}
+                        handleDelete={handleDelete}
+                      />
+                    ))}
+                  </SortableContext>
+                </DroppableMusicGroup>
+              );
+            })}
+          </DndContext>
         ) : (
           <p>Nenhuma canção definida para esta semana</p>
         )}
@@ -630,6 +720,233 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         )}
       </AnimatePresence>
     </ListContainer>
+  );
+};
+
+interface DroppableMusicGroupProps {
+  moment: string;
+  background: string;
+  children: React.ReactNode;
+}
+
+const DroppableMusicGroup: React.FC<DroppableMusicGroupProps> = ({
+  moment,
+  background,
+  children,
+}) => {
+  const { setNodeRef, isOver } = useDroppable({ id: moment });
+
+  return (
+    <MusicGroup ref={setNodeRef} $bg={background} $isOver={isOver}>
+      <h4 style={{ margin: "16px 0" }}>{moment}</h4>
+      {children}
+    </MusicGroup>
+  );
+};
+
+interface SortableMusicCardProps {
+  musicLink: MusicLink;
+  orderDisplay: number;
+  canReorder: boolean;
+  canDeleteMusic: boolean;
+  loadingCards: { [key: string]: boolean };
+  openMenuId: string | null;
+  toggleButtons: (id: string) => void;
+  handleCardClick: (description?: string, name?: string) => void;
+  openLinkVideo: (video: Video) => void;
+  handleEditClick: (id: string) => void;
+  handleDelete: (id: string) => void;
+}
+
+const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
+  musicLink,
+  orderDisplay,
+  canReorder,
+  canDeleteMusic,
+  loadingCards,
+  openMenuId,
+  toggleButtons,
+  handleCardClick,
+  openLinkVideo,
+  handleEditClick,
+  handleDelete,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: musicLink.id!,
+    disabled: !canReorder,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      className={`container-list${isDragging ? " is-dragging" : ""}`}
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -200 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="container-card">
+        {canReorder && (
+          <button
+            type="button"
+            className="drag-handle"
+            aria-label="Arrastar para reordenar"
+            {...attributes}
+            {...listeners}
+          >
+            <FaGripVertical size={16} />
+          </button>
+        )}
+        <div className="card">
+          {loadingCards[musicLink.id!] ? (
+            <p style={{ fontWeight: "bold", color: "#fff" }}>Aguarde..</p>
+          ) : (
+            <>
+              <div className="music-header">
+                <span className="span-order">{orderDisplay}ª</span>
+                <div
+                  className="span-music"
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "0 6px",
+                  }}
+                >
+                  <span className="span-name">{musicLink.name}</span>
+                  {musicLink.description?.trim() && (
+                    <span>
+                      <FaRegCommentDots
+                        className="icon-description"
+                        onClick={() =>
+                          handleCardClick(
+                            musicLink.description!,
+                            musicLink.name
+                          )
+                        }
+                      />
+                    </span>
+                  )}
+                </div>
+                {musicLink.cifra && (
+                  <span className="span-cifra">{musicLink.cifra}</span>
+                )}
+
+                <motion.button
+                  className="btns toggle-btn"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  title={
+                    openMenuId === musicLink.id
+                      ? "Ocultar botões"
+                      : "Mostrar botões"
+                  }
+                  onClick={() => toggleButtons(musicLink.id!)}
+                >
+                  {openMenuId === musicLink.id ? (
+                    <FaTimes size={16} />
+                  ) : (
+                    <FaEllipsisV size={16} />
+                  )}
+                </motion.button>
+              </div>
+
+              <AnimatePresence>
+                {openMenuId === musicLink.id && (
+                  <motion.div
+                    className="menu-buttons"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {musicLink.link && (
+                      <motion.button
+                        className="btns youtube-btn"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() =>
+                          openLinkVideo({
+                            url: musicLink.link || "",
+                          })
+                        }
+                        title="Assistir vídeo"
+                      >
+                        <FaYoutube size={16} />
+                      </motion.button>
+                    )}
+
+                    {musicLink.letter && (
+                      <motion.button
+                        className="btns letter-btn"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() =>
+                          musicLink.letter &&
+                          window.open(musicLink.letter, "_blank")
+                        }
+                        title="Abrir letra"
+                      >
+                        <FaFileAlt size={16} />
+                      </motion.button>
+                    )}
+
+                    {musicLink.spotify && (
+                      <motion.button
+                        className="btns spotify-btn"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() =>
+                          musicLink.spotify &&
+                          window.open(musicLink.spotify, "_blank")
+                        }
+                        title="Abrir no Spotify"
+                      >
+                        <FaSpotify size={16} />
+                      </motion.button>
+                    )}
+
+                    <motion.button
+                      className="btns edit-btn"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleEditClick(musicLink.id!)}
+                      title="Editar"
+                    >
+                      <FaEdit size={16} />
+                    </motion.button>
+
+                    {canDeleteMusic && (
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        className="btns delete-icon"
+                        onClick={() => handleDelete(musicLink.id!)}
+                        title="Deletar música"
+                      >
+                        <FaTrashAlt size={16} />
+                      </motion.button>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
