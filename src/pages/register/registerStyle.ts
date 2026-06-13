@@ -11,8 +11,7 @@ export const ContainerRegiter = styled.div`
 
 export const FormWrapper = styled.form`
   width: 50vw;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
