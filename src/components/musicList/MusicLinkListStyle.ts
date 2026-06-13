@@ -360,7 +360,7 @@ export const MusicGroup = styled.div<{ $bg?: string; $isOver?: boolean }>`
   gap: 8px;
   padding: 12px 8px;
   margin-bottom: 12px;
-  border-radius: 5px;
+  border-radius: 12px;
   background: ${({ $bg }) => $bg || "transparent"};
   outline: ${({ $isOver }) =>
     $isOver ? "2px dashed rgba(245, 158, 11, 0.8)" : "2px dashed transparent"};
