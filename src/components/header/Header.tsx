@@ -1,15 +1,25 @@
 import React from 'react';
 import Logo from '../../assets/imgs/logo.png'
-import { ContainerLogo, HeaderContainer, HeaderItem, NavHeader } from './HeaderStyle';
+import {
+  ContainerLogo,
+  HeaderActions,
+  HeaderContainer,
+  HeaderItem,
+  NavHeader,
+  ThemeSwitcher,
+} from './HeaderStyle';
 import { Link, useLocation } from 'react-router-dom';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import Logout from '../../assets/imgs/logout.png'
 import { motion } from "framer-motion";
 import { UserRole } from '../../types/UserRole';
+import { FaDesktop, FaMoon, FaSun } from 'react-icons/fa';
+import useThemePreference from '../../context/hooks/useThemePreference';
 
 const Header: React.FC = () => {
 
   const { user, logout } = useAuthContext();
+  const { mode, setMode } = useThemePreference();
   const location = useLocation();
   
   const isGuest = user?.roles?.includes(UserRole.Guest);
@@ -45,7 +55,7 @@ const Header: React.FC = () => {
                       layoutId="underline"
                       style={{
                         height: 2,
-                        background: "#2EBEF2",
+                        background: "var(--color-primary)",
                         marginTop: 2,
                         borderRadius: 1,
                         width: '100%',
@@ -60,10 +70,39 @@ const Header: React.FC = () => {
         })}
       </NavHeader>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+      <HeaderActions>
+        <ThemeSwitcher aria-label="Escolher tema">
+          <button
+            type="button"
+            className={mode === "light" ? "active" : ""}
+            title="Modo claro"
+            aria-label="Modo claro"
+            onClick={() => setMode("light")}
+          >
+            <FaSun size={14} />
+          </button>
+          <button
+            type="button"
+            className={mode === "dark" ? "active" : ""}
+            title="Modo escuro"
+            aria-label="Modo escuro"
+            onClick={() => setMode("dark")}
+          >
+            <FaMoon size={14} />
+          </button>
+          <button
+            type="button"
+            className={mode === "system" ? "active" : ""}
+            title="Tema do sistema"
+            aria-label="Tema do sistema"
+            onClick={() => setMode("system")}
+          >
+            <FaDesktop size={14} />
+          </button>
+        </ThemeSwitcher>
         {!isGuest && (
-          <span style={{ color: '#fff', fontWeight: 600 }}>
-            Olá, <span style={{ color: '#2EBEF2' }}>
+          <span style={{ color: 'var(--color-text-strong)', fontWeight: 600 }}>
+            Olá, <span style={{ color: 'var(--color-primary)' }}>
               {user?.nickname || user?.name}
             </span>
           </span>
@@ -91,7 +130,7 @@ const Header: React.FC = () => {
         >
           <img src={Logout} alt="Logout" style={{ width: 28, height: 28 }} />
         </motion.button>
-      </div>
+      </HeaderActions>
     </HeaderContainer>
   );
 };

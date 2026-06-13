@@ -18,6 +18,8 @@ const AppContainer = styled.div<{ $hideLayout: boolean }>`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: var(--color-page-bg);
+  color: var(--color-text);
 `;
 
 const FixedHeader = styled.header`
@@ -53,12 +55,12 @@ const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
 
   &::-webkit-scrollbar {
     width: 5px;
-    background-color: #0e1e30ff;
+    background-color: var(--color-scroll-track);
     border-radius: 1em;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #58a6ff;
+    background-color: var(--color-primary);
     border-radius: 1em;
   }
 

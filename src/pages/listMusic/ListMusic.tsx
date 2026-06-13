@@ -497,13 +497,13 @@ const ListMusic: React.FC = () => {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 1000
             }}>
-              <InputContainer style={{ backgroundColor: '#000000', padding: 24, borderRadius: 8 }}>
+              <InputContainer style={{ backgroundColor: 'var(--color-surface)', padding: 24, borderRadius: 8 }}>
                 <h3>Selecione o momento do louvor</h3>
                 <SelectContainer>
                   <select
                     value={selectedWorshipMoment}
                     onChange={(e) => setSelectedWorshipMoment(e.target.value)}
-                    style={{ backgroundColor: '#000000', color: '#fff', border: '1px solid #555' }}
+                    style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
                   >
                     <option value="">Selecione o momento</option>
                     {worshipMoments.map((moment) => (

@@ -315,14 +315,14 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         </Button>
       </div>
       {ministerModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'var(--color-modal-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <InputContainer>
             <h3>Selecione quem irá ministrar a música</h3>
             <SelectContainer>
               <select
                 value={ministerName}
                 onChange={(e) => setMinisterName(e.target.value)}
-                style={{ backgroundColor: '#000000', color: '#ffffff', border: '1px solid #555' }}
+                style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
               >
                 <option value="">Selecione o ministro</option>
                 {ministerUsers.map((m) => (
@@ -349,13 +349,13 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 1000
         }}>
-          <InputContainer style={{ backgroundColor: '#000000', padding: 24, borderRadius: 8 }}>
+          <InputContainer style={{ backgroundColor: 'var(--color-surface)', padding: 24, borderRadius: 8 }}>
             <h3>Selecione o momento do louvor</h3>
             <SelectContainer>
               <select
                 value={worshipMoment}
                 onChange={(e) => setWorshipMoment(e.target.value)}
-                style={{ backgroundColor: '#000000', color: '#fff', border: '1px solid #555' }}
+                style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
               >
                 <option value="">Selecione o momento</option>
                 {worshipMoments.map((moment) => (

@@ -43,7 +43,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       justify-content: center;
       flex-shrink: 0;
       padding: 8px 4px;
-      color: #8b949e;
+        color: var(--color-text-muted);
       cursor: grab;
       background: transparent;
       border: none;
@@ -51,7 +51,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       touch-action: none;
 
       &:hover {
-        color: #f59e0b;
+          color: #f59e0b;
         background: rgba(255, 255, 255, 0.08);
       }
 
@@ -64,14 +64,14 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       width: 100%;
       min-width: 100px;
       height: auto;
-      background-color: #161b22;
+      background-color: var(--color-surface);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+      box-shadow: 2px 2px 6px var(--color-shadow);
       position: relative;
       gap: 12px;
 
@@ -136,7 +136,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     .span-cifra {
       font-weight: bold;
       font-size: 20px;
-      color: #fff;
+      color: var(--color-text-strong);
       min-width: 40px;
       text-align: center;
       padding: 4px 8px;
@@ -161,7 +161,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
     .btns {
       align-items: center;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: none;
       border-radius: 8px;
       box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
       box-sizing: border-box;
@@ -221,7 +221,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
   .toggle-btn {
     background-color: transparent !important;
-    color: white !important;
+    color: var(--color-text-strong) !important;
     margin-left: 8px;
   }
 
@@ -232,7 +232,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: #000;
+    background-color: var(--color-modal-bg);
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -294,7 +294,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     height: auto;
     overflow-y: auto;
     text-align: left;
-    background: #fff;
+    background: var(--color-surface);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     border-radius: 8px;
   }

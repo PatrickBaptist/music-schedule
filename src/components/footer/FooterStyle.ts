@@ -5,8 +5,8 @@ export const ContainerFooter = styled.footer`
   height: 50px;
   padding: 10px 0 25px 0;
   text-align: center;
-  background-color: #000;
-  border-top: 1px solid #444;
+  background-color: var(--color-page-bg);
+  border-top: 1px solid var(--color-border);
   z-index: 9999;
   position: fixed;
   bottom: 0;
@@ -29,7 +29,8 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
   align-items: center;
   a {
     text-decoration: none;
-    color: ${(props) => (props.$active ? "#2EBEF2" : "#555")};
+    color: ${(props) =>
+      props.$active ? "var(--color-primary)" : "var(--color-text-muted)"};
     font-weight: ${(props) => (props.$active ? "600" : "400")};
     font-size: 12px;
     display: flex;

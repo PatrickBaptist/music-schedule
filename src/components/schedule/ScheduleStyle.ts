@@ -42,7 +42,7 @@ export const ScheduleContent = styled.div`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: #000;
+    background-color: var(--color-modal-bg);
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -122,12 +122,12 @@ export const CardsGrid = styled.div`
 `;
 
 export const SeeScale = styled.div`
-  background-color: #161b22;
+  background-color: var(--color-surface);
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  box-shadow: 0 0 10px var(--color-shadow);
   padding: 20px 25px;
   width: 280px;
-  color: #e0e0e0;
+  color: var(--color-text);
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   flex-direction: column;
@@ -143,7 +143,7 @@ export const SeeScale = styled.div`
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
   }
 
@@ -152,7 +152,7 @@ export const SeeScale = styled.div`
   }
 
   .content-escala strong {
-    color: #fff;
+    color: var(--color-text-strong);
     min-width: 90px;
   }
 `;

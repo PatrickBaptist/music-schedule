@@ -134,7 +134,7 @@ export const DarkSelect = styled.select`
 
 export const DarkButtonCancel = styled.button`
   max-width: 400px;
-  background-color: #555;
+  background-color: var(--color-text-muted);
   color: #fff;
   font-size: 13px;
   border: none;
@@ -182,9 +182,9 @@ export const DarkLabel = styled.label`
 `;
 
 export const BackButton = styled(DarkButton)`
-  background-color: #444;
+  background-color: var(--color-text-muted);
 
   &:hover {
-    background-color: #333;
+    background-color: var(--color-text-strong);
   }
 `;

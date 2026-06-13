@@ -8,12 +8,59 @@ export const HeaderContainer = styled.div`
   justify-content: space-between;
   padding: 0 40px;
   box-sizing: border-box;
-  border-bottom: 1px solid #444;
-  background-color: #000;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-page-bg);
   z-index: 9999;
 
   @media(max-width: 759px) {
     padding: 0 10px;
+  }
+`;
+
+export const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  @media(max-width: 520px) {
+    gap: 8px;
+  }
+`;
+
+export const ThemeSwitcher = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+
+  button {
+    width: 30px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  button:hover,
+  button.active {
+    background: var(--color-surface-muted);
+    color: var(--color-primary);
+  }
+
+  @media(max-width: 420px) {
+    button {
+      width: 27px;
+      height: 26px;
+    }
   }
 `;
 
@@ -45,7 +92,7 @@ export const HeaderItem = styled.div`
   cursor: pointer;
 
   a {
-    color: #fff;
+    color: var(--color-text-strong);
     font-size: 16px;
     font-weight: 500;
     text-decoration: none;
@@ -64,11 +111,11 @@ export const HeaderItem = styled.div`
     width: 100%;
     height: 2px;
     border-radius: 1px;
-    background-color: #2EBEF2;
+    background-color: var(--color-primary);
     margin-top: 2px;
   }
 
   &:hover span {
-    color: #2EBEF2;
+    color: var(--color-primary);
   }
 `;

@@ -35,7 +35,7 @@ export const InputContainer = styled.div`
 `;
 
 export const SuggestionsList = styled.ul`
-  background: #fff;
+  background: var(--color-surface);
   width: 360px;
   border: 1px solid #ccc;
   border-radius: 4px;

@@ -34,8 +34,8 @@ export const UsersContainer = styled.div`
 `;
 
 export const UserCard = styled(motion.div)`
-  background-color: #161b22;
-  color: #fff;
+  background-color: var(--color-surface);
+  color: var(--color-text-strong);
   display: flex;
   flex-direction: column;
   align-items: center;

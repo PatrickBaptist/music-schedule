@@ -69,11 +69,11 @@ export const ListContainer = styled.ul`
   .container-card-music {
     width: 100%;
     max-width: 800px;
-    background-color: #161b22;
+    background-color: var(--color-surface);
     border-radius: 12px;
     padding: 12px 20px;
     margin-bottom: 12px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 6px var(--color-shadow);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -160,7 +160,7 @@ export const ListContainer = styled.ul`
   .span-cifra {
     font-weight: bold;
     font-size: 18px;
-    color: white;
+    color: var(--color-text-strong);
     width: 60px;
     flex-shrink: 0;
   }
@@ -183,12 +183,12 @@ export const ListContainer = styled.ul`
   .span-music {
     font-weight: bold;
     font-size: 16px;
-    color: white;
+    color: var(--color-text-strong);
   }
 
   .span-minister {
     font-size: 14px;
-    color: #ccc;
+    color: var(--color-text-muted);
   }
 
   .music-buttons {
@@ -207,7 +207,7 @@ export const ListContainer = styled.ul`
       top: 0;
       left: 0;
       z-index: 2024;
-      background-color: #000;
+      background-color: var(--color-modal-bg);
       display: flex;
       align-items: flex-start;
       justify-content: center;
@@ -247,7 +247,7 @@ export const ListContainer = styled.ul`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: #000;
+    background-color: var(--color-modal-bg);
     display: flex;
     align-items: flex-start;
     justify-content: center;

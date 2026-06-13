@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button from "../buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
@@ -103,6 +103,52 @@ const findContainer = (id: string, grouped: GroupedMusic): string | undefined =>
   );
 };
 
+const moveMusicItem = (
+  grouped: GroupedMusic,
+  activeId: string,
+  overId: string
+): GroupedMusic => {
+  const activeContainer = findContainer(activeId, grouped);
+  const overContainer = findContainer(overId, grouped);
+
+  if (!activeContainer || !overContainer) return grouped;
+
+  if (activeContainer === overContainer) {
+    const items = [...grouped[activeContainer]];
+    const oldIndex = items.findIndex((item) => item.id === activeId);
+    const newIndex = items.findIndex((item) => item.id === overId);
+
+    if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) {
+      return grouped;
+    }
+
+    return {
+      ...grouped,
+      [activeContainer]: arrayMove(items, oldIndex, newIndex),
+    };
+  }
+
+  const activeItems = [...grouped[activeContainer]];
+  const overItems = [...grouped[overContainer]];
+  const activeIndex = activeItems.findIndex((item) => item.id === activeId);
+  const overIndex = overItems.findIndex((item) => item.id === overId);
+
+  if (activeIndex === -1) return grouped;
+
+  const newIndex = overIndex >= 0 ? overIndex : overItems.length;
+  const [movedItem] = activeItems.splice(activeIndex, 1);
+
+  return {
+    ...grouped,
+    [activeContainer]: activeItems,
+    [overContainer]: [
+      ...overItems.slice(0, newIndex),
+      { ...movedItem, worshipMoment: overContainer },
+      ...overItems.slice(newIndex),
+    ],
+  };
+};
+
 const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   const tons = [
     "C",
@@ -166,6 +212,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   const [groupedMusic, setGroupedMusic] = useState<GroupedMusic>(() =>
     buildGroupedMusic([])
   );
+  const groupedMusicRef = useRef<GroupedMusic>(groupedMusic);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   const [selectedDescription, setSelectedDescription] = useState<{
@@ -186,7 +233,9 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   }, [fetchMusicLinks]);
 
   useEffect(() => {
-    setGroupedMusic(buildGroupedMusic(musicLinks));
+    const nextGrouped = buildGroupedMusic(musicLinks);
+    groupedMusicRef.current = nextGrouped;
+    setGroupedMusic(nextGrouped);
   }, [musicLinks]);
 
   const sensors = useSensors(
@@ -259,96 +308,23 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     const overId = String(over.id);
 
     setGroupedMusic((prev) => {
-      const activeContainer = findContainer(activeId, prev);
-      const overContainer = findContainer(overId, prev);
+      const nextGrouped = moveMusicItem(prev, activeId, overId);
 
-      if (!activeContainer || !overContainer) return prev;
-      if (activeContainer === overContainer) return prev;
+      if (nextGrouped !== prev) {
+        groupedMusicRef.current = nextGrouped;
+      }
 
-      const activeItems = [...prev[activeContainer]];
-      const overItems = [...prev[overContainer]];
-      const activeIndex = activeItems.findIndex((item) => item.id === activeId);
-      const overIndex = overItems.findIndex((item) => item.id === overId);
-
-      if (activeIndex === -1) return prev;
-
-      const newIndex = overIndex >= 0 ? overIndex : overItems.length;
-      const [movedItem] = activeItems.splice(activeIndex, 1);
-
-      return {
-        ...prev,
-        [activeContainer]: activeItems,
-        [overContainer]: [
-          ...overItems.slice(0, newIndex),
-          { ...movedItem, worshipMoment: overContainer },
-          ...overItems.slice(newIndex),
-        ],
-      };
+      return nextGrouped;
     });
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     if (!canReorder || isSavingOrder) return;
 
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    const { over } = event;
+    if (!over) return;
 
-    const activeId = String(active.id);
-    const overId = String(over.id);
-    let nextGrouped: GroupedMusic | null = null;
-
-    setGroupedMusic((prev) => {
-      const activeContainer = findContainer(activeId, prev);
-      const overContainer = findContainer(overId, prev);
-
-      if (!activeContainer || !overContainer) return prev;
-
-      if (activeContainer === overContainer) {
-        const items = [...prev[activeContainer]];
-        const oldIndex = items.findIndex((item) => item.id === activeId);
-        const newIndex = items.findIndex((item) => item.id === overId);
-
-        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) {
-          return prev;
-        }
-
-        nextGrouped = {
-          ...prev,
-          [activeContainer]: arrayMove(items, oldIndex, newIndex),
-        };
-
-        return nextGrouped;
-      }
-
-      if (prev[overContainer].some((item) => item.id === activeId)) {
-        nextGrouped = prev;
-        return prev;
-      }
-
-      const activeItems = [...prev[activeContainer]];
-      const overItems = [...prev[overContainer]];
-      const activeIndex = activeItems.findIndex((item) => item.id === activeId);
-      const overIndex = overItems.findIndex((item) => item.id === overId);
-
-      if (activeIndex === -1) return prev;
-
-      const newIndex = overIndex >= 0 ? overIndex : overItems.length;
-      const [movedItem] = activeItems.splice(activeIndex, 1);
-
-      nextGrouped = {
-        ...prev,
-        [activeContainer]: activeItems,
-        [overContainer]: [
-          ...overItems.slice(0, newIndex),
-          { ...movedItem, worshipMoment: overContainer },
-          ...overItems.slice(newIndex),
-        ],
-      };
-
-      return nextGrouped;
-    });
-
-    await persistOrderChanges(nextGrouped ?? groupedMusic);
+    await persistOrderChanges(groupedMusicRef.current);
   };
 
   const handleVideoClick = () => {
@@ -738,7 +714,7 @@ const DroppableMusicGroup: React.FC<DroppableMusicGroupProps> = ({
 
   return (
     <MusicGroup ref={setNodeRef} $bg={background} $isOver={isOver}>
-      <h4 style={{ margin: "16px 0" }}>{moment}</h4>
+      <h4 style={{ color: "var(--color-text-strong2)", margin: "16px 0" }}>{moment}</h4>
       {children}
     </MusicGroup>
   );
@@ -789,14 +765,10 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
   };
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       style={style}
       className={`container-list${isDragging ? " is-dragging" : ""}`}
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -200 }}
-      transition={{ duration: 0.4 }}
     >
       <div className="container-card">
         {canReorder && (
@@ -946,7 +918,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

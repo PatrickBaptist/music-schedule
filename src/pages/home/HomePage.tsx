@@ -110,7 +110,7 @@ const HomePage: React.FC = () => {
                   {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
               </div>
               <div className="coluna-2">
-                  <div className='container-escala'>
+                  <div className='container-escala2'>
                     <h4>Escala de ministros (Quinta-Feira)</h4>
                     <div className='content'>
                       <div className='content-escala' style={{ backgroundColor: 'transparent' }}>

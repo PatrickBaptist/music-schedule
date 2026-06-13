@@ -8,7 +8,7 @@ export const ContainerEscala = styled.div`
   flex-direction: column;
 
   @media (max-width: 768px) {
-    border-top: 1px solid #444;
+    border-top: 1px solid var(--color-border);
   }
 
   .add-schedule {
@@ -26,7 +26,7 @@ export const ContainerEscala = styled.div`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: #000;
+    background-color: var(--color-modal-bg);
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -71,13 +71,13 @@ export const ContainerEscala = styled.div`
 
   .escala-content-escala {
     width: 100%;
-    background-color: #161b22;
+    background-color: var(--color-surface);
     border-radius: 10px;
     padding: 20px 30px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 10px var(--color-shadow);
     width: 90%;
     max-width: 400px;
-    color: #e0e0e0;
+    color: var(--color-text);
 
     @media (max-width: 478px) {
       max-width: 300px;
@@ -89,7 +89,7 @@ export const ContainerEscala = styled.div`
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
   }
 
@@ -98,7 +98,7 @@ export const ContainerEscala = styled.div`
   }
 
   .escala-content-escala strong {
-    color: #fff;
+    color: var(--color-text-strong);
     min-width: 90px;
   }
 

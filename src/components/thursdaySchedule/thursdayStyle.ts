@@ -23,11 +23,11 @@ export const CardThursday = styled(motion.div)`
   .content-escala {
     width: 90%;
     max-width: 400px;
-    background-color: #161b22;
+    background-color: var(--color-surface);
     border-radius: 10px;
     padding: 20px 30px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-    color: #e0e0e0;
+    box-shadow: 0 0 10px var(--color-shadow);
+    color: var(--color-text);
 
     @media (max-width: 478px) {
       max-width: 300px;
@@ -40,7 +40,7 @@ export const CardThursday = styled(motion.div)`
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
     transition: all 0.3s ease-in-out;
   }
@@ -50,7 +50,7 @@ export const CardThursday = styled(motion.div)`
   }
 
   .content-escala strong {
-    color: #fff;
+    color: var(--color-text-strong);
     min-width: 90px;
     text-align: left;
   }
@@ -58,12 +58,12 @@ export const CardThursday = styled(motion.div)`
   .content-escala span {
     text-align: right;
     flex: 1;
-    color: #e0e0e0;
+    color: var(--color-text);
   }
 `;
 
 export const MinisterInfo = styled.span`
   display: inline-block;
-  color: #e0e0e0;
+  color: var(--color-text);
   font-weight: 600;
 `;

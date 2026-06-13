@@ -204,9 +204,9 @@ export const DarkLabel = styled.label`
 `;
 
 export const BackButton = styled(DarkButton)`
-  background-color: #444;
+  background-color: var(--color-text-muted);
 
   &:hover {
-    background-color: #333;
+    background-color: var(--color-text-strong);
   }
 `;
