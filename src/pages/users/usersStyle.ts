@@ -60,50 +60,191 @@ export const UserCard = styled(motion.div)`
     gap: 10px;
     margin-top: 10px;
   }
+`;
 
-  button {
-    margin-top: 10px;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    background-color: #ffb74d;
-    color: #333;
+export const CardActionButton = styled.button`
+  && {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2ebef2, #0f8ec4);
+  color: #fff;
 
-    &:hover {
-      background-color: #ffa726;
-    }
+  &:hover {
+    filter: brightness(1.05);
   }
-
-  button:not(.delete-btn) {
-    background-color: #ffb74d;
-    color: #333;
-
-    &:hover {
-      background-color: #ffa726;
-    }
-  }
-
-  .delete-btn {
-    background-color: #f44336;
-    color: white;
-
-    &:hover {
-      background-color: #d32f2f;
-    }
   }
 `;
 
-export const PageTopBar = styled.div`
+export const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(8, 15, 24, 0.68);
+  backdrop-filter: blur(8px);
+`;
+
+export const ModalContent = styled(motion.div)`
+  width: min(100%, 620px);
+  max-height: min(92vh, 760px);
+  overflow: auto;
+  border-radius: 20px;
+  background: var(--color-surface);
+  color: var(--color-text-strong);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+`;
+
+export const ModalHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  p {
+    margin: 6px 0 0;
+    opacity: 0.75;
+    line-height: 1.4;
+  }
+`;
+
+export const CloseButton = styled.button`
+  border: none;
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  color: inherit;
+  font-size: 1.1rem;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.14);
+  }
+`;
+
+export const ModalBody = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const FieldLabel = styled.label`
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-text-strong);
+`;
+
+const fieldBase = `
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.98rem;
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111827;
+
+  &:focus {
+    border-color: #2ebef2;
+    box-shadow: 0 0 0 3px rgba(46, 190, 242, 0.18);
+  }
+`;
+
+export const TextInput = styled.input`
+  ${fieldBase}
+`;
+
+export const SelectField = styled.select`
+  ${fieldBase}
+`;
+
+export const RoleGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+`;
+
+export const RoleChip = styled.label<{ $checked?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid ${({ $checked }) => ($checked ? "#2ebef2" : "rgba(0,0,0,0.12)")};
+  background: ${({ $checked }) => ($checked ? "rgba(46, 190, 242, 0.12)" : "rgba(255,255,255,0.96)")};
+  cursor: pointer;
+  font-size: 0.94rem;
+  color: #111827;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: #2ebef2;
+  }
+`;
+
+export const ModalFooter = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 4px;
+`;
+
+export const FooterButton = styled.button`
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 800;
+  cursor: pointer;
+`;
+
+export const PrimaryActionButton = styled(FooterButton)`
+  background: linear-gradient(135deg, #2ebef2, #0f8ec4);
+  color: #fff;
+`;
+
+export const DangerActionButton = styled(FooterButton)`
+  background: #ef4444;
+  color: #fff;
+`;
+
+export const PageTopBar = styled.div<{ $centerTitle?: boolean }>`
   width: min(100%, 900px);
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({ $centerTitle }) => ($centerTitle ? "center" : "space-between")};
   align-items: center;
   gap: 16px;
   margin-bottom: 18px;
   flex-wrap: wrap;
   padding: 0 16px;
+
+  h1 {
+    margin: 0;
+  }
 `;
 
 export const AuditLink = styled(Link)`

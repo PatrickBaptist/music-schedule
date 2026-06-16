@@ -1,8 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { roleOptions, UserRole } from "../../types/UserRole";
-import { AuditLink, Input, PageTopBar, UserCard, UsersContainer } from "./usersStyle";
+import {
+  AuditLink,
+  CardActionButton,
+  CloseButton,
+  DangerActionButton,
+  FieldLabel,
+  FormGroup,
+  Input,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  PageTopBar,
+  PrimaryActionButton,
+  RoleChip,
+  RoleGrid,
+  SelectField,
+  TextInput,
+  UserCard,
+  UsersContainer,
+} from "./usersStyle";
 import { toast } from "sonner";
 import {
   FaUser,
@@ -10,25 +31,47 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaToggleOn,
-  FaToggleOff,
   FaEnvelope,
   FaTrash,
   FaHistory,
+  FaEdit,
+  FaTimes,
 } from "react-icons/fa";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { Timestamp } from "firebase/firestore";
 import useAuthContext from "../../context/hooks/useAuthContext";
+import type { User } from "../../services/UsersService";
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [draftEmail, setDraftEmail] = useState("");
+  const [draftRoles, setDraftRoles] = useState<string[]>([]);
+  const [draftStatus, setDraftStatus] = useState("enabled");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user: loggedUser } = useAuthContext();
 
   const loggedUserId = loggedUser?.id;
   const loggedUserRoles = loggedUser?.roles || [];
   const isAdminOrLeader = loggedUserRoles.some(
     (role) => role === UserRole.Admin || role === UserRole.Leader
+  );
+
+  const editableRoleOptions = useMemo(
+    () => roleOptions.filter((role) => role.value !== UserRole.Guest),
+    []
+  );
+
+  const statusOptions = useMemo(
+    () => [
+      { label: "Ativo", value: "enabled" },
+      { label: "Pendente", value: "pending" },
+      { label: "Desativado", value: "disabled" },
+    ],
+    []
   );
 
   const rolePriority = useMemo(
@@ -91,16 +134,7 @@ const UsersCardsPage: React.FC = () => {
   }, [searchTerm, processedUsers]);
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "enabled":
-        return "Ativo";
-      case "pending":
-        return "Pendente";
-      case "disabled":
-        return "Desativado";
-      default:
-        return status;
-    }
+    return statusOptions.find((option) => option.value === status)?.label || status;
   };
 
   useEffect(() => {
@@ -133,22 +167,7 @@ const UsersCardsPage: React.FC = () => {
     return `ha ${days} dia${days > 1 ? "s" : ""}`;
   };
 
-  const handleStatusChange = async (id: string, status: "enabled" | "disabled") => {
-    const toastId = toast.loading("Aguarde...");
-    try {
-      await updateUser(id, { status });
-      await fetchUsers();
-      toast.success("Status alterado com sucesso!", { id: toastId });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error("Sem permissao! " + err.message, { id: toastId });
-      } else {
-        toast.error("Erro desconhecido ao salvar", { id: toastId });
-      }
-    }
-  };
-
-  const handleDelete = async (id: string, userName: string) => {
+  const handleDelete = async (id: string, userName: string, onSuccess?: () => void) => {
     if (id === loggedUserId) {
       toast.error("Voce nao pode deletar o proprio usuario.");
       return;
@@ -163,6 +182,7 @@ const UsersCardsPage: React.FC = () => {
             await deleteUser(id);
             await fetchUsers();
             toast.success("Usuario deletado com sucesso!", { id: toastId });
+            onSuccess?.();
           } catch (err) {
             if (err instanceof Error) {
               toast.error("Sem permissao! " + err.message, { id: toastId });
@@ -174,6 +194,70 @@ const UsersCardsPage: React.FC = () => {
       },
     });
   };
+
+  const closeModal = useCallback(() => {
+    setEditingUser(null);
+    setDraftName("");
+    setDraftEmail("");
+    setDraftRoles([]);
+    setDraftStatus("enabled");
+  }, []);
+
+  const openEditModal = (user: User) => {
+    setEditingUser(user);
+    setDraftName(user.name || "");
+    setDraftEmail(user.email || "");
+    setDraftRoles(user.roles || []);
+    setDraftStatus(user.status || "pending");
+  };
+
+  const handleSaveUser = async (forceStatus?: string) => {
+    if (!editingUser) return;
+
+    const toastId = toast.loading("Aguarde...");
+    setIsSubmitting(true);
+    try {
+      await updateUser(editingUser.id, {
+        name: draftName.trim(),
+        email: draftEmail.trim(),
+        roles: draftRoles,
+        status: forceStatus ?? draftStatus,
+      });
+      await fetchUsers();
+      toast.success("Usuario atualizado com sucesso!", { id: toastId });
+      closeModal();
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error("Sem permissao! " + err.message, { id: toastId });
+      } else {
+        toast.error("Erro desconhecido ao salvar", { id: toastId });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleQuickActivate = async () => {
+    await handleSaveUser("enabled");
+  };
+
+  const handleModalDelete = async () => {
+    if (!editingUser) return;
+    await handleDelete(editingUser.id, editingUser.nickname || editingUser.name, closeModal);
+  };
+
+  useEffect(() => {
+    if (!editingUser) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [editingUser, closeModal]);
 
   const isUserOnline = (lastSeen?: Timestamp | string) => {
     if (!lastSeen) return false;
@@ -193,7 +277,7 @@ const UsersCardsPage: React.FC = () => {
       }}
     >
       <PageWrapper>
-        <PageTopBar>
+        <PageTopBar $centerTitle={!isAdminOrLeader}>
           <h1>Usuarios</h1>
           {isAdminOrLeader && (
             <AuditLink to="/audit">
@@ -269,26 +353,10 @@ const UsersCardsPage: React.FC = () => {
                   Status: {getStatusLabel(user.status!)}
                 </span>
 
-                {user.id !== loggedUserId && isAdminOrLeader && (
-                  <div className="actions-container">
-                    {user.status !== "enabled" && (
-                      <button onClick={() => handleStatusChange(user.id, "enabled")}>
-                        <FaToggleOn style={{ marginRight: "6px" }} /> Ativar
-                      </button>
-                    )}
-
-                    {user.status !== "disabled" && (
-                      <button onClick={() => handleStatusChange(user.id, "disabled")}>
-                        <FaToggleOff style={{ marginRight: "6px" }} /> Desativar
-                      </button>
-                    )}
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(user.id, user.nickname || user.name)}
-                    >
-                      <FaTrash style={{ marginRight: "6px" }} /> Deletar
-                    </button>
-                  </div>
+                {isAdminOrLeader && (
+                  <CardActionButton type="button" onClick={() => openEditModal(user)}>
+                    <FaEdit style={{ marginRight: "6px" }} /> Editar
+                  </CardActionButton>
                 )}
               </UserCard>
             ))}
@@ -296,6 +364,121 @@ const UsersCardsPage: React.FC = () => {
           </UsersContainer>
         )}
       </PageWrapper>
+
+      {editingUser && (
+        <ModalOverlay onClick={closeModal}>
+          <ModalContent
+            onClick={(event) => event.stopPropagation()}
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 18, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          >
+            <ModalHeader>
+              <div>
+                <h2>Editar usuario</h2>
+                <p>Altere os dados, ajuste as funções e salve tudo num lugar só.</p>
+              </div>
+              <CloseButton type="button" onClick={closeModal} aria-label="Fechar modal">
+                <FaTimes />
+              </CloseButton>
+            </ModalHeader>
+
+            <ModalBody
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleSaveUser();
+              }}
+            >
+              <FormGroup>
+                <FieldLabel htmlFor="user-name">Nome</FieldLabel>
+                <TextInput
+                  id="user-name"
+                  value={draftName}
+                  onChange={(event) => setDraftName(event.target.value)}
+                  placeholder="Nome do usuario"
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <FieldLabel htmlFor="user-email">E-mail</FieldLabel>
+                <TextInput
+                  id="user-email"
+                  type="email"
+                  value={draftEmail}
+                  onChange={(event) => setDraftEmail(event.target.value)}
+                  placeholder="email@exemplo.com"
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <FieldLabel>Roles</FieldLabel>
+                <RoleGrid>
+                  {editableRoleOptions.map((role) => {
+                    const checked = draftRoles.includes(role.value);
+                    return (
+                      <RoleChip key={role.value} $checked={checked}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              setDraftRoles((current) => [...current, role.value]);
+                              return;
+                            }
+                            setDraftRoles((current) => current.filter((item) => item !== role.value));
+                          }}
+                        />
+                        <span>{role.label}</span>
+                      </RoleChip>
+                    );
+                  })}
+                </RoleGrid>
+              </FormGroup>
+
+              <FormGroup>
+                <FieldLabel htmlFor="user-status">Status</FieldLabel>
+                <SelectField
+                  id="user-status"
+                  value={draftStatus}
+                  onChange={(event) => setDraftStatus(event.target.value)}
+                >
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </SelectField>
+              </FormGroup>
+
+              <ModalFooter>
+                {draftStatus !== "enabled" && (
+                  <PrimaryActionButton
+                    type="button"
+                    onClick={() => void handleQuickActivate()}
+                    disabled={isSubmitting}
+                  >
+                    <FaToggleOn style={{ marginRight: "6px" }} /> Ativar
+                  </PrimaryActionButton>
+                )}
+                <PrimaryActionButton type="submit" disabled={isSubmitting}>
+                  Salvar
+                </PrimaryActionButton>
+                <DangerActionButton
+                  type="button"
+                  onClick={() => void handleModalDelete()}
+                  disabled={isSubmitting || editingUser.id === loggedUserId}
+                  title={editingUser.id === loggedUserId ? "Voce nao pode deletar o proprio usuario." : undefined}
+                >
+                  <FaTrash style={{ marginRight: "6px" }} /> Excluir
+                </DangerActionButton>
+              </ModalFooter>
+            </ModalBody>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </div>
   );
 };
