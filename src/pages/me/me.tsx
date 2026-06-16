@@ -8,7 +8,7 @@ import LoadingScreen from '../../components/loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { toast } from 'sonner';
-import { Musicos } from '../../services/ScheduleService';
+import { createEmptyMusicos, Musicos, normalizeMusicos } from '../../services/ScheduleService';
 
 const MePage: React.FC = () => {
   const { user } = useAuthContext();
@@ -67,16 +67,7 @@ const MePage: React.FC = () => {
     const [year] = useState<number>(new Date().getFullYear());
     const [date] = useState("");
     const [, setMúsicos] = useState<Musicos>({
-      minister: "",
-      teclas: "",
-      violao: "",
-      batera: "",
-      bass: "",
-      guita: "",
-      sound: "",
-      vocal1: "",
-      vocal2: "",
-      outfitColor: "",
+      ...createEmptyMusicos(),
     });
     const [, setSundays] = useState<Date[]>([]);
   
@@ -124,20 +115,8 @@ const MePage: React.FC = () => {
       const found = monthlySchedule.find(
         (s) => s.date.slice(0, 10) === date.slice(0, 10)
       );
-      if (found) setMúsicos(found.músicos);
-      else
-        setMúsicos({
-          minister: "",
-          teclas: "",
-          violao: "",
-          batera: "",
-          bass: "",
-          guita: "",
-          sound: "",
-          vocal1: "",
-          vocal2: "",
-          outfitColor: "",
-        });
+      if (found) setMúsicos(normalizeMusicos(found.músicos));
+      else setMúsicos(createEmptyMusicos());
   
       setIsLoading(false);
     }, [date, monthlySchedule]);

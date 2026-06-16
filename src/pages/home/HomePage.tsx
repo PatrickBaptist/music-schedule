@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
 import MusicLinkList from '../../components/musicList/MusicLinkList';
 import { Container, ContainerHome } from './HomePageStyle';
@@ -15,20 +15,20 @@ import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
 import { FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
+import { formatVocalList } from '../../services/ScheduleService';
 
 const HomePage: React.FC = () => {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { nextSundaySchedule, specialSchedules, getSpecialSchedules } = useSchedulesContext();
-  const { warning, getWarning } = useNotificationContext()
-  const [ isLoading, setIsLoading ] = useState(true);
+  const { warning, getWarning } = useNotificationContext();
+  const [isLoading, setIsLoading] = useState(true);
   const { user: loggedUser } = useAuthContext();
 
   const isGuest = loggedUser?.roles?.includes(UserRole.Guest);
 
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
-  const canAddMusic = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
+  const canAddMusic = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,85 +47,109 @@ const HomePage: React.FC = () => {
 
   return (
     <Container>
- 
-        <ContainerHome>
-          <PageWrapper>
-            {warning?.text && <Aviso message={"⚠️ " + warning.text} duration={20000} />}
+      <ContainerHome>
+        <PageWrapper>
+          {warning?.text && <Aviso message={'⚠️ ' + warning.text} duration={20000} />}
 
-            <div className="desktop-layout">
-              <div className="coluna-1">
-                {canAddMusic && (
-                  <div className='content-louvores'>
-                    <h4>Adicionar louvor</h4>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="btns add-btn"
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      <FaPlus size={12} />
-                    </motion.button>
+          <div className="desktop-layout">
+            <div className="coluna-1">
+              {canAddMusic && (
+                <div className="content-louvores">
+                  <h4>Adicionar louvor</h4>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btns add-btn"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <FaPlus size={12} />
+                  </motion.button>
+                </div>
+              )}
+
+              {isModalOpen && (
+                <div className="modal">
+                  <div className="modal-content">
+                    <MusicLinkInput setIsModalOpen={setIsModalOpen} />
                   </div>
-                )}
+                </div>
+              )}
 
-                {isModalOpen && (
-                  <div className="modal">
-                    <div className="modal-content">
-                      <MusicLinkInput setIsModalOpen={setIsModalOpen}/>
-                    </div>
-                  </div>
-                )}
+              <MusicLinkList canDelete={loggedRoles} />
+            </div>
 
-                <MusicLinkList canDelete={loggedRoles} />
-              </div>
-
-              <div className="coluna-2">
-                <div className='container-escala'>
-                  <h4>Escala do próximo domingo</h4>
-                  <div className='content'>
+            <div className="coluna-2">
+              <div className="container-escala">
+                <h4>Escala do próximo domingo</h4>
+                <div className="content">
                   {isLoading ? (
-                      <LoadingScreen />
+                    <LoadingScreen />
                   ) : nextSundaySchedule ? (
-                    <div className='content-escala'>
-                      <p style={{ fontWeight: 'bold', color: '#f59e0b' }}><strong>Ministro: </strong>{nextSundaySchedule.músicos.minister || 'Não definido'}</p>
-                      <p><strong>Vocal: </strong>{nextSundaySchedule.músicos.vocal1 || 'Não definido'}</p>
-                      <p><strong>Teclas: </strong>{nextSundaySchedule.músicos.teclas || 'Não definido'}</p>
-                      <p><strong>Violão: </strong>{nextSundaySchedule.músicos.violao || 'Não definido'}</p>
-                      <p><strong>Batera: </strong>{nextSundaySchedule.músicos.batera || 'Não definido'}</p>
-                      <p><strong>Bass: </strong>{nextSundaySchedule.músicos.bass || 'Não definido'}</p>
-                      <p><strong>Guita: </strong>{nextSundaySchedule.músicos.guita || 'Não definido'}</p>
-                      <p><strong>Op. Som: </strong>{nextSundaySchedule.músicos.sound || 'Não definido'}</p>
-                      <p><strong>Paleta de cores: </strong><span style={{ fontStyle: 'italic' }}>{nextSundaySchedule.músicos.outfitColor || 'Não definido'}</span></p>
+                    <div className="content-escala">
+                      <p style={{ fontWeight: 'bold', color: '#f59e0b' }}>
+                        <strong>Ministro: </strong>
+                        {nextSundaySchedule.músicos.minister || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Vocal: </strong>
+                        {formatVocalList(nextSundaySchedule.músicos.vocal)}
+                      </p>
+                      <p>
+                        <strong>Teclas: </strong>
+                        {nextSundaySchedule.músicos.teclas || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Violão: </strong>
+                        {nextSundaySchedule.músicos.violao || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Batera: </strong>
+                        {nextSundaySchedule.músicos.batera || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Bass: </strong>
+                        {nextSundaySchedule.músicos.bass || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Guita: </strong>
+                        {nextSundaySchedule.músicos.guita || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Op. Som: </strong>
+                        {nextSundaySchedule.músicos.sound || 'Não definido'}
+                      </p>
+                      <p>
+                        <strong>Paleta de cores: </strong>
+                        <span style={{ fontStyle: 'italic' }}>{nextSundaySchedule.músicos.outfitColor || 'Não definido'}</span>
+                      </p>
                     </div>
                   ) : (
                     <p>Não há escala disponível</p>
                   )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="desktop-layout-row-2">
+            <div className="coluna-1">
+              {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
+            </div>
+            <div className="coluna-2">
+              <div className="container-escala2">
+                <h4>Escala de ministros (Quinta-Feira)</h4>
+                <div className="content">
+                  <div className="content-escala" style={{ backgroundColor: 'transparent' }}>
+                    <ThursdaySchedule />
                   </div>
                 </div>
               </div>
             </div>
-            
-            <div className="desktop-layout-row-2">
-              <div className="coluna-1">
-                  {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
-              </div>
-              <div className="coluna-2">
-                  <div className='container-escala2'>
-                    <h4>Escala de ministros (Quinta-Feira)</h4>
-                    <div className='content'>
-                      <div className='content-escala' style={{ backgroundColor: 'transparent' }}>
-                        <ThursdaySchedule />
-                      </div>
-                    </div>
-                  </div>
-              </div>
-            </div>
-            
-            {!isGuest && <BirthdaysThisMonth />}
+          </div>
 
-          </PageWrapper> 
-        </ContainerHome>
-
+          {!isGuest && <BirthdaysThisMonth />}
+        </PageWrapper>
+      </ContainerHome>
     </Container>
   );
 };

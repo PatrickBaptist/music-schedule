@@ -105,6 +105,21 @@ export const ScheduleContent = styled.div`
   .add-btn:hover {
     background-color: #1aa34a;
   }
+
+  .generate-btn {
+    background-color: #2563eb;
+    color: white;
+  }
+
+  .generate-btn:hover {
+    background-color: #1d4ed8;
+  }
+
+  .btns:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none !important;
+  }
 `;
 
 export const CardsGrid = styled.div`

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Musicos, SpecialSchedule } from "../../services/ScheduleService";
+import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedule } from "../../services/ScheduleService";
 import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./EspecialScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
@@ -17,18 +17,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
   );
   const [year] = useState<number>(new Date().getFullYear());
   const [date] = useState("");
-  const [, setMusicos] = useState<Musicos>({
-    minister: "",
-    teclas: "",
-    violao: "",
-    batera: "",
-    bass: "",
-    guita: "",
-    sound: "",
-    vocal1: "",
-    vocal2: "",
-    outfitColor: "",
-  });
+  const [, setMusicos] = useState<Musicos>(createEmptyMusicos());
   const [, setSundays] = useState<Date[]>([]);
   const [, setIsLoading] = useState<boolean>(true);
   const { users } = useUsersContext();
@@ -165,20 +154,8 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     const found = monthlySchedule.find(
       (s) => s.date.slice(0, 10) === date.slice(0, 10)
     );
-    if (found) setMusicos(found.músicos);
-    else
-      setMusicos({
-        minister: "",
-        teclas: "",
-        violao: "",
-        batera: "",
-        bass: "",
-        guita: "",
-        sound: "",
-        vocal1: "",
-        vocal2: "",
-        outfitColor: "",
-      });
+    if (found) setMusicos(normalizeMusicos(found.músicos));
+    else setMusicos(createEmptyMusicos());
 
     setIsLoading(false);
   }, [date, monthlySchedule]);

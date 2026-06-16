@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Musicos } from "../../services/ScheduleService";
+import { createEmptyMusicos, Musicos, normalizeMusicos } from "../../services/ScheduleService";
 import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./ScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
@@ -16,18 +16,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
   );
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [date, setDate] = useState("");
-  const [músicos, setMúsicos] = useState<Musicos>({
-    minister: "",
-    teclas: "",
-    violao: "",
-    batera: "",
-    bass: "",
-    guita: "",
-    vocal1: "",
-    vocal2: "",
-    sound: "",
-    outfitColor: "",
-  });
+  const [músicos, setMúsicos] = useState<Musicos>(createEmptyMusicos());
   const [sundays, setSundays] = useState<Date[]>([]);
   const [, setIsLoading] = useState<boolean>(true);
   const { users } = useUsersContext();
@@ -92,7 +81,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     bass: "Baixo",
     guita: "Guitarra",
     sound: "Op. Som",
-    vocal1: "Vocal",
+    vocal: "Vocal",
   };
 
   const ordemCampos = [
@@ -103,7 +92,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     "bass",
     "guita",
     "sound",
-    "vocal1",
+    "vocal",
   ];
 
   const {
@@ -143,20 +132,8 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     const found = monthlySchedule.find(
       (s) => s.date.slice(0, 10) === date.slice(0, 10)
     );
-    if (found) setMúsicos(found.músicos);
-    else
-      setMúsicos({
-        minister: "",
-        teclas: "",
-        violao: "",
-        batera: "",
-        bass: "",
-        guita: "",
-        vocal1: "",
-        vocal2: "",
-        sound: "",
-        outfitColor: "",
-      });
+    if (found) setMúsicos(normalizeMusicos(found.músicos));
+    else setMúsicos(createEmptyMusicos());
 
     setIsLoading(false);
   }, [date, monthlySchedule]);
@@ -254,25 +231,15 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
               </FormGroup>
 
               {ordemCampos.map((key) => {
-                const skillKey = key.startsWith("vocal")
-                  ? "vocal"
-                  : key;
-                const options = musiciansBySkill[skillKey] || [];
-
-                const isVocal = key.startsWith("vocal");
+                const isVocal = key === "vocal";
+                const options = musiciansBySkill[isVocal ? "vocal" : key] || [];
 
                 return (
                   <FormGroup key={key}>
                     <DarkLabel>{labels[key] || key}:</DarkLabel>
                     <DarkSelect
                       multiple={isVocal}
-                      value={
-                        isVocal
-                          ? (músicos[key as keyof Musicos] as string)
-                              ?.split(",")
-                              .map((s) => s.trim()) || []
-                          : músicos[key as keyof Musicos] || ""
-                      }
+                      value={isVocal ? músicos.vocal : músicos[key as keyof Musicos] || ""}
                       onChange={(e) => {
                         if (isVocal) {
                           const selected = Array.from(
@@ -281,7 +248,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                           );
                           setMúsicos((prev) => ({
                             ...prev,
-                            [key]: selected.join(", "),
+                            vocal: selected,
                           }));
                         } else {
                           setMúsicos((prev) => ({
@@ -291,9 +258,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                         }
                       }}
                     >
-                      {!isVocal && (
-                        <option value="">Selecione</option>
-                      )}
+                      {!isVocal && <option value="">Selecione</option>}
                       {options.map((musico) => (
                         <option key={musico} value={musico}>
                           {musico}
