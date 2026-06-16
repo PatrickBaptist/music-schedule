@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Input = styled.input`
@@ -91,5 +92,33 @@ export const UserCard = styled(motion.div)`
     &:hover {
       background-color: #d32f2f;
     }
+  }
+`;
+
+export const PageTopBar = styled.div`
+  width: min(100%, 900px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  padding: 0 16px;
+`;
+
+export const AuditLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #0f8ec4, #2ebef2);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
   }
 `;

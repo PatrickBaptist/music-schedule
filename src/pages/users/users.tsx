@@ -2,9 +2,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { roleOptions, UserRole } from "../../types/UserRole";
-import { Input, UserCard, UsersContainer } from "./usersStyle";
+import { AuditLink, Input, PageTopBar, UserCard, UsersContainer } from "./usersStyle";
 import { toast } from "sonner";
-import { FaUser, FaCogs, FaCheckCircle, FaTimesCircle, FaToggleOn, FaToggleOff, FaEnvelope, FaTrash } from 'react-icons/fa';
+import {
+  FaUser,
+  FaCogs,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaToggleOn,
+  FaToggleOff,
+  FaEnvelope,
+  FaTrash,
+  FaHistory,
+} from "react-icons/fa";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { Timestamp } from "firebase/firestore";
 import useAuthContext from "../../context/hooks/useAuthContext";
@@ -17,21 +27,26 @@ const UsersCardsPage: React.FC = () => {
 
   const loggedUserId = loggedUser?.id;
   const loggedUserRoles = loggedUser?.roles || [];
-  const isAdminOrLeader = loggedUserRoles.some(role => role === UserRole.Admin || role === UserRole.Leader);
+  const isAdminOrLeader = loggedUserRoles.some(
+    (role) => role === UserRole.Admin || role === UserRole.Leader
+  );
 
-  const rolePriority = useMemo(() => [
-    UserRole.Leader,
-    UserRole.Minister,
-    UserRole.Vocal,
-    UserRole.Keyboard,
-    UserRole.Violao,
-    UserRole.Guitar,
-    UserRole.Bass,
-    UserRole.Drums,
-    UserRole.Sound,
-    UserRole.Midia,
-    UserRole.DataShow,
-  ], []);
+  const rolePriority = useMemo(
+    () => [
+      UserRole.Leader,
+      UserRole.Minister,
+      UserRole.Vocal,
+      UserRole.Keyboard,
+      UserRole.Violao,
+      UserRole.Guitar,
+      UserRole.Bass,
+      UserRole.Drums,
+      UserRole.Sound,
+      UserRole.Midia,
+      UserRole.DataShow,
+    ],
+    []
+  );
 
   const getRoleLabel = (role: UserRole) => {
     return roleOptions.find((r) => r.value === role)?.label || role;
@@ -65,12 +80,13 @@ const UsersCardsPage: React.FC = () => {
 
   const filteredUsers = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    return processedUsers.filter((user) => 
-      (user.name?.toLowerCase().includes(term)) ||
-      (user.nickname?.toLowerCase().includes(term)) ||
-      (user.email?.toLowerCase().includes(term)) ||
-      (user.roles.some((role) => role.toLowerCase().includes(term))) ||
-      (user.status?.toLowerCase().includes(term))
+    return processedUsers.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(term) ||
+        user.nickname?.toLowerCase().includes(term) ||
+        user.email?.toLowerCase().includes(term) ||
+        user.roles.some((role) => role.toLowerCase().includes(term)) ||
+        user.status?.toLowerCase().includes(term)
     );
   }, [searchTerm, processedUsers]);
 
@@ -104,25 +120,17 @@ const UsersCardsPage: React.FC = () => {
 
   const getLastSeenLabel = (timestamp?: string | Timestamp) => {
     if (!timestamp) return "nunca";
-    
-    let date: Date;
 
-    if (timestamp instanceof Timestamp) {
-      date = timestamp.toDate();
-    } else {
-      date = new Date(timestamp);
-    }
-
+    const date = timestamp instanceof Timestamp ? timestamp.toDate() : new Date(timestamp);
     const diff = Date.now() - date.getTime();
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
     if (minutes < 1) return "agora mesmo";
-    if (minutes < 60) return `há ${minutes} min`;
-    if (hours < 24) return `há ${hours}h`;
-    return `há ${days} dia${days > 1 ? "s" : ""}`;
-
+    if (minutes < 60) return `ha ${minutes} min`;
+    if (hours < 24) return `ha ${hours}h`;
+    return `ha ${days} dia${days > 1 ? "s" : ""}`;
   };
 
   const handleStatusChange = async (id: string, status: "enabled" | "disabled") => {
@@ -133,7 +141,7 @@ const UsersCardsPage: React.FC = () => {
       toast.success("Status alterado com sucesso!", { id: toastId });
     } catch (err) {
       if (err instanceof Error) {
-        toast.error("Sem premissão! " + err.message, { id: toastId });
+        toast.error("Sem permissao! " + err.message, { id: toastId });
       } else {
         toast.error("Erro desconhecido ao salvar", { id: toastId });
       }
@@ -141,49 +149,38 @@ const UsersCardsPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string, userName: string) => {
-
     if (id === loggedUserId) {
-      toast.error("Você não pode deletar o próprio usuário.");
+      toast.error("Voce nao pode deletar o proprio usuario.");
       return;
     }
 
-    toast(
-      `Deseja realmente deletar o usuário "${userName}"?`,
-      {
-        action: {
-          label: "Deletar",
-          onClick: async () => {
-            const toastId = toast.loading("Aguarde...");
-            try {
-              await deleteUser(id);
-              await fetchUsers();
-              toast.success("Usuário deletado com sucesso!", { id: toastId });
-            } catch (err) {
-              if (err instanceof Error) {
-                toast.error("Sem premissão! " + err.message, { id: toastId });
-              } else {
-                toast.error("Erro desconhecido ao deletar", { id: toastId });
-              }
+    toast(`Deseja realmente deletar o usuario "${userName}"?`, {
+      action: {
+        label: "Deletar",
+        onClick: async () => {
+          const toastId = toast.loading("Aguarde...");
+          try {
+            await deleteUser(id);
+            await fetchUsers();
+            toast.success("Usuario deletado com sucesso!", { id: toastId });
+          } catch (err) {
+            if (err instanceof Error) {
+              toast.error("Sem permissao! " + err.message, { id: toastId });
+            } else {
+              toast.error("Erro desconhecido ao deletar", { id: toastId });
             }
-          },
+          }
         },
-      }
-    );
+      },
+    });
   };
 
   const isUserOnline = (lastSeen?: Timestamp | string) => {
     if (!lastSeen) return false;
 
-    let date: Date;
-
-    if (lastSeen instanceof Timestamp) {
-      date = lastSeen.toDate();
-    } else {
-      date = new Date(lastSeen);
-    }
-
+    const date = lastSeen instanceof Timestamp ? lastSeen.toDate() : new Date(lastSeen);
     const diff = Date.now() - date.getTime();
-    return diff < 5 * 60 * 1000; // 5 minutos
+    return diff < 5 * 60 * 1000;
   };
 
   return (
@@ -196,85 +193,107 @@ const UsersCardsPage: React.FC = () => {
       }}
     >
       <PageWrapper>
-        <h1>Usuários</h1>
+        <PageTopBar>
+          <h1>Usuarios</h1>
+          {isAdminOrLeader && (
+            <AuditLink to="/audit">
+              <FaHistory size={12} />
+              Auditoria
+            </AuditLink>
+          )}
+        </PageTopBar>
 
         <div style={{ width: "90%", maxWidth: "600px", display: "flex", alignItems: "center", marginBottom: "40px" }}>
           <Input
             type="text"
-            placeholder="Pesquisar por nome, e-mail ou função..."
+            placeholder="Pesquisar por nome, e-mail ou funcao..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         {isLoading ? (
-          <LoadingScreen /> 
+          <LoadingScreen />
         ) : (
-            <UsersContainer>
-              {filteredUsers.map((user, index) => (
-                <UserCard
-                  key={user.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
-                >
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><FaUser style={{ marginRight: '8px' }} />
+          <UsersContainer>
+            {filteredUsers.map((user, index) => (
+              <UserCard
+                key={user.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
+              >
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <FaUser style={{ marginRight: "8px" }} />
                   <strong>{user.nickname || user.name}</strong>
                   {user.id === loggedUserId ? (
-                    <span style={{ 
-                      fontSize: "0.75rem",
-                      color: "#9ca3af",
-                      marginLeft: "6px",
-                      fontStyle: "italic",
-                     }}>
-                      (você)
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "#9ca3af",
+                        marginLeft: "6px",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      (voce)
                     </span>
                   ) : isUserOnline(user.lastSeen) ? (
                     <span style={{ color: "green", fontWeight: 500, fontSize: "0.85rem" }}>
-                      🟢 Online
+                      Online
                     </span>
-                  )  : user.status === "disabled" ? (
+                  ) : user.status === "disabled" ? (
                     <span style={{ color: "gray", fontWeight: 500, fontSize: "0.85rem" }}>
-                      🔴 Conta desativada {getLastSeenLabel(user.lastSeen)}
+                      Conta desativada {getLastSeenLabel(user.lastSeen)}
                     </span>
                   ) : (
                     <span style={{ color: "gray", fontWeight: 500, fontSize: "0.85rem" }}>
-                      ⚪ Visto {getLastSeenLabel(user.lastSeen)}
+                      Visto {getLastSeenLabel(user.lastSeen)}
                     </span>
                   )}
-                  </span>
-                  <span><FaEnvelope style={{ marginRight: '8px' }} />{user.email}</span>
-                  <span><FaCogs style={{ marginRight: '8px' }} /> {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}</span>
-                  <span>
-                    {user.status === "enabled" ? <FaCheckCircle style={{ color: 'green', marginRight: '8px' }} /> : <FaTimesCircle style={{ color: 'red', marginRight: '8px' }} />}
-                    Status: {getStatusLabel(user.status!)}
-                  </span>
+                </span>
 
-                  {user.id !== loggedUserId && isAdminOrLeader && (
-                    <div className="actions-container">
-                      {user.status !== "enabled" && (
-                        <button onClick={() => handleStatusChange(user.id, "enabled")}>
-                          <FaToggleOn style={{ marginRight: '6px' }} /> Ativar
-                        </button>
-                      )}
-
-                      {user.status !== "disabled" && (
-                        <button onClick={() => handleStatusChange(user.id, "disabled")}>
-                          <FaToggleOff style={{ marginRight: '6px' }} /> Desativar
-                        </button>
-                      )}
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleDelete(user.id, user.nickname || user.name)}
-                        >
-                          <FaTrash style={{ marginRight: '6px' }} /> Deletar
-                        </button>
-                    </div>
+                <span>
+                  <FaEnvelope style={{ marginRight: "8px" }} />
+                  {user.email}
+                </span>
+                <span>
+                  <FaCogs style={{ marginRight: "8px" }} />
+                  {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}
+                </span>
+                <span>
+                  {user.status === "enabled" ? (
+                    <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
+                  ) : (
+                    <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
                   )}
-                </UserCard>
-              ))}
-              {filteredUsers.length === 0 && <p>Nenhum usuário encontrado.</p>}
-            </UsersContainer>
+                  Status: {getStatusLabel(user.status!)}
+                </span>
+
+                {user.id !== loggedUserId && isAdminOrLeader && (
+                  <div className="actions-container">
+                    {user.status !== "enabled" && (
+                      <button onClick={() => handleStatusChange(user.id, "enabled")}>
+                        <FaToggleOn style={{ marginRight: "6px" }} /> Ativar
+                      </button>
+                    )}
+
+                    {user.status !== "disabled" && (
+                      <button onClick={() => handleStatusChange(user.id, "disabled")}>
+                        <FaToggleOff style={{ marginRight: "6px" }} /> Desativar
+                      </button>
+                    )}
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(user.id, user.nickname || user.name)}
+                    >
+                      <FaTrash style={{ marginRight: "6px" }} /> Deletar
+                    </button>
+                  </div>
+                )}
+              </UserCard>
+            ))}
+            {filteredUsers.length === 0 && <p>Nenhum usuario encontrado.</p>}
+          </UsersContainer>
         )}
       </PageWrapper>
     </div>
