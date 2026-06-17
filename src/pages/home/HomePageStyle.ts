@@ -11,12 +11,12 @@ export const Container = styled.div`
 
 export const ContainerHome = styled.div`
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 25px 0 10px 0;
-    overflow-y: hidden;
+    overflow: visible;
     box-sizing: border-box;
 
     /* Layout para desktop */
@@ -83,6 +83,16 @@ export const ContainerHome = styled.div`
         @media (max-width: 478px) {
           max-width: 300px;
         }
+
+        @media (max-height: 700px) and (max-width: 768px) {
+          max-height: calc(100dvh - 190px);
+          overflow-y: auto;
+          padding: 14px 18px;
+        }
+
+        @media (max-height: 560px) and (max-width: 768px) {
+          max-height: calc(100dvh - 150px);
+        }
       }
 
       .content-escala2 {
@@ -96,6 +106,12 @@ export const ContainerHome = styled.div`
         @media (max-width: 478px) {
           max-width: 300px;
         }
+
+        @media (max-height: 700px) and (max-width: 768px) {
+          max-height: calc(100dvh - 190px);
+          overflow-y: auto;
+          padding: 14px 18px;
+        }
       }
 
       .content-escala p {
@@ -105,6 +121,12 @@ export const ContainerHome = styled.div`
         justify-content: space-between;
         border-bottom: 1px solid var(--color-border-soft);
         padding-bottom: 6px;
+
+        @media (max-height: 700px) and (max-width: 768px) {
+          font-size: 14px;
+          margin: 7px 0;
+          padding-bottom: 5px;
+        }
       }
 
       .content-escala p:last-child {

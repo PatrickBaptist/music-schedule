@@ -73,6 +73,10 @@ export const ContainerEscala = styled.div`
     justify-content: center;
     margin: 12px 0;
     gap: 25px;
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      gap: 14px;
+    }
   }
 
   .escala-content-escala {
@@ -88,6 +92,16 @@ export const ContainerEscala = styled.div`
     @media (max-width: 478px) {
       max-width: 300px;
     }
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      max-height: calc(100dvh - 190px);
+      overflow-y: auto;
+      padding: 14px 18px;
+    }
+
+    @media (max-height: 560px) and (max-width: 768px) {
+      max-height: calc(100dvh - 150px);
+    }
   }
 
   .escala-content-escala p {
@@ -97,6 +111,12 @@ export const ContainerEscala = styled.div`
     justify-content: space-between;
     border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      font-size: 14px;
+      margin: 7px 0;
+      padding-bottom: 5px;
+    }
   }
 
   .escala-content-escala p:last-child {

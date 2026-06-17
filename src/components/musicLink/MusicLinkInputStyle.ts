@@ -56,35 +56,53 @@ export const InputContainer = styled.div`
 export const SuggestionsList = styled.ul`
   background: var(--color-surface);
   width: 100%;
-  max-height: 200px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  max-height: clamp(240px, 42dvh, 360px);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   margin-top: 4px;
   list-style: none;
   padding: 0;
   overflow-y: auto;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    max-height: min(360px, 48dvh);
+  }
+
+  @media (max-width: 380px) {
+    max-height: min(380px, 52dvh);
+  }
 
   li {
-    padding: 10px;
+    padding: 12px;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--color-border-soft);
 
     &:hover {
-      background-color: #f5f5f5;
+      background-color: var(--color-surface-muted);
     }
 
     .suggestion-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+
+      @media (max-width: 480px) {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
 
     .music-name {
       font-size: 15px;
       font-weight: 500;
-      color: #333;
+      color: var(--color-text-strong);
+      overflow-wrap: anywhere;
+      min-width: 0;
     }
 
     .add-label {
@@ -96,6 +114,7 @@ export const SuggestionsList = styled.ul`
       font-weight: 600;
       opacity: 0.8;
       transition: opacity 0.2s ease;
+      white-space: nowrap;
 
       svg {
         color: #007bff;

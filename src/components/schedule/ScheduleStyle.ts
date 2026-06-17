@@ -8,6 +8,10 @@ export const ScheduleContainer = styled.div`
   align-items: center;
   box-sizing: border-box;
   padding: 60px 0;
+
+  @media (max-height: 700px) and (max-width: 768px) {
+    padding: 24px 0;
+  }
 `;
 
 export const ScheduleContent = styled.div`
@@ -135,6 +139,10 @@ export const CardsGrid = styled.div`
   @media (max-width: 670px) {
     grid-template-columns: 1fr;
   }
+
+  @media (max-height: 700px) and (max-width: 768px) {
+    padding: 12px;
+  }
 `;
 
 export const SeeScale = styled.div`
@@ -149,9 +157,23 @@ export const SeeScale = styled.div`
   flex-direction: column;
   gap: 8px;
 
+  @media (max-height: 700px) and (max-width: 768px) {
+    max-height: calc(100dvh - 190px);
+    overflow-y: auto;
+    padding: 14px 18px;
+  }
+
+  @media (max-height: 560px) and (max-width: 768px) {
+    max-height: calc(100dvh - 150px);
+  }
+
   h3 {
     font-size: 1.1rem;
     margin-bottom: 12px;
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      margin-bottom: 8px;
+    }
   }
 
   .content-escala p {
@@ -161,6 +183,12 @@ export const SeeScale = styled.div`
     justify-content: space-between;
     border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      font-size: 14px;
+      margin: 7px 0;
+      padding-bottom: 5px;
+    }
   }
 
   .content-escala p:last-child {

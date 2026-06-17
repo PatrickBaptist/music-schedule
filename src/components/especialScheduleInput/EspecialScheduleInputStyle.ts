@@ -108,6 +108,7 @@ export const DarkForm = styled.form`
   max-height: 550px;
   gap: 16px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
   min-height: 0;
   scrollbar-gutter: stable;

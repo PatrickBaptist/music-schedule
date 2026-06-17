@@ -33,6 +33,16 @@ export const CardThursday = styled(motion.div)`
       max-width: 300px;
       padding: 15px 20px;
     }
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      max-height: calc(100dvh - 190px);
+      overflow-y: auto;
+      padding: 14px 18px;
+    }
+
+    @media (max-height: 560px) and (max-width: 768px) {
+      max-height: calc(100dvh - 150px);
+    }
   }
 
   .content-escala p {
@@ -43,6 +53,12 @@ export const CardThursday = styled(motion.div)`
     border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
     transition: all 0.3s ease-in-out;
+
+    @media (max-height: 700px) and (max-width: 768px) {
+      font-size: 14px;
+      margin: 7px 0;
+      padding-bottom: 5px;
+    }
   }
 
   .content-escala p:last-child {
