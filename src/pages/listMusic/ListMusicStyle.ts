@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -375,5 +376,24 @@ export const SelectContainer = styled.div`
     box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
     outline: none;
     font-size: 14px;
+  }
+`;
+
+export const AddFormOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) + 20);
+  background: rgba(8, 15, 24, 0.68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @media (max-width: 720px) {
+    align-items: flex-start;
+    padding: 82px 12px 106px;
   }
 `;

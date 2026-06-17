@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
 import MusicLinkList from '../../components/musicList/MusicLinkList';
-import { Container, ContainerHome } from './HomePageStyle';
+import { AddFormOverlay, Container, ContainerHome } from './HomePageStyle';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
@@ -16,6 +17,7 @@ import { FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import { formatVocalList } from '../../services/ScheduleService';
+import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +31,8 @@ const HomePage: React.FC = () => {
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
   const canAddMusic = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
+
+  useBodyScrollLock(isModalOpen);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,13 +71,18 @@ const HomePage: React.FC = () => {
                 </div>
               )}
 
-              {isModalOpen && (
-                <div className="modal">
-                  <div className="modal-content">
+              {isModalOpen &&
+                createPortal(
+                  <AddFormOverlay
+                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 18, scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 180, damping: 18 }}
+                  >
                     <MusicLinkInput setIsModalOpen={setIsModalOpen} />
-                  </div>
-                </div>
-              )}
+                  </AddFormOverlay>,
+                  document.body
+                )}
 
               <MusicLinkList canDelete={loggedRoles} />
             </div>

@@ -82,19 +82,26 @@ export const CardActionButton = styled.button`
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 18px;
   background: rgba(8, 15, 24, 0.68);
   backdrop-filter: blur(8px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @media (max-width: 720px) {
+    align-items: flex-start;
+    padding: 82px 12px 106px;
+  }
 `;
 
 export const ModalContent = styled(motion.div)`
   width: min(100%, 620px);
   max-height: min(92vh, 760px);
-  overflow: auto;
+  overflow: hidden;
   border-radius: 20px;
   background: var(--color-surface);
   color: var(--color-text-strong);
@@ -103,6 +110,11 @@ export const ModalContent = styled(motion.div)`
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  @media (max-width: 720px) {
+    width: 100%;
+    max-height: calc(100dvh - 188px);
+  }
 `;
 
 export const ModalHeader = styled.div`
@@ -142,6 +154,13 @@ export const ModalBody = styled.form`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  @media (max-width: 720px) {
+    max-height: calc(100dvh - 188px - 90px);
+  }
 `;
 
 export const FormGroup = styled.div`

@@ -11,6 +11,7 @@ import useAllMusicHistoryContext from '../../context/hooks/useAllMusicHistoryCon
 import { FaPlus } from 'react-icons/fa';
 import { AllMusicLink } from '../../services/AllMusicHistory';
 import LoadingScreen from '../loading/LoadingScreen';
+import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -59,6 +60,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
+
+  useBodyScrollLock(true);
 
   useEffect(() => {
     getAllMusicLinksFull().catch((err) => console.error("Erro ao carregar músicas:", err));
@@ -229,8 +232,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         ) : (
           <div style={{ padding: 10 }}>Nenhuma sugestão encontrada</div>
         )}
-      </SuggestionsList>
-    )}
+        </SuggestionsList>
+      )}
         
       <SelectContainer>
         <label htmlFor="worshipMoment">Momento do Louvor</label>
@@ -315,7 +318,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         </Button>
       </div>
       {ministerModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'var(--color-modal-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', backgroundColor: 'rgba(8, 15, 24, 0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '82px 12px 106px', boxSizing: 'border-box', overflowY: 'auto', zIndex: 10010 }}>
           <InputContainer>
             <h3>Selecione quem irá ministrar a música</h3>
             <SelectContainer>
@@ -344,12 +347,19 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       {worshipMomentModalOpen && (
         <div style={{
           position: 'fixed',
-          top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1000
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(8, 15, 24, 0.78)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '82px 12px 106px',
+          boxSizing: 'border-box',
+          overflowY: 'auto',
+          zIndex: 10011
         }}>
-          <InputContainer style={{ backgroundColor: 'var(--color-surface)', padding: 24, borderRadius: 8 }}>
+          <InputContainer style={{ backgroundColor: 'var(--color-surface)', padding: 24, borderRadius: 18 }}>
             <h3>Selecione o momento do louvor</h3>
             <SelectContainer>
               <select

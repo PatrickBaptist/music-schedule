@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
 export const Container = styled.div`
@@ -157,24 +158,36 @@ export const ContainerHome = styled.div`
       width: 100vw;
       height: 100dvh;
       position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 2024;
-      background-color: var(--color-modal-bg);
+      inset: 0;
+      z-index: calc(var(--z-modal) + 10);
+      background-color: rgba(8, 15, 24, 0.92);
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
-      padding: 200px 0;
+      padding: 16px;
       box-sizing: border-box;
-      overflow: auto;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+
+      @media (max-width: 720px) {
+        align-items: flex-start;
+        padding: 82px 12px 106px;
+      }
     }
 
     .modal-content {
-      width: 100%;
+      width: min(100%, 620px);
+      max-height: calc(100dvh - 32px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+
+      @media (max-width: 720px) {
+        width: 100%;
+        max-height: calc(100dvh - 188px);
+      }
 
       .btn-close {
         width: 100%;
@@ -222,5 +235,24 @@ export const ContainerHome = styled.div`
 
   .add-btn:hover {
     background-color: #1aa34a;
+  }
+`
+
+export const AddFormOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) + 20);
+  background: rgba(8, 15, 24, 0.68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @media (max-width: 720px) {
+    align-items: flex-start;
+    padding: 82px 12px 106px;
   }
 `

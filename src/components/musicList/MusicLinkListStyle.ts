@@ -229,16 +229,21 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     width: 100vw;
     height: 100dvh;
     position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 2024;
-    background-color: var(--color-modal-bg);
+    inset: 0;
+    z-index: var(--z-modal);
+    background-color: rgba(8, 15, 24, 0.68);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding: 200px 0;
+    padding: 16px;
     box-sizing: border-box;
-    overflow: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    @media (max-width: 720px) {
+      align-items: flex-start;
+      padding: 82px 12px 106px;
+    }
   }
 
   .edit-content {
@@ -247,18 +252,34 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    max-height: calc(100dvh - 32px);
+    overflow: hidden;
+
+    @media (max-width: 720px) {
+      max-height: calc(100dvh - 188px);
+    }
   }
 
   .input-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 0;
+    width: 100%;
+    max-width: 620px;
+    max-height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 20px;
+    border-radius: 18px;
+    background: var(--color-surface);
+    color: var(--color-text-strong);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
 
     input {
-      width: 350px;
-      height: 25px;
+      width: 100%;
+      min-height: 40px;
       border: 1px solid rgba(0, 0, 0, 0.1);
       box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
       outline: none;
@@ -270,27 +291,33 @@ export const ListContainer = styled.ul<{ bg?: string }>`
         box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
       }
     }
+
+    textarea,
+    select {
+      width: 100%;
+    }
   }
 
   .description-modal {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
+    height: 100dvh;
+    background: rgba(8, 15, 24, 0.68);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999;
-    padding: 20px;
+    z-index: var(--z-modal);
+    padding: 16px;
     box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .modal-content {
     padding: 24px;
-    width: auto !important;
-    max-height: 50vh;
+    width: min(100%, 560px) !important;
+    max-height: calc(100dvh - 32px);
     height: auto;
     overflow-y: auto;
     text-align: left;
@@ -307,7 +334,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   }
 
   .modal-text {
-    width: auto;
+    width: 100%;
     white-space: pre-wrap;
     word-break: break-word;
     word-wrap: break-word;
@@ -372,9 +399,8 @@ export const ContainerVd = styled.div`
   width: 100vw;
   height: 100dvh;
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2024;
+  inset: 0;
+  z-index: var(--z-modal);
   background-color: rgba(0, 0, 0, 0.8);
 `;
 

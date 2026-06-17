@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import useAllMusicHistoryContext from "../../context/hooks/useAllMusicHistoryContext";
 import Button from "../../components/buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
-import { Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
+import { AddFormOverlay, Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
 import { FirestoreTimestamp } from "../../helpers/helpers";
 import { toast } from "sonner";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
@@ -17,6 +18,7 @@ import { InputContainer } from "../../components/allMusicLink/AllMusicLinkInputS
 import { MdPlaylistAdd } from "react-icons/md";
 import { UserRole } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
+import useBodyScrollLock from "../../context/hooks/useBodyScrollLock";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -80,6 +82,8 @@ const ListMusic: React.FC = () => {
   useEffect(() => {
     setFilteredMusicLinks(musicLinks);
   }, [musicLinks]);
+
+  useBodyScrollLock(isModalOpen || isEditing || worshipMomentModalOpen || openVideo);
 
   useEffect(() => {
     const fetchMusic = async () => {
@@ -274,18 +278,29 @@ const ListMusic: React.FC = () => {
               </div>
               )}
 
-            {isModalOpen && (
-              <div className="modal">
-                <div className="modal-content">
+            {isModalOpen &&
+              createPortal(
+                <AddFormOverlay
+                  initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 18, scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 180, damping: 18 }}
+                >
                   <AllMusicLinkInput setIsModalOpen={setIsModalOpen}/>
-                </div>
-              </div>
-            )}
+                </AddFormOverlay>,
+                document.body
+              )}
 
-            {isEditing && (
-              <div className="all-edit-form">
-                <div className='all-edit-content'>
-                  <div className="all-input-container">
+            {isEditing &&
+              createPortal(
+                <AddFormOverlay
+                  initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 18, scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 180, damping: 18 }}
+                >
+                  <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                    <InputContainer style={{ width: "min(100%, 620px)" }}>
                     <input
                       type="text"
                       value={name}
@@ -330,18 +345,19 @@ const ListMusic: React.FC = () => {
                         ))}
                       </select>
                     </SelectContainer>
-                      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-                        <Button onClick={handleCancelEdit} style={{ backgroundColor: '#9e9e9e', marginBottom: '10px' }}>
+                      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", gap: "10px" }}>
+                        <Button onClick={handleCancelEdit} style={{ backgroundColor: "#9e9e9e" }}>
                           Cancelar
                         </Button>
-                        <Button onClick={handleSaveEdit} style={{ backgroundColor: '#007BFF', marginBottom: '10px' }}>
+                        <Button onClick={handleSaveEdit} style={{ backgroundColor: "#007BFF" }}>
                           Salvar
                         </Button>
                       </div>
+                    </InputContainer>
                   </div>
-                </div>
-              </div>
-            )}
+                </AddFormOverlay>,
+                document.body
+              )}
 
             {isLoading ? (
               <LoadingScreen />
@@ -489,40 +505,41 @@ const ListMusic: React.FC = () => {
               </ContentVd>
             </ContainerVd>
           )}
-          {worshipMomentModalOpen && (
-            <div style={{
-              position: 'fixed',
-              top: 0, left: 0, width: '100%', height: '100%',
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              zIndex: 1000
-            }}>
-              <InputContainer style={{ backgroundColor: 'var(--color-surface)', padding: 24, borderRadius: 8 }}>
-                <h3>Selecione o momento do louvor</h3>
-                <SelectContainer>
-                  <select
-                    value={selectedWorshipMoment}
-                    onChange={(e) => setSelectedWorshipMoment(e.target.value)}
-                    style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
-                  >
-                    <option value="">Selecione o momento</option>
-                    {worshipMoments.map((moment) => (
-                      <option key={moment} value={moment}>
-                        {moment}
-                      </option>
-                    ))}
-                  </select>
-                </SelectContainer>
+          {worshipMomentModalOpen &&
+            createPortal(
+              <AddFormOverlay
+                initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 180, damping: 18 }}
+              >
+                <InputContainer style={{ backgroundColor: 'var(--color-surface)' }}>
+                  <h3>Selecione o momento do louvor</h3>
+                  <SelectContainer>
+                    <select
+                      value={selectedWorshipMoment}
+                      onChange={(e) => setSelectedWorshipMoment(e.target.value)}
+                      style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
+                    >
+                      <option value="">Selecione o momento</option>
+                      {worshipMoments.map((moment) => (
+                        <option key={moment} value={moment}>
+                          {moment}
+                        </option>
+                      ))}
+                    </select>
+                  </SelectContainer>
 
-                <div style={{ width: '100%', marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
-                  <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={confirmAddWithMoment}>Confirmar</Button>
-                </div>
-              </InputContainer>
-            </div>
-          )}
+                  <div style={{ width: '100%', marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
+                    <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={confirmAddWithMoment}>Confirmar</Button>
+                  </div>
+                </InputContainer>
+              </AddFormOverlay>,
+              document.body
+            )}
         </PageWrapper>
       </Main>
     </Container>
