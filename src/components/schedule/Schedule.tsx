@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
+import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import { toast } from 'sonner';
@@ -10,6 +11,7 @@ import ScheduleInput from '../scheduleInput/ScheduleInput';
 import { UserRole } from '../../types/UserRole';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { formatVocalList } from '../../services/ScheduleService';
+import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -72,6 +74,8 @@ const Schedule: React.FC = () => {
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Admin];
   const canManageSchedule = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
+
+  useBodyScrollLock(isModalOpen);
 
   useEffect(() => {
     const fetch = async () => {
@@ -147,13 +151,18 @@ const Schedule: React.FC = () => {
             </div>
           )}
 
-          {isModalOpen && (
-            <div className="modal">
-              <div className="modal-content">
+          {isModalOpen &&
+            createPortal(
+              <AddFormOverlay
+                initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 180, damping: 18 }}
+              >
                 <ScheduleInput setIsModalOpen={setIsModalOpen} />
-              </div>
-            </div>
-          )}
+              </AddFormOverlay>,
+              document.body
+            )}
 
           {loading ? (
             <LoadingScreen />

@@ -26,13 +26,19 @@ export const ContainerEscala = styled.div`
     top: 0;
     left: 0;
     z-index: 2024;
-    background-color: var(--color-modal-bg);
+    background-color: rgba(8, 15, 24, 0.92);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding: 20px 0 100px 0;
+    padding: 16px;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
+    overscroll-behavior: contain;
+
+    @media (max-width: 720px) {
+      align-items: flex-start;
+      padding: 82px 12px 106px;
+    }
   }
 
   .modal-content {

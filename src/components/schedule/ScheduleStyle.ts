@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import styled from 'styled-components';
 
 export const ScheduleContainer = styled.div`
@@ -169,5 +170,24 @@ export const SeeScale = styled.div`
   .content-escala strong {
     color: var(--color-text-strong);
     min-width: 90px;
+  }
+`;
+
+export const AddFormOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) + 20);
+  background: rgba(8, 15, 24, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  @media (max-width: 720px) {
+    align-items: flex-start;
+    padding: 82px 12px 106px;
   }
 `;
