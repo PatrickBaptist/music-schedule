@@ -99,20 +99,35 @@ const Schedule: React.FC = () => {
     fetch();
   }, [getScheduleForMonth, currentMonth]);
 
-  const handleGenerateMonthlySchedule = async () => {
+  const executeGenerateMonthlySchedule = async () => {
     const [month, year] = currentMonth.split('-');
 
+    const toastId = toast.loading('Chamando escala automática...');
     setIsGenerating(true);
     try {
       await generateMonthlySchedule({ month, year });
       getScheduleForMonth(currentMonth);
-      toast.success('Escala do mês gerada com sucesso');
+      toast.success('Escala automática criada com sucesso', { id: toastId });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Não foi possível gerar a escala automática';
-      toast.error(message);
+      toast.error(message, { id: toastId });
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleGenerateMonthlySchedule = () => {
+    if (isGenerating) return;
+
+    toast('Confirmar geração automática?', {
+      description: 'Clique em "Confirmar" para gerar a escala do mês atual.',
+      action: {
+        label: 'Confirmar',
+        onClick: () => {
+          void executeGenerateMonthlySchedule();
+        },
+      },
+    });
   };
 
   const isNextSunday = (dateString: string) => {
