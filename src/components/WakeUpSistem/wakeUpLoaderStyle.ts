@@ -3,12 +3,13 @@ import styled from "styled-components";
 export const Container = styled.div`
     width: 100vw;
     height: 100vh;
-    background-color: #000;
+    background-color: var(--color-page-bg);
     overflow: hidden;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 9999;
+    transition: background-color 0.5s ease, color 0.2s ease;
 `;
 
 export const Content = styled.div`

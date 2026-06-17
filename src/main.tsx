@@ -19,39 +19,39 @@ import { ThemePreferenceProvider } from './context/themeContext';
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <UsersProvider>
-        <ServerProvider>
-          <WakeUpScreen>
-            <AuthProvider>
-              <AllMusicLinksProvider>
-                <MusicLinksProvider>
-                  <SchedulesProvider>
-                    <NotificationProvider>
-                      <ThemePreferenceProvider>
-                        <GlobalStyle />
-                          <LayoutWrapper>
-                            <ScrollProvider>
-                              <App />
-                            </ScrollProvider>
-                          </LayoutWrapper>
-                      </ThemePreferenceProvider>
-                    </NotificationProvider>
-                  </SchedulesProvider>
-                </MusicLinksProvider>
-                <Toaster 
-                  richColors
-                  position='top-right'
-                  toastOptions={{
-                    actionButtonStyle: {
-                      backgroundColor: 'red'
-                    }
-                  }}
-                />
-              </AllMusicLinksProvider>
-            </AuthProvider>
-          </WakeUpScreen>
-        </ServerProvider>
-      </UsersProvider>
+      <ThemePreferenceProvider>
+        <GlobalStyle />
+        <UsersProvider>
+          <ServerProvider>
+            <WakeUpScreen>
+              <AuthProvider>
+                <AllMusicLinksProvider>
+                  <MusicLinksProvider>
+                    <SchedulesProvider>
+                      <NotificationProvider>
+                        <LayoutWrapper>
+                          <ScrollProvider>
+                            <App />
+                          </ScrollProvider>
+                        </LayoutWrapper>
+                      </NotificationProvider>
+                    </SchedulesProvider>
+                  </MusicLinksProvider>
+                  <Toaster 
+                    richColors
+                    position='top-right'
+                    toastOptions={{
+                      actionButtonStyle: {
+                        backgroundColor: 'red'
+                      }
+                    }}
+                  />
+                </AllMusicLinksProvider>
+              </AuthProvider>
+            </WakeUpScreen>
+          </ServerProvider>
+        </UsersProvider>
+      </ThemePreferenceProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
