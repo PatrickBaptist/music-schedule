@@ -17,7 +17,7 @@ Frontend em React para organizar a rotina do ministério de louvor. O sistema ju
 
 ## Perfis e permissões
 
-O frontend trabalha com os seguintes papéis:
+O frontend trabalha com os seguintes papéis: 
 
 - `admin`
 - `leader`
