@@ -21,7 +21,7 @@ export const ProfileItem = styled(motion.div)`
   flex-wrap: wrap;
 
   strong {
-    color: #1e90ff;
+    color: var(--color-text);
     font-weight: 600;
     margin-right: 6px;
   }
