@@ -68,10 +68,12 @@ export const ContainerLogo = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-
-  .logo {
-    width: 90px;
-    height: 50px;
+  
+  a {
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text-strong);
+    text-decoration: none;
+    margin-right: 2px;
   }
 `;
 

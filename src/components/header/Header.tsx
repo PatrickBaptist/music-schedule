@@ -1,5 +1,4 @@
 import React from 'react';
-import Logo from '../../assets/imgs/logo.png'
 import {
   ContainerLogo,
   HeaderActions,
@@ -35,7 +34,7 @@ const Header: React.FC = () => {
   return (
     <HeaderContainer>
       <ContainerLogo>
-        <a href="/"><img src={Logo} alt="Logo da igreja" className="logo" /></a>
+        <a href="/"><strong className="logo">Manancial</strong></a>
       </ContainerLogo>
 
       <NavHeader>

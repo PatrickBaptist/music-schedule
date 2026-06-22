@@ -20,7 +20,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   :root[data-theme='light'] {
-    --color-page-bg: #e0dcd4;
+    --color-page-bg: #f7f1e5;
     --color-surface: #ffffff;
     --color-surface-muted: #EDE8DF;
     --color-text: #2d3748;
