@@ -13,7 +13,7 @@ export const BirthdayContainer = styled(motion.div)`
 
 export const Title = styled.h4`
   font-size: 1.8rem;
-  color: #fff;
+  color: var(--color-text-strong);
   font-weight: 700;
 `;
 

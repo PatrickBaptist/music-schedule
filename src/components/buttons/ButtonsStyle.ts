@@ -22,6 +22,7 @@ export const ContainerButton = styled.button`
   vertical-align: baseline;
   width: auto;
   height: 14px;
+  background-color: #F0F0F1;
 
  &:hover, &:focus {
   border-color: rgba(0, 0, 0, 0.15);
