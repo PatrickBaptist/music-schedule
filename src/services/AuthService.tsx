@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import useUsersContext from "../context/hooks/useUsersContext";
 
+// 💡 Interface atualizada com suporte à arquitetura multi-igrejas
 export interface RegisterPayload {
   name: string;
   nickname?: string;
@@ -15,6 +16,11 @@ export interface RegisterPayload {
   experience?: string;
   notes?: string;
   canLeadWorship?: boolean;
+  
+  // Novos campos enviados pela página de cadastro
+  churchFlow?: 'select' | 'create' | 'join';
+  churchName?: string;
+  inviteCode?: string;
 }
 
 interface RegisterResponse {
@@ -86,7 +92,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [token, API_URL]);
 
   useEffect(() => {
-  if (!user?.id) return;
+    if (!user?.id) return;
     setUserOnlineStatus(user.id);
   }, [user?.id, setUserOnlineStatus]);
 
@@ -101,8 +107,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () =>
       document.removeEventListener("visibilitychange", onVisibility);
   }, [user?.id, setUserOnlineStatus]);
-
-
 
   const login = async (email: string, password: string) => {
     try {
@@ -129,7 +133,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const logout =() => {
+  const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
@@ -138,18 +142,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const registerUser = async (payload: RegisterPayload): Promise<RegisterResponse> => {
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message || "Erro ao cadastrar usuário");
-    }
+      if (!res.ok) {
+        throw new Error(data.message || "Erro ao cadastrar usuário");
+      }
 
-    return data;
+      return data;
     } catch (err) {
       console.error("Erro ao cadastrar usuário:", err);
       throw err;
