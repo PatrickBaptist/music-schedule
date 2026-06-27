@@ -10,7 +10,30 @@ export const ProfileTitle = styled(motion.h1)`
 export const ProfileList = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start; // tudo à esquerda
+  align-items: flex-start;
+`;
+
+export const ProfileAvatar = styled.div`
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px auto;
+  border: 3px solid var(--color-primary);
+  background: linear-gradient(135deg, rgba(46, 190, 242, 0.12), rgba(15, 142, 196, 0.22));
+  color: var(--color-primary);
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 export const ProfileItem = styled(motion.div)`
@@ -77,7 +100,6 @@ export const ContainerForm = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-
   }
 
   .form-content {
@@ -93,13 +115,12 @@ export const ContainerForm = styled.div`
     justify-content: center;
   }
 
-  /* Media query para desktop */
   @media (min-width: 768px) {
     .form-row {
       flex-direction: row;
       justify-content: space-between;
       gap: 25px;
-      align-items: stretch; /* Crucial para alinhar a altura */
+      align-items: stretch;
     }
 
     .form-column {
@@ -111,7 +132,6 @@ export const ContainerForm = styled.div`
       height: 100%;
     }
 
-    /* Garante que os formulários ocupem toda a altura */
     .form-content {
       height: 100%;
     }
@@ -137,7 +157,7 @@ export const DarkForm = styled(motion.form)`
 export const DarkTitle = styled.h1`
   text-align: center;
 `;
-  
+
 export const FormGroup = styled.div`
   width: 100%;
   display: flex;

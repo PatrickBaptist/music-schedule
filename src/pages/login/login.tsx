@@ -2,14 +2,24 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuthContext from "../../context/hooks/useAuthContext";
-import { Button, Container, FormWrapper, Input, Logo, RegisterPrompt } from "./loginStyle";
+import { FaGoogle } from "react-icons/fa";
+import {
+  Button,
+  Container,
+  Divider,
+  FormWrapper,
+  GoogleButton,
+  Input,
+  Logo,
+  RegisterPrompt,
+} from "./loginStyle";
 import logo from "../../assets/imgs/logo.png";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loginGuest } = useAuthContext();
+  const { login, loginGuest, loginWithGoogle } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,6 +53,21 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    const toastId = toast.loading("Entrando com Google...");
+    try {
+      const result = await loginWithGoogle();
+      toast.success(result.message, { id: toastId });
+      navigate("/");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message, { id: toastId });
+      } else {
+        toast.error("Erro desconhecido ao entrar com Google", { id: toastId });
+      }
+    }
+  };
+
   return (
     <PageWrapper>
       <Container>
@@ -73,6 +98,14 @@ const LoginPage: React.FC = () => {
             >
             Entrar
           </Button>
+
+          <Divider>ou</Divider>
+
+          <GoogleButton type="button" onClick={handleGoogleLogin}>
+            <FaGoogle />
+            Entrar com Google
+          </GoogleButton>
+
           <RegisterPrompt onClick={handleLoginGuest} style={{ cursor: "pointer" }}>
             Continuar como visitante
           </RegisterPrompt>

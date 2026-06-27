@@ -12,7 +12,7 @@ export interface User {
   status?: string;
   isOnline?: boolean;
   lastSeen?: Timestamp | string;
-
+  photoURL?: string;
 }
 
 export interface UsersContextProps {
@@ -28,7 +28,6 @@ export const UsersService = createContext<UsersContextProps | undefined>(undefin
 
 export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
-
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
   const getHeaders = () => {
@@ -42,20 +41,17 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/users`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
+        headers: getHeaders(),
       });
 
-      if (!res.ok) throw new Error("Erro ao buscar usuários");
+      if (!res.ok) throw new Error("Erro ao buscar usuarios");
 
-      const data = await res.json();
+      const data = (await res.json()) as User[];
       setUsers(data);
     } catch (err) {
       console.error(err);
     }
-  }, [ API_URL ]);
+  }, [API_URL]);
 
   useEffect(() => {
     fetchUsers();
@@ -66,7 +62,7 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       const res = await fetch(`${API_URL}/users/${id}`, {
         headers: getHeaders(),
       });
-      if (!res.ok) throw new Error("Usuário não encontrado");
+      if (!res.ok) throw new Error("Usuario nao encontrado");
       const data: User = await res.json();
       return data;
     } catch (err) {
@@ -82,7 +78,7 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         headers: getHeaders(),
         body: JSON.stringify(updated),
       });
-      if (!res.ok) throw new Error("Erro ao atualizar usuário");
+      if (!res.ok) throw new Error("Erro ao atualizar usuario");
     } catch (err) {
       console.error(err);
       throw err;
@@ -95,7 +91,7 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         method: "DELETE",
         headers: getHeaders(),
       });
-      if (!res.ok) throw new Error("Erro ao deletar usuário");
+      if (!res.ok) throw new Error("Erro ao deletar usuario");
     } catch (err) {
       console.error(err);
       throw err;
@@ -108,29 +104,6 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       lastSeen: serverTimestamp(),
     });
   }, []);
-
-
-  /*const setUserOnlineStatus = async (id: string, isOnline: boolean) => {
-    try {
-      const userRef = doc(db, "users", id);
-      await updateDoc(userRef, {
-        isOnline,
-        lastSeen: serverTimestamp(),
-      });
-    } catch (err) {
-      console.error("Erro ao atualizar status online:", err);
-    }
-  };
-
-  const listenUserStatus = (id: string, callback: (user: Partial<User>) => void) => {
-    const userRef = doc(db, "users", id);
-    const unsubscribe = onSnapshot(userRef, (snap) => {
-      if (snap.exists()) {
-        callback(snap.data() as Partial<User>);
-      }
-    });
-    return unsubscribe;
-  };*/
 
   return (
     <UsersService.Provider value={{ users, fetchUsers, getUserById, updateUser, deleteUser, setUserOnlineStatus }}>

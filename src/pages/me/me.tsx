@@ -9,6 +9,7 @@ import {
   DarkInput,
   DarkLabel,
   FormGroup,
+  ProfileAvatar,
   ProfileItem,
   ProfileList,
   ProfileTitle,
@@ -67,6 +68,16 @@ const MePage: React.FC = () => {
   const canAddwarning = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
 
   const isGuest = user?.roles?.includes(UserRole.Guest);
+
+  const profileInitials = useMemo(() => {
+    const sourceName = user?.nickname || user?.name || user?.email || "";
+    return sourceName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "U";
+  }, [user?.email, user?.name, user?.nickname]);
 
   useEffect(() => {
     setIsLoading(!user);
@@ -270,6 +281,14 @@ const MePage: React.FC = () => {
 
           {user && (
             <ProfileList>
+              <ProfileAvatar aria-label="Foto do perfil">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt={user.name || "Foto do usuario"} />
+                ) : (
+                  <span>{profileInitials}</span>
+                )}
+              </ProfileAvatar>
+
               {!isGuest && (
                 <>
                   <ProfileItem

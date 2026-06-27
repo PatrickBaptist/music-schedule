@@ -36,11 +36,13 @@ import {
   FaHistory,
   FaEdit,
   FaTimes,
+  FaClock,
 } from "react-icons/fa";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { Timestamp } from "firebase/firestore";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import type { User } from "../../services/UsersService";
+import { UserAvatar } from "./usersStyle";
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
@@ -87,6 +89,7 @@ const UsersCardsPage: React.FC = () => {
       UserRole.Sound,
       UserRole.Midia,
       UserRole.DataShow,
+      UserRole.Guest,
     ],
     []
   );
@@ -99,7 +102,7 @@ const UsersCardsPage: React.FC = () => {
     const usersWithSortedRoles = users
       .map((user) => {
         const validRoles = user.roles
-          .filter((r) => r !== UserRole.Admin && r !== UserRole.Guest)
+          .filter((r) => r !== UserRole.Admin)
           .sort(
             (a, b) =>
               rolePriority.indexOf(a as UserRole) -
@@ -307,6 +310,14 @@ const UsersCardsPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
               >
+                <UserAvatar aria-label="Avatar do usuario">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.nickname || user.name || "Foto do usuario"} />
+                  ) : (
+                    <FaUser />
+                  )}
+                </UserAvatar>
+
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                   <FaUser style={{ marginRight: "8px" }} />
                   <strong>{user.nickname || user.name}</strong>
@@ -344,9 +355,11 @@ const UsersCardsPage: React.FC = () => {
                   <FaCogs style={{ marginRight: "8px" }} />
                   {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}
                 </span>
-                <span>
+                  <span>
                   {user.status === "enabled" ? (
                     <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
+                  ) : user.status === "pending" ? (
+                    <FaClock style={{ color: "#f59e0b", marginRight: "8px" }} />
                   ) : (
                     <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
                   )}
