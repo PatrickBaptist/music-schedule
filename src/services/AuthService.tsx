@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
 import useUsersContext from "../context/hooks/useUsersContext";
 
 export interface RegisterPayload {
@@ -28,6 +28,13 @@ interface User {
   nickname?: string;
   email: string;
   roles?: string[];
+  phone?: string;
+}
+
+export interface UpdateMyProfilePayload {
+  name?: string;
+  nickname?: string;
+  phone?: string;
 }
 
 export interface AuthContextProps {
@@ -37,6 +44,8 @@ export interface AuthContextProps {
   loginGuest: () => Promise<void>;
   logout: () => void;
   registerUser: (payload: RegisterPayload) => Promise<RegisterResponse>;
+  updateMyProfile: (payload: UpdateMyProfilePayload) => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -49,41 +58,43 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
 
-  useEffect(() => {
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
+  }, []);
+
+  const refreshUser = useCallback(async () => {
     if (!token) return;
 
-    let cancelled = false;
+    try {
+      const res = await fetch(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    (async () => {
-      try {
-        const res = await fetch(`${API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          logout();
-          return;
-        }
-
-        const data = await res.json();
-        if (cancelled) return;
-
-        setUser({
-          id: data.id,
-          name: data.name,
-          nickname: data.nickname,
-          email: data.email,
-          roles: data.roles,
-        });
-      } catch {
+      if (!res.ok) {
         logout();
+        return;
       }
-    })();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [token, API_URL]);
+      const data = await res.json();
+
+      setUser({
+        id: data.id,
+        name: data.name,
+        nickname: data.nickname,
+        email: data.email,
+        roles: data.roles,
+        phone: data.phone,
+      });
+    } catch {
+      logout();
+    }
+  }, [API_URL, logout, token]);
+
+  useEffect(() => {
+    void refreshUser();
+  }, [refreshUser]);
 
   useEffect(() => {
   if (!user?.id) return;
@@ -129,12 +140,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const logout =() => {
-    localStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
-  };
-
   const registerUser = async (payload: RegisterPayload): Promise<RegisterResponse> => {
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
@@ -154,6 +159,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error("Erro ao cadastrar usuário:", err);
       throw err;
     }
+  };
+
+  const updateMyProfile = async (payload: UpdateMyProfilePayload) => {
+    if (!token) {
+      throw new Error("Sessão expirada");
+    }
+
+    const filteredPayload = Object.fromEntries(
+      Object.entries({
+        name: payload.name?.trim(),
+        nickname: payload.nickname?.trim(),
+        phone: payload.phone?.trim(),
+      }).filter(([, value]) => Boolean(value))
+    );
+
+    if (Object.keys(filteredPayload).length === 0) {
+      throw new Error("Envie pelo menos um campo válido");
+    }
+
+    const res = await fetch(`${API_URL}/users/me`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(filteredPayload),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(data?.message || "Erro ao atualizar seus dados");
+    }
+
+    await refreshUser();
   };
 
   const loginGuest = async () => {
@@ -178,7 +218,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthService.Provider value={{ user, token, login, logout, registerUser, loginGuest, isAuthenticated: !!token }}>
+    <AuthService.Provider value={{ user, token, login, logout, registerUser, loginGuest, updateMyProfile, refreshUser, isAuthenticated: !!token }}>
       {children}
     </AuthService.Provider>
   );
