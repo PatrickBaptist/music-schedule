@@ -377,7 +377,6 @@ const UsersCardsPage: React.FC = () => {
             <ModalHeader>
               <div>
                 <h2>Editar usuario</h2>
-                <p>Altere os dados, ajuste as funções e salve tudo num lugar só.</p>
               </div>
               <CloseButton type="button" onClick={closeModal} aria-label="Fechar modal">
                 <FaTimes />
@@ -472,7 +471,7 @@ const UsersCardsPage: React.FC = () => {
                   disabled={isSubmitting || editingUser.id === loggedUserId}
                   title={editingUser.id === loggedUserId ? "Voce nao pode deletar o proprio usuario." : undefined}
                 >
-                  <FaTrash style={{ marginRight: "6px" }} /> Excluir
+                  <FaTrash style={{ marginRight: "6px" }} /> Excluir usuário
                 </DangerActionButton>
               </ModalFooter>
             </ModalBody>

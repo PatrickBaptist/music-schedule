@@ -210,3 +210,78 @@ export const BackButton = styled(DarkButton)`
     background-color: var(--color-text-strong);
   }
 `;
+
+export const ProfileActions = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+`;
+
+export const EditProfileSection = styled.section`
+  width: 100%;
+  max-width: 920px;
+  margin: 28px auto 0 auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+`;
+
+export const EditProfileTitle = styled.h2`
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  text-align: center;
+`;
+
+export const EditProfileHint = styled.p`
+  margin: 0 0 18px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+`;
+
+export const EditProfileGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+export const EditProfileField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const EditProfileTextarea = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  font-size: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  outline: none;
+  resize: vertical;
+
+  &:focus {
+    border-color: #2EBEF2;
+    box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
+  }
+`;
+
+export const EditProfileFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+`;
