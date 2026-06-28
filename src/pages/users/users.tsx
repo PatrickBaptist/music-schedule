@@ -101,7 +101,7 @@ const UsersCardsPage: React.FC = () => {
   const processedUsers = useMemo(() => {
     const usersWithSortedRoles = users
       .map((user) => {
-        const validRoles = user.roles
+        const validRoles = (user.roles || [])
           .filter((r) => r !== UserRole.Admin)
           .sort(
             (a, b) =>
@@ -110,11 +110,17 @@ const UsersCardsPage: React.FC = () => {
           );
         return { ...user, roles: validRoles };
       })
-      .filter((user) => user.roles.length > 0);
 
     usersWithSortedRoles.sort((a, b) => {
       const aPriority = rolePriority.findIndex((r) => a.roles.includes(r));
       const bPriority = rolePriority.findIndex((r) => b.roles.includes(r));
+      const aHasRoles = a.roles.length > 0;
+      const bHasRoles = b.roles.length > 0;
+
+      if (aHasRoles !== bHasRoles) {
+        return aHasRoles ? -1 : 1;
+      }
+
       if (aPriority === bPriority) {
         return (a.nickname || a.name).localeCompare(b.nickname || b.name);
       }
@@ -353,7 +359,9 @@ const UsersCardsPage: React.FC = () => {
                 </span>
                 <span>
                   <FaCogs style={{ marginRight: "8px" }} />
-                  {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}
+                  {user.roles.length > 0
+                    ? user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")
+                    : "Sem funcao"}
                 </span>
                   <span>
                   {user.status === "enabled" ? (

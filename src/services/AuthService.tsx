@@ -71,6 +71,10 @@ const getStoredAuthSource = (): AuthSource => {
   return localStorage.getItem("token") ? "backend" : null;
 };
 
+const isPendingUser = (data: { status?: string; user?: { status?: string } }) => {
+  return data.status === "pending" || data.user?.status === "pending";
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("token") || null);
@@ -200,6 +204,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         if (!res.ok || !data?.token) {
           throw new Error(data?.message || "Usuario nao pode logar agora");
+        }
+
+        if (isPendingUser(data)) {
+          throw new Error("Seu cadastro ainda esta pendente. Aguarde a liberacao para entrar.");
         }
 
         localStorage.setItem("token", data.token);
