@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuthContext from "../../context/hooks/useAuthContext";
-import { FaGoogle } from "react-icons/fa";
 import {
   Button,
   Container,
@@ -15,6 +14,7 @@ import {
 } from "./loginStyle";
 import logo from "../../assets/imgs/logo.png";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
+import { FcGoogle } from "react-icons/fc";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -102,7 +102,7 @@ const LoginPage: React.FC = () => {
           <Divider>ou</Divider>
 
           <GoogleButton type="button" onClick={handleGoogleLogin}>
-            <FaGoogle />
+            <FcGoogle />
             Entrar com Google
           </GoogleButton>
 

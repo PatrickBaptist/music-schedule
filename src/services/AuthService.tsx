@@ -29,6 +29,7 @@ interface User {
   name?: string;
   nickname?: string;
   email: string;
+  birthDate?: string;
   roles?: string[];
   phone?: string;
   photoURL?: string;
@@ -40,6 +41,8 @@ export interface UpdateMyProfilePayload {
   name?: string;
   nickname?: string;
   phone?: string;
+  photoURL?: string;
+  birthDate?: string;
 }
 
 type AuthSource = "backend" | null;
@@ -111,6 +114,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name: data.name ?? current?.name,
         nickname: data.nickname ?? current?.nickname,
         email: data.email ?? current?.email ?? "",
+        birthDate: data.birthDate ?? current?.birthDate,
         roles: data.roles ?? current?.roles,
         phone: data.phone ?? current?.phone,
         photoURL: data.photoURL ?? current?.photoURL,
@@ -259,12 +263,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error("Sessao expirada");
     }
 
+    const normalizedPayload = {
+      name: payload.name?.trim(),
+      nickname: payload.nickname?.trim(),
+      phone: payload.phone?.trim(),
+      photoURL: payload.photoURL?.trim(),
+      birthDate: payload.birthDate?.trim(),
+    };
+
     const filteredPayload = Object.fromEntries(
-      Object.entries({
-        name: payload.name?.trim(),
-        nickname: payload.nickname?.trim(),
-        phone: payload.phone?.trim(),
-      }).filter(([, value]) => Boolean(value))
+      Object.entries(normalizedPayload).filter(([, value]) => Boolean(value))
     );
 
     if (Object.keys(filteredPayload).length === 0) {
@@ -286,6 +294,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error(data?.message || "Erro ao atualizar seus dados");
     }
 
+    setUser((current) => (current ? { ...current, ...normalizedPayload } : current));
     await refreshUser();
   };
 

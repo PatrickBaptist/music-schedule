@@ -1,28 +1,44 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Logo from '../../assets/imgs/logo.png'
 import {
   ContainerLogo,
   HeaderActions,
   HeaderContainer,
   HeaderItem,
+  ProfileAvatarFrame,
+  ProfileBadge,
+  ProfileButton,
   NavHeader,
   ThemeSwitcher,
 } from './HeaderStyle';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import Logout from '../../assets/imgs/logout.png'
 import { motion } from "framer-motion";
 import { UserRole } from '../../types/UserRole';
 import { FaDesktop, FaMoon, FaSun } from 'react-icons/fa';
 import useThemePreference from '../../context/hooks/useThemePreference';
+import { getPendingProfileFields } from '../../helpers/profileCompletion';
 
 const Header: React.FC = () => {
 
   const { user, logout } = useAuthContext();
   const { mode, setMode } = useThemePreference();
   const location = useLocation();
+  const navigate = useNavigate();
   
   const isGuest = user?.roles?.includes(UserRole.Guest);
+  const pendingProfileFields = useMemo(() => getPendingProfileFields(user), [user]);
+  const shouldShowBadge = !isGuest && pendingProfileFields.length > 0;
+  const profileLabel = useMemo(() => {
+    const sourceName = user?.nickname || user?.name || user?.email || "";
+    return sourceName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "U";
+  }, [user?.email, user?.name, user?.nickname]);
 
   const menuItems = [
     { name: "Início", path: "/" },
@@ -100,19 +116,21 @@ const Header: React.FC = () => {
             <FaDesktop size={14} />
           </button>
         </ThemeSwitcher>
-        {user?.photoURL && (
-          <img
-            src={user.photoURL}
-            alt={user.name || "Foto do usuario"}
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: "50%",
-              objectFit: "cover",
-              border: "2px solid var(--color-primary)",
-            }}
-          />
-        )}
+        <ProfileButton
+          type="button"
+          title="Abrir perfil"
+          aria-label="Abrir perfil"
+          onClick={() => navigate("/profile", { state: shouldShowBadge ? { openCompletion: true } : undefined })}
+        >
+          <ProfileAvatarFrame>
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt={user.name || "Foto do usuario"} />
+            ) : (
+              <span>{profileLabel}</span>
+            )}
+          </ProfileAvatarFrame>
+          {shouldShowBadge && <ProfileBadge aria-hidden="true" />}
+        </ProfileButton>
         {!isGuest && (
           <span style={{ color: 'var(--color-text-strong)', fontWeight: 600 }}>
             Olá, <span style={{ color: 'var(--color-primary)' }}>
