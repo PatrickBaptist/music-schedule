@@ -25,18 +25,56 @@ export const BirthdayList = styled.div`
 
 export const BirthdayCard = styled(motion.div)`
   background: white;
-  padding: 15px 20px;
+  padding: 16px 18px;
   border-radius: 15px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #444;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 14px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+`;
 
-  strong {
-    color: #ff477e;
+export const BirthdayAvatar = styled.div`
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 71, 126, 0.2);
+  background: linear-gradient(135deg, rgba(255, 154, 158, 0.22), rgba(251, 194, 235, 0.35));
+  color: #ff477e;
+  font-size: 1.1rem;
+  font-weight: 800;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
+`;
+
+export const BirthdayCardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  text-align: left;
+  min-width: 0;
+`;
+
+export const BirthdayName = styled.strong`
+  color: #ff477e;
+  font-size: 1.05rem;
+  line-height: 1.2;
+`;
+
+export const BirthdayDate = styled.span`
+  color: #666;
+  font-size: 0.95rem;
 `;

@@ -21,7 +21,7 @@ import { roleOptions, UserRole } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import { motion } from "framer-motion";
-import { FaGoogle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ const RegisterPage: React.FC = () => {
           <Title>Cadastro</Title>
 
           <GoogleButton type="button" onClick={handleGoogleRegister}>
-            <FaGoogle />
+            <FcGoogle />
             Cadastrar com Google
           </GoogleButton>
 
@@ -142,7 +142,7 @@ const RegisterPage: React.FC = () => {
           </FieldContainer>
           <RolesContainer>
             {roleOptions
-              .filter((role) => role.value !== UserRole.Guest)
+              .filter((role) => role.value !== UserRole.Guest && role.value !== UserRole.Leader)
               .map((role) => (
                 <RoleItem key={role.value}>
                   <motion.input

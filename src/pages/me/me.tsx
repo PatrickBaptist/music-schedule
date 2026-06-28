@@ -1,8 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
 import { StyledInputMask } from '../register/registerStyle';
 import {
   Badge,
+  CompletionBody,
+  CompletionSection,
+  CompletionSectionActions,
+  CompletionSectionHint,
+  CompletionSectionTitle,
   ContainerForm,
   DarkButton,
   DarkForm,
@@ -32,12 +38,18 @@ import {
   ModalOverlay,
   PrimaryActionButton,
 } from '../users/usersStyle';
+import { auth } from '../../firebaseConfig';
+import { getPendingProfileFields } from '../../helpers/profileCompletion';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const MePage: React.FC = () => {
   const { user, updateMyProfile } = useAuthContext();
   const [ isLoading, setIsLoading ] = useState(true);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   const {
       notification,
       postNotification,
@@ -52,6 +64,7 @@ const MePage: React.FC = () => {
     name: "",
     nickname: "",
     phone: "",
+    birthDate: "",
   });
 
   const formatPhone = (phone?: string) => {
@@ -79,6 +92,10 @@ const MePage: React.FC = () => {
       .join("") || "U";
   }, [user?.email, user?.name, user?.nickname]);
 
+  const pendingProfileFields = useMemo(() => getPendingProfileFields(user), [user]);
+  const shouldShowCompletionBadge = !isGuest && pendingProfileFields.length > 0;
+  const completionRequested = Boolean((location.state as { openCompletion?: boolean } | null)?.openCompletion);
+
   useEffect(() => {
     setIsLoading(!user);
   }, [user]);
@@ -90,8 +107,27 @@ const MePage: React.FC = () => {
       name: user.name || "",
       nickname: user.nickname || "",
       phone: user.phone || "",
+      birthDate: user.birthDate || "",
     });
   }, [user]);
+
+  useEffect(() => {
+    if (!completionRequested) {
+      return;
+    }
+
+    if (pendingProfileFields.length > 0) {
+      setIsCompletionModalOpen(true);
+    }
+
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [completionRequested, location.pathname, navigate, pendingProfileFields.length]);
+
+  useEffect(() => {
+    if (pendingProfileFields.length === 0 && isCompletionModalOpen) {
+      setIsCompletionModalOpen(false);
+    }
+  }, [isCompletionModalOpen, pendingProfileFields.length]);
 
   const rolePriority = useMemo(() => [
     UserRole.Leader,
@@ -240,6 +276,52 @@ const MePage: React.FC = () => {
     }
   };
 
+  const handleCompletionUpdate = async (payload: {
+    nickname?: string;
+    phone?: string;
+    photoURL?: string;
+    birthDate?: string;
+  }) => {
+    const toastId = toast.loading("Atualizando seu cadastro...");
+    try {
+      await updateMyProfile(payload);
+      toast.success("Cadastro atualizado.", { id: toastId });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message, { id: toastId });
+      } else {
+        toast.error("Erro desconhecido ao salvar", { id: toastId });
+      }
+    }
+  };
+
+  const handleImportGooglePhoto = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+
+    const toastId = toast.loading("Buscando sua foto do Google...");
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const photoURL = result.user.photoURL?.trim();
+      await signOut(auth).catch(() => undefined);
+
+      if (!photoURL) {
+        throw new Error("Nao foi possivel encontrar uma foto no Google.");
+      }
+
+      await updateMyProfile({ photoURL });
+      toast.success("Foto importada.", { id: toastId });
+    } catch (err: unknown) {
+      await signOut(auth).catch(() => undefined);
+      if (err instanceof Error) {
+        toast.error(err.message, { id: toastId });
+      } else {
+        toast.error("Erro desconhecido ao importar a foto", { id: toastId });
+      }
+    }
+  };
+
   const handleSaveProfile = async () => {
     if (!user) return;
 
@@ -350,6 +432,124 @@ const MePage: React.FC = () => {
             </ProfileList>
           )}
         </PageWrapper>
+      )}
+
+      {isCompletionModalOpen && user && shouldShowCompletionBadge && (
+        <ModalOverlay onClick={() => setIsCompletionModalOpen(false)}>
+          <ModalContent
+            onClick={(event) => event.stopPropagation()}
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 18, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          >
+            <ModalHeader>
+              <div>
+                <h2>Completar cadastro</h2>
+                <p>Preencha apenas o que ainda está faltando.</p>
+              </div>
+              <CloseButton type="button" onClick={() => setIsCompletionModalOpen(false)} aria-label="Fechar modal">
+                <FaTimes />
+              </CloseButton>
+            </ModalHeader>
+
+            <CompletionBody>
+              {pendingProfileFields.includes("photoURL") && (
+                <CompletionSection>
+                  <CompletionSectionTitle>Foto de perfil</CompletionSectionTitle>
+                  <CompletionSectionHint>
+                    Adicione uma foto para facilitar sua identificação dentro do sistema.
+                  </CompletionSectionHint>
+                  <CompletionSectionActions>
+                    <PrimaryActionButton type="button" onClick={() => void handleImportGooglePhoto()}>
+                      Importar foto do Google
+                    </PrimaryActionButton>
+                  </CompletionSectionActions>
+                </CompletionSection>
+              )}
+
+              {pendingProfileFields.includes("nickname") && (
+                <CompletionSection>
+                  <CompletionSectionTitle>Apelido</CompletionSectionTitle>
+                  <CompletionSectionHint>
+                    Informe como você gostaria de aparecer nas escalas.
+                  </CompletionSectionHint>
+                  <FormGroup>
+                    <FieldLabel htmlFor="completion-nickname">Apelido</FieldLabel>
+                    <DarkInput
+                      id="completion-nickname"
+                      value={profileDraft.nickname}
+                      onChange={(event) => setProfileDraft((current) => ({ ...current, nickname: event.target.value }))}
+                      placeholder="____________________"
+                    />
+                  </FormGroup>
+                  <CompletionSectionActions>
+                    <PrimaryActionButton
+                      type="button"
+                      onClick={() => void handleCompletionUpdate({ nickname: profileDraft.nickname })}
+                    >
+                      Salvar
+                    </PrimaryActionButton>
+                  </CompletionSectionActions>
+                </CompletionSection>
+              )}
+
+              {pendingProfileFields.includes("phone") && (
+                <CompletionSection>
+                  <CompletionSectionTitle>Telefone</CompletionSectionTitle>
+                  <CompletionSectionHint>
+                    Informe um telefone para facilitar o contato da liderança.
+                  </CompletionSectionHint>
+                  <FormGroup>
+                    <FieldLabel htmlFor="completion-phone">Telefone</FieldLabel>
+                    <StyledInputMask
+                      id="completion-phone"
+                      mask="(99) 9 9999-9999"
+                      maskChar=""
+                      value={profileDraft.phone}
+                      onChange={(event) => setProfileDraft((current) => ({ ...current, phone: event.target.value }))}
+                      placeholder="(21) 99999-9999"
+                    />
+                  </FormGroup>
+                  <CompletionSectionActions>
+                    <PrimaryActionButton
+                      type="button"
+                      onClick={() => void handleCompletionUpdate({ phone: profileDraft.phone })}
+                    >
+                      Salvar
+                    </PrimaryActionButton>
+                  </CompletionSectionActions>
+                </CompletionSection>
+              )}
+
+              {pendingProfileFields.includes("birthDate") && (
+                <CompletionSection>
+                  <CompletionSectionTitle>Data de aniversário</CompletionSectionTitle>
+                  <CompletionSectionHint>
+                    Informe sua data de aniversário para melhorar sua identificação no sistema.
+                  </CompletionSectionHint>
+                  <FormGroup>
+                    <FieldLabel htmlFor="completion-birthDate">Data de aniversário</FieldLabel>
+                    <DarkInput
+                      id="completion-birthDate"
+                      type="date"
+                      value={profileDraft.birthDate}
+                      onChange={(event) => setProfileDraft((current) => ({ ...current, birthDate: event.target.value }))}
+                    />
+                  </FormGroup>
+                  <CompletionSectionActions>
+                    <PrimaryActionButton
+                      type="button"
+                      onClick={() => void handleCompletionUpdate({ birthDate: profileDraft.birthDate })}
+                    >
+                      Salvar
+                    </PrimaryActionButton>
+                  </CompletionSectionActions>
+                </CompletionSection>
+              )}
+            </CompletionBody>
+          </ModalContent>
+        </ModalOverlay>
       )}
 
       {isEditingProfile && user && (

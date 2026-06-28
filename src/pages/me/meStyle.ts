@@ -240,6 +240,44 @@ export const ProfileActions = styled.div`
   flex-wrap: wrap;
 `;
 
+export const CompletionBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+`;
+
+export const CompletionSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(46, 190, 242, 0.16);
+  background: rgba(46, 190, 242, 0.06);
+`;
+
+export const CompletionSectionTitle = styled.h3`
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-text-strong);
+`;
+
+export const CompletionSectionHint = styled.p`
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+`;
+
+export const CompletionSectionActions = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
 export const EditProfileSection = styled.section`
   width: 100%;
   max-width: 920px;

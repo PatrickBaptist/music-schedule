@@ -1,7 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
-import { BirthdayCard, BirthdayContainer, BirthdayList, Title } from "./birthdaysMonthStyle";
+import {
+  BirthdayAvatar,
+  BirthdayCard,
+  BirthdayCardContent,
+  BirthdayContainer,
+  BirthdayDate,
+  BirthdayList,
+  BirthdayName,
+  Title,
+} from "./birthdaysMonthStyle";
 import LoadingScreen from "../loading/LoadingScreen";
 
 const BirthdaysThisMonth: React.FC = () => {
@@ -22,6 +31,14 @@ const BirthdaysThisMonth: React.FC = () => {
   }, [fetchUsers]);
 
   const currentMonth = new Date().getMonth() + 1;
+  const getInitials = (name?: string, nickname?: string) => {
+    const sourceName = (nickname || name || "U").trim();
+    return sourceName
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("");
+  };
 
   const birthdays = useMemo(() => {
     return users.filter((user) => {
@@ -64,10 +81,20 @@ const BirthdaysThisMonth: React.FC = () => {
                 key={user.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.1 }}
                 >
-                🎈 <strong>{user.nickname || user.name}</strong>
-                {formatDateDDMMYYYY(user.birthDate!)} 🎁
+                <BirthdayAvatar aria-label={`Foto de ${user.nickname || user.name}`}>
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.nickname || user.name || "Foto do aniversariante"} />
+                  ) : (
+                    <span>{getInitials(user.name, user.nickname)}</span>
+                  )}
+                </BirthdayAvatar>
+
+                <BirthdayCardContent>
+                  <BirthdayName>{user.nickname || user.name}</BirthdayName>
+                  <BirthdayDate>{formatDateDDMMYYYY(user.birthDate!)}</BirthdayDate>
+                </BirthdayCardContent>
                 </BirthdayCard>
             ))}
             </BirthdayList>
