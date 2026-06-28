@@ -36,11 +36,13 @@ import {
   FaHistory,
   FaEdit,
   FaTimes,
+  FaClock,
 } from "react-icons/fa";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { Timestamp } from "firebase/firestore";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import type { User } from "../../services/UsersService";
+import { UserAvatar } from "./usersStyle";
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
@@ -87,6 +89,7 @@ const UsersCardsPage: React.FC = () => {
       UserRole.Sound,
       UserRole.Midia,
       UserRole.DataShow,
+      UserRole.Guest,
     ],
     []
   );
@@ -98,8 +101,8 @@ const UsersCardsPage: React.FC = () => {
   const processedUsers = useMemo(() => {
     const usersWithSortedRoles = users
       .map((user) => {
-        const validRoles = user.roles
-          .filter((r) => r !== UserRole.Admin && r !== UserRole.Guest)
+        const validRoles = (user.roles || [])
+          .filter((r) => r !== UserRole.Admin)
           .sort(
             (a, b) =>
               rolePriority.indexOf(a as UserRole) -
@@ -107,11 +110,17 @@ const UsersCardsPage: React.FC = () => {
           );
         return { ...user, roles: validRoles };
       })
-      .filter((user) => user.roles.length > 0);
 
     usersWithSortedRoles.sort((a, b) => {
       const aPriority = rolePriority.findIndex((r) => a.roles.includes(r));
       const bPriority = rolePriority.findIndex((r) => b.roles.includes(r));
+      const aHasRoles = a.roles.length > 0;
+      const bHasRoles = b.roles.length > 0;
+
+      if (aHasRoles !== bHasRoles) {
+        return aHasRoles ? -1 : 1;
+      }
+
       if (aPriority === bPriority) {
         return (a.nickname || a.name).localeCompare(b.nickname || b.name);
       }
@@ -307,6 +316,14 @@ const UsersCardsPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, type: "spring", stiffness: 100 }}
               >
+                <UserAvatar aria-label="Avatar do usuario">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.nickname || user.name || "Foto do usuario"} />
+                  ) : (
+                    <FaUser />
+                  )}
+                </UserAvatar>
+
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                   <FaUser style={{ marginRight: "8px" }} />
                   <strong>{user.nickname || user.name}</strong>
@@ -342,11 +359,15 @@ const UsersCardsPage: React.FC = () => {
                 </span>
                 <span>
                   <FaCogs style={{ marginRight: "8px" }} />
-                  {user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")}
+                  {user.roles.length > 0
+                    ? user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")
+                    : "Sem funcao"}
                 </span>
-                <span>
+                  <span>
                   {user.status === "enabled" ? (
                     <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
+                  ) : user.status === "pending" ? (
+                    <FaClock style={{ color: "#f59e0b", marginRight: "8px" }} />
                   ) : (
                     <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
                   )}

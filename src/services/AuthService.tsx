@@ -1,4 +1,6 @@
-import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useState, ReactNode } from "react";
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import useUsersContext from "../context/hooks/useUsersContext";
 
 export interface RegisterPayload {
@@ -27,20 +29,37 @@ interface User {
   name?: string;
   nickname?: string;
   email: string;
+  birthDate?: string;
   roles?: string[];
   phone?: string;
+  photoURL?: string;
+  provider?: "backend";
+  status?: string;
 }
 
 export interface UpdateMyProfilePayload {
   name?: string;
   nickname?: string;
   phone?: string;
+  photoURL?: string;
+  birthDate?: string;
+}
+
+type AuthSource = "backend" | null;
+
+export interface GoogleAuthResult {
+  message: string;
+  token?: string;
+  user?: User;
 }
 
 export interface AuthContextProps {
   user: User | null;
   token: string | null;
+  authSource: AuthSource;
+  isAuthReady: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<GoogleAuthResult>;
   loginGuest: () => Promise<void>;
   logout: () => void;
   registerUser: (payload: RegisterPayload) => Promise<RegisterResponse>;
@@ -51,25 +70,36 @@ export interface AuthContextProps {
 
 export const AuthService = createContext<AuthContextProps | undefined>(undefined);
 
+const getStoredAuthSource = (): AuthSource => {
+  return localStorage.getItem("token") ? "backend" : null;
+};
+
+const isPendingUser = (data: { status?: string; user?: { status?: string } }) => {
+  return data.status === "pending" || data.user?.status === "pending";
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("token") || null);
+  const [authSource, setAuthSource] = useState<AuthSource>(getStoredAuthSource());
+  const [isAuthReady, setIsAuthReady] = useState(false);
   const { setUserOnlineStatus } = useUsersContext();
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
+  const googleProvider = useMemo(() => new GoogleAuthProvider(), []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setToken(null);
+    setAuthSource(null);
     setUser(null);
+    void signOut(auth);
   }, []);
 
-  const refreshUser = useCallback(async () => {
-    if (!token) return;
-
-    try {
+  const loadBackendUser = useCallback(
+    async (currentToken: string) => {
       const res = await fetch(`${API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${currentToken}` },
       });
 
       if (!res.ok) {
@@ -79,27 +109,49 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const data = await res.json();
 
-      setUser({
+      setUser((current) => ({
         id: data.id,
-        name: data.name,
-        nickname: data.nickname,
-        email: data.email,
-        roles: data.roles,
-        phone: data.phone,
-      });
-    } catch {
-      logout();
+        name: data.name ?? current?.name,
+        nickname: data.nickname ?? current?.nickname,
+        email: data.email ?? current?.email ?? "",
+        birthDate: data.birthDate ?? current?.birthDate,
+        roles: data.roles ?? current?.roles,
+        phone: data.phone ?? current?.phone,
+        photoURL: data.photoURL ?? current?.photoURL,
+        provider: "backend",
+        status: data.status ?? current?.status,
+      }));
+    },
+    [API_URL, logout]
+  );
+
+  const refreshUser = useCallback(async () => {
+    if (!token) {
+      setUser(null);
+      return;
     }
-  }, [API_URL, logout, token]);
+
+    await loadBackendUser(token);
+  }, [loadBackendUser, token]);
 
   useEffect(() => {
-    void refreshUser();
-  }, [refreshUser]);
+    const init = async () => {
+      try {
+        if (token) {
+          await refreshUser();
+        }
+      } finally {
+        setIsAuthReady(true);
+      }
+    };
+
+    void init();
+  }, [refreshUser, token]);
 
   useEffect(() => {
-  if (!user?.id) return;
+    if (!user?.id) return;
     setUserOnlineStatus(user.id);
-  }, [user?.id, setUserOnlineStatus]);
+  }, [setUserOnlineStatus, user?.id]);
 
   useEffect(() => {
     const onVisibility = () => {
@@ -109,14 +161,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     document.addEventListener("visibilitychange", onVisibility);
-    return () =>
-      document.removeEventListener("visibilitychange", onVisibility);
-  }, [user?.id, setUserOnlineStatus]);
-
-
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [setUserOnlineStatus, user?.id]);
 
   const login = async (email: string, password: string) => {
     try {
+      await signOut(auth);
       const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,8 +175,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        const errorMsg =
-          errorData?.message || "Credenciais inválidas. Tente novamente.";
+        const errorMsg = errorData?.message || "Credenciais invalidas. Tente novamente.";
         throw new Error(errorMsg);
       }
 
@@ -134,8 +183,56 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       localStorage.setItem("token", data.token);
       setToken(data.token);
+      setAuthSource("backend");
+      setUser(null);
+      await loadBackendUser(data.token);
     } catch (err) {
       console.error("Erro no login:", err);
+      throw err;
+    }
+  };
+
+  const loginWithGoogle = async (): Promise<GoogleAuthResult> => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken(true);
+
+      try {
+        const res = await fetch(`${API_URL}/auth/google`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data?.token) {
+          throw new Error(data?.message || "Usuario nao pode logar agora");
+        }
+
+        if (isPendingUser(data)) {
+          throw new Error("Seu cadastro ainda esta pendente. Aguarde a liberacao para entrar.");
+        }
+
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        setAuthSource("backend");
+
+        if (data.user) {
+          setUser({
+            ...data.user,
+            provider: "backend",
+          });
+        } else {
+          await loadBackendUser(data.token);
+        }
+
+        return { message: data?.message || "Login realizado com sucesso.", token: data.token, user: data.user };
+      } finally {
+        await signOut(auth).catch(() => undefined);
+      }
+    } catch (err) {
+      console.error("Erro no login com Google:", err);
       throw err;
     }
   };
@@ -143,39 +240,43 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const registerUser = async (payload: RegisterPayload): Promise<RegisterResponse> => {
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message || "Erro ao cadastrar usuário");
-    }
+      if (!res.ok) {
+        throw new Error(data.message || "Erro ao cadastrar usuario");
+      }
 
-    return data;
+      return data;
     } catch (err) {
-      console.error("Erro ao cadastrar usuário:", err);
+      console.error("Erro ao cadastrar usuario:", err);
       throw err;
     }
   };
 
   const updateMyProfile = async (payload: UpdateMyProfilePayload) => {
     if (!token) {
-      throw new Error("Sessão expirada");
+      throw new Error("Sessao expirada");
     }
 
+    const normalizedPayload = {
+      name: payload.name?.trim(),
+      nickname: payload.nickname?.trim(),
+      phone: payload.phone?.trim(),
+      photoURL: payload.photoURL?.trim(),
+      birthDate: payload.birthDate?.trim(),
+    };
+
     const filteredPayload = Object.fromEntries(
-      Object.entries({
-        name: payload.name?.trim(),
-        nickname: payload.nickname?.trim(),
-        phone: payload.phone?.trim(),
-      }).filter(([, value]) => Boolean(value))
+      Object.entries(normalizedPayload).filter(([, value]) => Boolean(value))
     );
 
     if (Object.keys(filteredPayload).length === 0) {
-      throw new Error("Envie pelo menos um campo válido");
+      throw new Error("Envie pelo menos um campo valido");
     }
 
     const res = await fetch(`${API_URL}/users/me`, {
@@ -193,13 +294,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error(data?.message || "Erro ao atualizar seus dados");
     }
 
+    setUser((current) => (current ? { ...current, ...normalizedPayload } : current));
     await refreshUser();
   };
 
   const loginGuest = async () => {
     try {
+      await signOut(auth);
       const res = await fetch(`${API_URL}/auth/guest`, {
-        method: "POST"
+        method: "POST",
       });
 
       if (!res.ok) {
@@ -211,6 +314,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       localStorage.setItem("token", data.token);
       setToken(data.token);
+      setAuthSource("backend");
+      await loadBackendUser(data.token);
     } catch (err) {
       console.error("Erro no login:", err);
       throw err;
@@ -218,7 +323,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthService.Provider value={{ user, token, login, logout, registerUser, loginGuest, updateMyProfile, refreshUser, isAuthenticated: !!token }}>
+    <AuthService.Provider
+      value={{
+        user,
+        token,
+        authSource,
+        isAuthReady,
+        login,
+        loginWithGoogle,
+        logout,
+        registerUser,
+        loginGuest,
+        updateMyProfile,
+        refreshUser,
+        isAuthenticated: !!token,
+      }}
+    >
       {children}
     </AuthService.Provider>
   );

@@ -27,6 +27,56 @@ export const HeaderActions = styled.div`
   }
 `;
 
+export const ProfileButton = styled.button`
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 0.88rem;
+`;
+
+export const ProfileAvatarFrame = styled.span`
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(46, 190, 242, 0.18), rgba(15, 142, 196, 0.28));
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 4px 14px rgba(15, 142, 196, 0.18);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const ProfileBadge = styled.span`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid var(--color-page-bg);
+  background: #ff7f50;
+  box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.25);
+  z-index: 2;
+`;
+
 export const ThemeSwitcher = styled.div`
   display: inline-flex;
   align-items: center;

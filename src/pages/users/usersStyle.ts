@@ -62,6 +62,27 @@ export const UserCard = styled(motion.div)`
   }
 `;
 
+export const UserAvatar = styled.div`
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-primary);
+  background: linear-gradient(135deg, rgba(46, 190, 242, 0.12), rgba(15, 142, 196, 0.22));
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  font-weight: 800;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
 export const CardActionButton = styled.button`
   && {
   margin-top: 10px;
