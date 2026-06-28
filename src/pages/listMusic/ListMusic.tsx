@@ -36,7 +36,7 @@ const worshipMoments = [
 ];
 
 const ListMusic: React.FC = () => {
-  const { musicLinks, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage, updateMusicLink, removeMusicLink } = useAllMusicHistoryContext();
+  const { musicLinks, loading, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage, updateMusicLink, removeMusicLink } = useAllMusicHistoryContext();
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
@@ -249,6 +249,8 @@ const ListMusic: React.FC = () => {
     return [...filteredMusicLinks].sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
   }, [filteredMusicLinks]);
 
+  const isPageLoading = isLoading || loading;
+
   return (
     <Container>
 
@@ -359,7 +361,7 @@ const ListMusic: React.FC = () => {
                 document.body
               )}
 
-            {isLoading ? (
+            {isPageLoading ? (
               <LoadingScreen />
             ) : (
               <div className="container">

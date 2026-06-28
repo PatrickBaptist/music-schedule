@@ -3,7 +3,6 @@ import React, {
   useCallback,
   ReactNode,
   createContext,
-  useEffect,
 } from "react";
 import { FirestoreTimestamp } from "../helpers/helpers";
 
@@ -104,12 +103,6 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({
     },
     [API_URL]
   );
-
-  useEffect(() => {
-    getAllMusicLinks().catch((err) =>
-      console.error("Erro ao carregar músicas:", err)
-    );
-  }, [getAllMusicLinks]);
 
   const getAllMusicLinksFull = useCallback(
     async (search?: string) => {
