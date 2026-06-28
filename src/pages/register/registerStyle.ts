@@ -105,6 +105,46 @@ export const Button = styled.button`
   }
 `;
 
+export const Divider = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #7a7a7a;
+  font-size: 13px;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.12);
+  }
+`;
+
+export const GoogleButton = styled.button`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #222;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: #c8c8c8;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  }
+`;
+
 export const LoginPrompt = styled.div`
   margin-top: 15px;
   font-size: 14px;

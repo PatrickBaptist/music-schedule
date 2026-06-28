@@ -100,6 +100,19 @@ const Header: React.FC = () => {
             <FaDesktop size={14} />
           </button>
         </ThemeSwitcher>
+        {user?.photoURL && (
+          <img
+            src={user.photoURL}
+            alt={user.name || "Foto do usuario"}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "2px solid var(--color-primary)",
+            }}
+          />
+        )}
         {!isGuest && (
           <span style={{ color: 'var(--color-text-strong)', fontWeight: 600 }}>
             Olá, <span style={{ color: 'var(--color-primary)' }}>
