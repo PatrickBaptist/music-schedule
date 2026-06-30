@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
@@ -10,8 +10,14 @@ import { FaMagic, FaPlus } from 'react-icons/fa';
 import ScheduleInput from '../scheduleInput/ScheduleInput';
 import { UserRole } from '../../types/UserRole';
 import useAuthContext from '../../context/hooks/useAuthContext';
-import { formatVocalList } from '../../services/ScheduleService';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
+import useUsersContext from '../../context/hooks/useUsersContext';
+import type { User } from '../../services/UsersService';
+import {
+  getMusicianDisplayName,
+  getMusicianPhotoURL,
+  MusicoDetalhe,
+} from '../../services/ScheduleService';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -53,12 +59,118 @@ const getNameMonth = (): string => {
   return monthNames[targetMonth - 1];
 };
 
+const parseScheduleDate = (date: string | Date): Date => {
+  if (date instanceof Date) return date;
+
+  const [dateOnly] = date.split('T');
+  const parts = dateOnly.split('-').map((value) => parseInt(value, 10));
+
+  if (parts.length === 3 && parts.every((value) => !Number.isNaN(value))) {
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  return new Date(date);
+};
+
 const formatDateToYYYYMMDD = (date: string | Date): string => {
-  const d = new Date(date);
+  const d = parseScheduleDate(date);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+};
+
+const formatScheduleDate = (date: string | Date): string => {
+  return parseScheduleDate(date).toLocaleDateString('pt-BR');
+};
+
+type PersonRef = string | MusicoDetalhe | null | undefined;
+
+const PersonBadge = ({
+  person,
+  usersById,
+}: {
+  person: PersonRef;
+  usersById: Record<string, User>;
+}) => {
+  const displayName = getMusicianDisplayName(person, usersById);
+  const photoURL = getMusicianPhotoURL(person, usersById);
+
+  if (!person) {
+    return <span style={{ color: '#9ca3af' }}>Não definido</span>;
+  }
+
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        justifyContent: 'flex-end',
+        maxWidth: '100%',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <span
+        style={{
+          width: '26px',
+          height: '26px',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          background: '#1f2937',
+          color: '#fff',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          fontSize: '0.72rem',
+          fontWeight: 700,
+        }}
+      >
+        {photoURL ? <img src={photoURL} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials || '?'}
+      </span>
+      <span style={{ textAlign: 'right' }}>{displayName}</span>
+    </span>
+  );
+};
+
+const PersonList = ({
+  people,
+  usersById,
+}: {
+  people: PersonRef[] | PersonRef;
+  usersById: Record<string, User>;
+}) => {
+  const list = Array.isArray(people) ? people : [people];
+  const validPeople = list.filter(Boolean);
+
+  if (validPeople.length === 0) {
+    return <span style={{ color: '#9ca3af' }}>Não definido</span>;
+  }
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: '8px',
+        justifyContent: 'flex-end',
+        maxWidth: 'calc(100% - 90px)',
+      }}
+    >
+      {validPeople.map((person, index) => (
+        <PersonBadge key={`${typeof person === 'string' ? person : person?.id}-${index}`} person={person} usersById={usersById} />
+      ))}
+    </span>
+  );
 };
 
 const Schedule: React.FC = () => {
@@ -67,9 +179,17 @@ const Schedule: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user: loggedUser } = useAuthContext();
+  const { users } = useUsersContext();
 
   const currentMonth = getFormattedMonth();
   const nameMonth = getNameMonth();
+  const usersById = useMemo(
+    () => users.reduce<Record<string, User>>((acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    }, {}),
+    [users]
+  );
 
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Admin];
@@ -100,7 +220,7 @@ const Schedule: React.FC = () => {
   }, [getScheduleForMonth, currentMonth]);
 
   const executeGenerateMonthlySchedule = async () => {
-    const [month, year] = currentMonth.split('-');
+    const [month, year] = currentMonth.split('-').map((value) => parseInt(value, 10));
 
     const toastId = toast.loading('Chamando escala automática...');
     setIsGenerating(true);
@@ -185,44 +305,44 @@ const Schedule: React.FC = () => {
             <CardsGrid>
               {monthlySchedule
                 .slice()
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                .sort((a, b) => parseScheduleDate(a.date).getTime() - parseScheduleDate(b.date).getTime())
                 .map((musician, index) => (
                   <SeeScale key={index}>
                     <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#2EBEF2' }}>
-                      {new Date(musician.date).toLocaleDateString('pt-BR')}
+                      {formatScheduleDate(musician.date)}
                     </h3>
                     <div className="content-escala">
                       <p style={{ fontWeight: '500', color: '#f59e0b' }}>
                         <strong>Ministro: </strong>
-                        {musician.músicos.minister || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.minister || musician.músicos.minister} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Vocal: </strong>
-                        {formatVocalList(musician.músicos.vocal)}
+                        <PersonList people={musician.músicosIds.vocal.length > 0 ? musician.músicosIds.vocal : musician.músicos.vocal} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Teclas: </strong>
-                        {musician.músicos.teclas || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.teclas || musician.músicos.teclas} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Violão: </strong>
-                        {musician.músicos.violao || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.violao || musician.músicos.violao} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Batera: </strong>
-                        {musician.músicos.batera || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.batera || musician.músicos.batera} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Bass: </strong>
-                        {musician.músicos.bass || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.bass || musician.músicos.bass} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Guita: </strong>
-                        {musician.músicos.guita || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.guita || musician.músicos.guita} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Op. Som: </strong>
-                        {musician.músicos.sound || 'Não definido'}
+                        <PersonBadge person={musician.músicosIds.sound || musician.músicos.sound} usersById={usersById} />
                       </p>
                     </div>
                   </SeeScale>

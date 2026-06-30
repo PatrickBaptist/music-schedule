@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedule } from "../../services/ScheduleService";
+import React, { useEffect, useMemo, useState } from "react";
+import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedulePayload } from "../../services/ScheduleService";
 import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./EspecialScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
@@ -10,69 +10,53 @@ type EspecialScheduleInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+const emptyMeta = {
+  id: "",
+  evento: "",
+  data: "",
+  outfitColor: "",
+};
+
 const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModalOpen }) => {
-
-  const [month] = useState<string>(
-    (new Date().getMonth() + 1).toString().padStart(2, "0")
-  );
-  const [year] = useState<number>(new Date().getFullYear());
-  const [date] = useState("");
-  const [, setMusicos] = useState<Musicos>(createEmptyMusicos());
-  const [, setSundays] = useState<Date[]>([]);
-  const [, setIsLoading] = useState<boolean>(true);
+  const [specialMeta, setSpecialMeta] = useState(emptyMeta);
+  const [musicosIds, setMusicosIds] = useState<Musicos>(createEmptyMusicos());
   const { users } = useUsersContext();
+  const { postSpecialSchedules, getSpecialSchedules, specialSchedules } = useSchedulesContext();
 
-  const musiciansBySkill: Record<string, string[]> = {
-    minister: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Minister) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    vocal: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Vocal) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-        "Convidado",
-        "Todos cantam",
-    ],
-    teclas: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Keyboard) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    violao: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Violao) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    bass: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Bass) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    guita: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Guitar) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    batera: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Drums) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    sound: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Sound) && u.status === 'enabled')
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
+  const getUserLabel = (user: (typeof users)[number]) => user.nickname?.trim() || user.name?.trim() || user.id;
+
+  const resolveUserId = (value?: string) => {
+    if (!value) return "";
+
+    const direct = users.find((user) => user.id === value);
+    if (direct) return direct.id;
+
+    const byLabel = users.find(
+      (user) =>
+        user.nickname?.trim() === value ||
+        user.name?.trim() === value
+    );
+
+    return byLabel?.id || value;
   };
+
+  const musiciansBySkill = useMemo(() => {
+    const byRole = (role: UserRole) =>
+      users
+        .filter((u) => u.roles?.includes(role) && u.status === "enabled")
+        .map((u) => ({ value: u.id, label: getUserLabel(u) }));
+
+    return {
+      minister: byRole(UserRole.Minister),
+      vocal: byRole(UserRole.Vocal),
+      teclas: byRole(UserRole.Keyboard),
+      violao: byRole(UserRole.Violao),
+      bass: byRole(UserRole.Bass),
+      guita: byRole(UserRole.Guitar),
+      batera: byRole(UserRole.Drums),
+      sound: byRole(UserRole.Sound),
+    };
+  }, [users]);
 
   const labels: Record<string, string> = {
     minister: "Ministro",
@@ -82,7 +66,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     bass: "Baixo",
     guita: "Guitarra",
     sound: "Op. Som",
-    vocal1: "Vocal",
+    vocal: "Vocal",
   };
 
   const ordemCampos = [
@@ -93,129 +77,80 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     "bass",
     "guita",
     "sound",
-    "vocal1",
-  ];
+    "vocal",
+  ] as const;
 
-  const {
-    getScheduleForMonth,
-    monthlySchedule,
-    postSpecialSchedules,
-    getSpecialSchedules,
-    specialSchedules,
-  } = useSchedulesContext();
-  const [specialMusicos, setSpecialMusicos] = useState<SpecialSchedule>({
-    id: "",
-    evento: "",
-    data: "",
-    minister: "",
-    vocal1: "",
-    vocal2: "",
-    teclas: "",
-    violao: "",
-    batera: "",
-    bass: "",
-    guita: "",
-    sound: "",
-    outfitColor: "",
-  });
-
-  // Buscar domingos do mês
-  useEffect(() => {
-    const sundaysList = getSundaysOfMonth(parseInt(month), year);
-    setSundays(sundaysList);
-  }, [month, year]);
+  type Campo = (typeof ordemCampos)[number];
 
   useEffect(() => {
     getSpecialSchedules();
   }, [getSpecialSchedules]);
 
-  // Buscar escala do mês quando mudar mês ou ano
   useEffect(() => {
-    const fetchSchedule = async () => {
-      setIsLoading(true);
-      try {
-        await getScheduleForMonth(`${month}-${year}`);
-      } catch (err) {
-        console.error("Erro ao carregar escala:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSchedule();
-  }, [getScheduleForMonth, month, year]);
-
-  // Preenche os músicos se já houver dados salvos para a data
-  useEffect(() => {
-    if (!date || !monthlySchedule) return;
-
-    setIsLoading(true);
-
-    const found = monthlySchedule.find(
-      (s) => s.date.slice(0, 10) === date.slice(0, 10)
-    );
-    if (found) setMusicos(normalizeMusicos(found.músicos));
-    else setMusicos(createEmptyMusicos());
-
-    setIsLoading(false);
-  }, [date, monthlySchedule]);
-
-  useEffect(() => {
-    if (!specialMusicos.data || !specialSchedules) return;
+    if (!specialMeta.data || !specialSchedules) return;
 
     const found = specialSchedules.find(
-      (s) => s.data.slice(0, 10) === specialMusicos.data.slice(0, 10)
+      (schedule) => schedule.data.slice(0, 10) === specialMeta.data.slice(0, 10)
     );
 
-    if (found) setSpecialMusicos(found);
-  }, [specialMusicos.data, specialSchedules]);
-  
+    if (!found) {
+      setMusicosIds(createEmptyMusicos());
+      return;
+    }
+
+    const normalized = normalizeMusicos(found.músicosIds ?? found.músicos ?? found);
+    setSpecialMeta({
+      id: found.id || "",
+      evento: found.evento || "",
+      data: found.data?.slice(0, 10) || specialMeta.data,
+      outfitColor: found.outfitColor || normalized.outfitColor || "",
+    });
+    setMusicosIds({
+      ...normalized,
+      minister: resolveUserId(normalized.minister),
+      vocal: normalized.vocal.map(resolveUserId),
+      teclas: resolveUserId(normalized.teclas),
+      violao: resolveUserId(normalized.violao),
+      batera: resolveUserId(normalized.batera),
+      bass: resolveUserId(normalized.bass),
+      guita: resolveUserId(normalized.guita),
+      sound: resolveUserId(normalized.sound),
+    });
+  }, [specialMeta.data, specialSchedules, users]);
+
   const handleAddSpecialSchedule = async () => {
-    if (!specialMusicos.evento || !specialMusicos.data)
-      return toast.error("Evento e data obrigatórios!");
+    if (!specialMeta.evento || !specialMeta.data) {
+      toast.error("Evento e data obrigatórios!");
+      return;
+    }
 
     const toastId = toast.loading("Aguarde...");
-
-    const payload = { schedules: [specialMusicos] };
+    const payload: { schedules: SpecialSchedulePayload[] } = {
+      schedules: [
+        {
+          id: specialMeta.id || undefined,
+          evento: specialMeta.evento,
+          data: specialMeta.data,
+          outfitColor: specialMeta.outfitColor,
+          músicosIds: {
+            ...musicosIds,
+            outfitColor: specialMeta.outfitColor,
+          },
+        },
+      ],
+    };
 
     setIsModalOpen(false);
 
     try {
       await postSpecialSchedules(payload);
-      toast.success("Escala especial adicionada! ", { id: toastId });
-      setSpecialMusicos({
-        id: "",
-        evento: "",
-        data: "",
-        minister: "",
-        vocal1: "",
-        vocal2: "",
-        teclas: "",
-        violao: "",
-        batera: "",
-        bass: "",
-        guita: "",
-        sound: "",
-        outfitColor: "",
-      });
+      toast.success("Escala especial adicionada!", { id: toastId });
+      setSpecialMeta(emptyMeta);
+      setMusicosIds(createEmptyMusicos());
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao adicionar escala especial");
+      toast.error("Erro ao adicionar escala especial", { id: toastId });
     }
-  };
-
-  const getSundaysOfMonth = (month: number, year: number): Date[] => {
-    const date = new Date(year, month - 1, 1);
-    const sundays: Date[] = [];
-
-    while (date.getMonth() === month - 1) {
-      if (date.getDay() === 0) {
-        sundays.push(new Date(date));
-      }
-      date.setDate(date.getDate() + 1);
-    }
-
-    return sundays;
   };
 
   return (
@@ -229,9 +164,9 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                 <DarkLabel>Evento:</DarkLabel>
                 <DarkInput
                   type="text"
-                  value={specialMusicos.evento}
+                  value={specialMeta.evento}
                   onChange={(e) =>
-                    setSpecialMusicos((prev) => ({
+                    setSpecialMeta((prev) => ({
                       ...prev,
                       evento: e.target.value,
                     }))
@@ -245,9 +180,9 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                 <DarkLabel>Data:</DarkLabel>
                 <DarkInput
                   type="date"
-                  value={specialMusicos.data}
+                  value={specialMeta.data}
                   onChange={(e) =>
-                    setSpecialMusicos((prev) => ({
+                    setSpecialMeta((prev) => ({
                       ...prev,
                       data: e.target.value,
                     }))
@@ -256,69 +191,50 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                 />
               </FormGroup>
 
-              {ordemCampos.map((key) => {
-                const skillKey = key.startsWith("vocal")
-                  ? "vocal"
-                  : key;
-                const options = musiciansBySkill[skillKey] || [];
-
-                const isVocal = key.startsWith("vocal");
+              {ordemCampos.map((key: Campo) => {
+                const isVocal = key === "vocal";
+                const options = musiciansBySkill[isVocal ? "vocal" : key];
 
                 return (
                   <FormGroup key={key}>
                     <DarkLabel>{labels[key] || key}:</DarkLabel>
                     <DarkSelect
                       multiple={isVocal}
-                      value={
-                        isVocal
-                          ? (
-                              specialMusicos[
-                                key as keyof SpecialSchedule
-                              ] as string
-                            )
-                              ?.split(",")
-                              .map((s) => s.trim()) || []
-                          : specialMusicos[
-                              key as keyof SpecialSchedule
-                            ] || ""
-                      }
+                      value={isVocal ? musicosIds.vocal : musicosIds[key] || ""}
                       onChange={(e) => {
                         if (isVocal) {
-                          const selected = Array.from(
-                            e.target.selectedOptions,
-                            (opt) => opt.value
-                          );
-                          setSpecialMusicos((prev) => ({
+                          const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
+                          setMusicosIds((prev) => ({
                             ...prev,
-                            [key]: selected.join(", "),
+                            vocal: selected,
                           }));
-                        } else {
-                          setSpecialMusicos((prev) => ({
-                            ...prev,
-                            [key]: e.target.value,
-                          }));
+                          return;
                         }
+
+                        setMusicosIds((prev) => ({
+                          ...prev,
+                          [key]: e.target.value,
+                        }));
                       }}
                     >
-                      {!isVocal && (
-                        <option value="">Selecione</option>
-                      )}
+                      {!isVocal && <option value="">Selecione</option>}
                       {options.map((musico) => (
-                        <option key={musico} value={musico}>
-                          {musico}
+                        <option key={musico.value} value={musico.value}>
+                          {musico.label}
                         </option>
                       ))}
                     </DarkSelect>
                   </FormGroup>
                 );
               })}
+
               <FormGroup>
                 <DarkLabel>Cor da Roupa:</DarkLabel>
                 <DarkInput
                   type="text"
-                  value={specialMusicos.outfitColor || ""}
+                  value={specialMeta.outfitColor}
                   onChange={(e) =>
-                    setSpecialMusicos((prev) => ({ ...prev, outfitColor: e.target.value }))
+                    setSpecialMeta((prev) => ({ ...prev, outfitColor: e.target.value }))
                   }
                   placeholder="Ex.: Preto e branco"
                 />

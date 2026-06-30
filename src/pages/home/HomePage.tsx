@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
@@ -10,14 +10,104 @@ import PageWrapper from '../../components/pageWrapper/pageWrapper';
 import Aviso from '../../components/warnings/warnings';
 import SpecialSchedules from '../../components/specialSchedule/specialSchedule';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
-import { SpecialSchedule } from '../../services/ScheduleService';
+import { MusicoDetalhe, SpecialSchedule, getMusicianDisplayName, getMusicianPhotoURL } from '../../services/ScheduleService';
 import ThursdaySchedule from '../../components/thursdaySchedule/thursday';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
 import { FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
-import { formatVocalList } from '../../services/ScheduleService';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
+import useUsersContext from '../../context/hooks/useUsersContext';
+import type { User } from '../../services/UsersService';
+
+type PersonRef = string | MusicoDetalhe | null | undefined;
+
+const PersonBadge = ({
+  person,
+  usersById,
+}: {
+  person: PersonRef;
+  usersById: Record<string, User>;
+}) => {
+  const displayName = getMusicianDisplayName(person, usersById);
+  const photoURL = getMusicianPhotoURL(person, usersById);
+
+  if (!person) {
+    return <span style={{ color: '#9ca3af' }}>Não definido</span>;
+  }
+
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        justifyContent: 'flex-end',
+        maxWidth: '100%',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <span
+        style={{
+          width: '26px',
+          height: '26px',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          background: '#1f2937',
+          color: '#fff',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          fontSize: '0.72rem',
+          fontWeight: 700,
+        }}
+      >
+        {photoURL ? <img src={photoURL} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials || '?'}
+      </span>
+      <span style={{ textAlign: 'right' }}>{displayName}</span>
+    </span>
+  );
+};
+
+const PersonList = ({
+  people,
+  usersById,
+}: {
+  people: PersonRef[] | PersonRef;
+  usersById: Record<string, User>;
+}) => {
+  const list = Array.isArray(people) ? people : [people];
+  const validPeople = list.filter(Boolean);
+
+  if (validPeople.length === 0) {
+    return <span style={{ color: '#9ca3af' }}>Não definido</span>;
+  }
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: '8px',
+        justifyContent: 'flex-end',
+        maxWidth: 'calc(100% - 90px)',
+      }}
+    >
+      {validPeople.map((person, index) => (
+        <PersonBadge key={`${typeof person === 'string' ? person : person?.id}-${index}`} person={person} usersById={usersById} />
+      ))}
+    </span>
+  );
+};
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,12 +115,20 @@ const HomePage: React.FC = () => {
   const { warning, getWarning } = useNotificationContext();
   const [isLoading, setIsLoading] = useState(true);
   const { user: loggedUser } = useAuthContext();
+  const { users } = useUsersContext();
 
   const isGuest = loggedUser?.roles?.includes(UserRole.Guest);
 
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
   const canAddMusic = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
+  const usersById = useMemo(
+    () => users.reduce<Record<string, User>>((acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    }, {}),
+    [users]
+  );
 
   useBodyScrollLock(isModalOpen);
 
@@ -97,35 +195,35 @@ const HomePage: React.FC = () => {
                     <div className="content-escala">
                       <p style={{ fontWeight: 'bold', color: '#f59e0b' }}>
                         <strong>Ministro: </strong>
-                        {nextSundaySchedule.músicos.minister || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.minister || nextSundaySchedule.músicos.minister} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Vocal: </strong>
-                        {formatVocalList(nextSundaySchedule.músicos.vocal)}
+                        <PersonList people={nextSundaySchedule.músicosIds.vocal.length > 0 ? nextSundaySchedule.músicosIds.vocal : nextSundaySchedule.músicos.vocal} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Teclas: </strong>
-                        {nextSundaySchedule.músicos.teclas || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.teclas || nextSundaySchedule.músicos.teclas} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Violão: </strong>
-                        {nextSundaySchedule.músicos.violao || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.violao || nextSundaySchedule.músicos.violao} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Batera: </strong>
-                        {nextSundaySchedule.músicos.batera || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.batera || nextSundaySchedule.músicos.batera} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Bass: </strong>
-                        {nextSundaySchedule.músicos.bass || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.bass || nextSundaySchedule.músicos.bass} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Guita: </strong>
-                        {nextSundaySchedule.músicos.guita || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.guita || nextSundaySchedule.músicos.guita} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Op. Som: </strong>
-                        {nextSundaySchedule.músicos.sound || 'Não definido'}
+                        <PersonBadge person={nextSundaySchedule.músicosIds.sound || nextSundaySchedule.músicos.sound} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Paleta de cores: </strong>

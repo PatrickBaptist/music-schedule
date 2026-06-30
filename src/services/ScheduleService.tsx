@@ -8,6 +8,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { db } from '../firebaseConfig';
+import type { User } from './UsersService';
 
 export interface Musicos {
   date?: string;
@@ -22,68 +23,252 @@ export interface Musicos {
   outfitColor?: string;
 }
 
+export interface MusicoDetalhe {
+  id: string;
+  label: string;
+  name?: string;
+  nickname?: string | null;
+}
+
+export interface MusicosDetalhados {
+  minister: MusicoDetalhe | null;
+  vocal: MusicoDetalhe[];
+  teclas: MusicoDetalhe | null;
+  violao: MusicoDetalhe | null;
+  batera: MusicoDetalhe | null;
+  bass: MusicoDetalhe | null;
+  guita: MusicoDetalhe | null;
+  sound: MusicoDetalhe | null;
+  outfitColor?: string;
+}
+
 export interface SpecialSchedule {
   id: string;
   evento: string;
   data: string;
-  minister: string;
-  vocal1: string;
-  vocal2: string;
-  teclas: string;
-  violao: string;
-  batera: string;
-  bass: string;
-  guita: string;
-  sound: string;
+  minister?: string;
+  vocal1?: string;
+  vocal2?: string;
+  teclas?: string;
+  violao?: string;
+  batera?: string;
+  bass?: string;
+  guita?: string;
+  sound?: string;
   outfitColor?: string;
+  músicos?: MusicosDetalhados;
+  musicos?: MusicosDetalhados;
+  músicosIds?: Musicos;
+  musicosIds?: Musicos;
+}
+
+export interface SpecialSchedulePayload {
+  id?: string;
+  evento: string;
+  data: string;
+  outfitColor?: string;
+  músicosIds: Musicos;
 }
 
 interface PostSpecialSchedulesPayload {
-  schedules: SpecialSchedule[];
+  schedules: SpecialSchedulePayload[];
 }
 
 interface GenerateMonthlyScheduleParams {
-  month: string;
-  year: string;
+  month: number;
+  year: number;
 }
 
-type LegacyMusicosPayload = Partial<Omit<Musicos, 'vocal'>> & {
-  vocal?: string[] | string;
-  vocal1?: string;
-  vocal2?: string;
+type LegacyMusicosPayload = Record<string, any>;
+
+const normalizeMusicianId = (value?: any) => {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  return value.id || '';
 };
 
-const normalizeVocalList = (value: LegacyMusicosPayload['vocal'], vocal1?: string, vocal2?: string) => {
+const normalizeMusicianDetail = (value?: any): MusicoDetalhe | null => {
+  if (!value) return null;
+
+  if (typeof value === 'string') {
+    return {
+      id: value,
+      label: value,
+      name: value,
+      nickname: value,
+    };
+  }
+
+  const id = value.id || '';
+  const label = value.label || value.nickname || value.name || id || '';
+
+  return {
+    id,
+    label,
+    name: value.name || label || id || '',
+    nickname: value.nickname ?? label ?? value.name ?? id,
+  };
+};
+
+const resolveUserLike = (value: string, userLookup?: Record<string, User>) => {
+  if (!userLookup) return null;
+
+  return (
+    userLookup[value] ||
+    Object.values(userLookup).find(
+      (user) =>
+        user.id === value ||
+        user.nickname === value ||
+        user.name === value
+    ) ||
+    null
+  );
+};
+
+const normalizeVocalList = (value?: any, vocal1?: any, vocal2?: any) => {
   if (Array.isArray(value)) {
-    return value.filter(Boolean);
+    return value.map((item) => normalizeMusicianId(item)).filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    const parsed = value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    return parsed.length > 0 ? parsed : [value].filter(Boolean);
+  }
+
+  return [vocal1, vocal2]
+    .map((item) => normalizeMusicianId(item))
+    .filter((item): item is string => Boolean(item));
+};
+
+const normalizeVocalDetails = (value?: any, vocal1?: any, vocal2?: any) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => normalizeMusicianDetail(item))
+      .filter((item): item is MusicoDetalhe => Boolean(item));
   }
 
   if (typeof value === 'string') {
     return value
       .split(',')
       .map((item) => item.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .map((item) => normalizeMusicianDetail(item))
+      .filter((item): item is MusicoDetalhe => Boolean(item));
   }
 
-  return [vocal1, vocal2].filter((item): item is string => Boolean(item && item.trim()));
+  return [vocal1, vocal2]
+    .map((item) => normalizeMusicianDetail(item))
+    .filter((item): item is MusicoDetalhe => Boolean(item));
 };
 
-export const normalizeMusicos = (musicos?: LegacyMusicosPayload | null): Musicos => ({
-  date: musicos?.date,
-  minister: musicos?.minister || '',
-  vocal: normalizeVocalList(musicos?.vocal, musicos?.vocal1, musicos?.vocal2),
-  teclas: musicos?.teclas || '',
-  violao: musicos?.violao || '',
-  batera: musicos?.batera || '',
-  bass: musicos?.bass || '',
-  guita: musicos?.guita || '',
-  sound: musicos?.sound || '',
-  outfitColor: musicos?.outfitColor || '',
-});
+const extractIdsSource = (musicos?: LegacyMusicosPayload | null) => {
+  return (
+    musicos?.músicosIds ||
+    musicos?.musicosIds ||
+    musicos?.["mÃºsicosIds"] ||
+    musicos?.músicasIds ||
+    musicos?.musicasIds ||
+    musicos?.músicos ||
+    musicos?.musicos ||
+    musicos?.["mÃºsicos"] ||
+    musicos ||
+    null
+  );
+};
 
-export const formatVocalList = (vocal: string[] | undefined | null) => {
+const extractDisplaySource = (musicos?: LegacyMusicosPayload | null) => {
+  return (
+    musicos?.músicos ||
+    musicos?.musicos ||
+    musicos?.["mÃºsicos"] ||
+    musicos?.músicosIds ||
+    musicos?.musicosIds ||
+    musicos?.["mÃºsicosIds"] ||
+    musicos?.músicasIds ||
+    musicos?.musicasIds ||
+    musicos ||
+    null
+  );
+};
+
+export const normalizeMusicos = (musicos?: any): Musicos => {
+  const source = extractIdsSource(musicos) as LegacyMusicosPayload;
+
+  return {
+    date: musicos?.date,
+    minister: normalizeMusicianId(source?.minister) || '',
+    vocal: normalizeVocalList(source?.vocal, source?.vocal1, source?.vocal2),
+    teclas: normalizeMusicianId(source?.teclas) || '',
+    violao: normalizeMusicianId(source?.violao) || '',
+    batera: normalizeMusicianId(source?.batera) || '',
+    bass: normalizeMusicianId(source?.bass) || '',
+    guita: normalizeMusicianId(source?.guita) || '',
+    sound: normalizeMusicianId(source?.sound) || '',
+    outfitColor: source?.outfitColor || musicos?.outfitColor || '',
+  };
+};
+
+export const normalizeMusicosDetalhados = (musicos?: any): MusicosDetalhados => {
+  const source = extractDisplaySource(musicos) as LegacyMusicosPayload;
+
+  return {
+    minister: normalizeMusicianDetail(source?.minister),
+    vocal: normalizeVocalDetails(source?.vocal, source?.vocal1, source?.vocal2),
+    teclas: normalizeMusicianDetail(source?.teclas),
+    violao: normalizeMusicianDetail(source?.violao),
+    batera: normalizeMusicianDetail(source?.batera),
+    bass: normalizeMusicianDetail(source?.bass),
+    guita: normalizeMusicianDetail(source?.guita),
+    sound: normalizeMusicianDetail(source?.sound),
+    outfitColor: source?.outfitColor || musicos?.outfitColor || '',
+  };
+};
+
+export const getMusicianDisplayName = (
+  musician?: string | MusicoDetalhe | null,
+  userLookup?: Record<string, User>,
+  fallback = 'Não definido'
+) => {
+  if (!musician) return fallback;
+
+  if (typeof musician !== 'string') {
+    return musician.label || musician.nickname || musician.name || musician.id || fallback;
+  }
+
+  const user = resolveUserLike(musician, userLookup);
+  if (user) {
+    return user.nickname || user.name || user.id || fallback;
+  }
+
+  return musician || fallback;
+};
+
+export const getMusicianPhotoURL = (
+  musician?: string | MusicoDetalhe | null,
+  userLookup?: Record<string, User>
+) => {
+  if (!musician) return '';
+
+  if (typeof musician !== 'string') {
+    return resolveUserLike(musician.id, userLookup)?.photoURL || '';
+  }
+
+  return resolveUserLike(musician, userLookup)?.photoURL || '';
+};
+
+export const formatVocalList = (
+  vocal: Array<string | MusicoDetalhe> | undefined | null,
+  userLookup?: Record<string, User>
+) => {
   if (!vocal || vocal.length === 0) return 'Não definido';
-  return vocal.join(', ');
+  return vocal
+    .map((item) => getMusicianDisplayName(item, userLookup, ''))
+    .filter(Boolean)
+    .join(', ');
 };
 
 export const createEmptyMusicos = (): Musicos => ({
@@ -98,16 +283,25 @@ export const createEmptyMusicos = (): Musicos => ({
   outfitColor: '',
 });
 
+export const getScheduleMusicosSource = (item?: any) => {
+  return item?.músicos ?? item?.musicos ?? item?.["mÃºsicos"] ?? item?.músicosIds ?? item?.musicosIds ?? item?.["mÃºsicosIds"] ?? item;
+};
+
+export const getScheduleMusicosIdsSource = (item?: any) => {
+  return item?.músicosIds ?? item?.musicosIds ?? item?.["mÃºsicosIds"] ?? item?.músicos ?? item?.musicos ?? item?.["mÃºsicos"] ?? item;
+};
+
 export interface Schedule {
   date: string;
-  músicos: Musicos;
+  músicos: MusicosDetalhados;
+  músicosIds: Musicos;
 }
 
 interface UpsertScheduleParams {
   month: string;
-  year: string;
+  year: number;
   date: string;
-  músicos: Musicos;
+  músicosIds: Musicos;
 }
 
 export interface ScheduleContextProps {
@@ -187,7 +381,8 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         setNextSundaySchedule({
           date: nextSundayISO,
-          músicos: normalizeMusicos(match.músicos),
+          músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(match)),
+          músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(match)),
         });
       },
       (error) => {
@@ -224,10 +419,13 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
         const data = snapshot.data();
         const sundays = Array.isArray(data?.sundays) ? data.sundays : [];
 
-        setMonthlySchedule(sundays.map((item) => ({
-          ...item,
-          músicos: normalizeMusicos(item?.músicos),
-        })));
+        setMonthlySchedule(
+          sundays.map((item) => ({
+            ...item,
+            músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(item)),
+            músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(item)),
+          }))
+        );
       },
       (error) => {
         console.error('Erro ao buscar escala do mês:', error);
@@ -294,7 +492,14 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
       const res = await fetch(`${API_URL}/schedule/special-schedule`);
       if (!res.ok) throw new Error('Erro ao buscar escalas especiais');
       const data = await res.json();
-      setSpecialSchedules(data || []);
+      const schedules = Array.isArray(data) ? data : [];
+      setSpecialSchedules(
+        schedules.map((item) => ({
+          ...item,
+          músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(item)),
+          músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(item)),
+        }))
+      );
     } catch (err) {
       console.error(err);
       setSpecialSchedules([]);
