@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createEmptyMusicos, Musicos, normalizeMusicos } from "../../services/ScheduleService";
 import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./ScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
@@ -11,9 +11,7 @@ type ScheduleInputProps = {
 };
 
 const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
-  const [month, setMonth] = useState<string>(
-    (new Date().getMonth() + 1).toString().padStart(2, "0")
-  );
+  const [month, setMonth] = useState<string>((new Date().getMonth() + 1).toString().padStart(2, "0"));
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [date, setDate] = useState("");
   const [músicos, setMúsicos] = useState<Musicos>(createEmptyMusicos());
@@ -21,57 +19,39 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
   const [, setIsLoading] = useState<boolean>(true);
   const { users } = useUsersContext();
 
-  const musiciansBySkill: Record<string, string[]> = {
-    minister: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Minister) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    vocal: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Vocal) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-      "Todos cantam",
-    ],
-    teclas: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Keyboard) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    violao: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Violao) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    bass: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Bass) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    guita: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Guitar) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    batera: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Drums) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
-    sound: [
-      ...users
-        .filter((u) => u.roles?.includes(UserRole.Sound) && u.status === "enabled")
-        .map((u) => u.nickname!.trim()),
-      "Convidado",
-    ],
+  const getUserLabel = (user: (typeof users)[number]) => user.nickname?.trim() || user.name?.trim() || user.id;
+  const resolveUserId = (value?: string) => {
+    if (!value) return '';
+
+    const direct = users.find((user) => user.id === value);
+    if (direct) return direct.id;
+
+    const byLabel = users.find(
+      (user) =>
+        user.nickname?.trim() === value ||
+        user.name?.trim() === value
+    );
+
+    return byLabel?.id || value;
   };
+
+  const musiciansBySkill = useMemo(() => {
+    const byRole = (role: UserRole) =>
+      users
+        .filter((u) => u.roles?.includes(role) && u.status === "enabled")
+        .map((u) => ({ value: u.id, label: getUserLabel(u) }));
+
+    return {
+      minister: byRole(UserRole.Minister),
+      vocal: byRole(UserRole.Vocal),
+      teclas: byRole(UserRole.Keyboard),
+      violao: byRole(UserRole.Violao),
+      bass: byRole(UserRole.Bass),
+      guita: byRole(UserRole.Guitar),
+      batera: byRole(UserRole.Drums),
+      sound: byRole(UserRole.Sound),
+    };
+  }, [users]);
 
   const labels: Record<string, string> = {
     minister: "Ministro",
@@ -93,12 +73,14 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     "guita",
     "sound",
     "vocal",
-  ];
+  ] as const;
+
+  type Campo = (typeof ordemCampos)[number];
 
   const { saveOrUpdateSchedule, getScheduleForMonth, monthlySchedule } = useSchedulesContext();
 
   useEffect(() => {
-    const sundaysList = getSundaysOfMonth(parseInt(month), year);
+    const sundaysList = getSundaysOfMonth(parseInt(month, 10), year);
     setSundays(sundaysList);
   }, [month, year]);
 
@@ -123,7 +105,20 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
     setIsLoading(true);
 
     const found = monthlySchedule.find((s) => s.date.slice(0, 10) === date.slice(0, 10));
-    if (found) setMúsicos(normalizeMusicos(found.músicos));
+    if (found) {
+      const normalized = normalizeMusicos(found.músicosIds ?? found.músicos);
+      setMúsicos({
+        ...normalized,
+        minister: resolveUserId(normalized.minister),
+        vocal: normalized.vocal.map(resolveUserId),
+        teclas: resolveUserId(normalized.teclas),
+        violao: resolveUserId(normalized.violao),
+        batera: resolveUserId(normalized.batera),
+        bass: resolveUserId(normalized.bass),
+        guita: resolveUserId(normalized.guita),
+        sound: resolveUserId(normalized.sound),
+      });
+    }
     else setMúsicos(createEmptyMusicos());
 
     setIsLoading(false);
@@ -148,9 +143,9 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
 
     const payload = {
       month,
-      year: year.toString(),
+      year,
       date,
-      músicos,
+      músicosIds: músicos,
     };
 
     setIsModalOpen(false);
@@ -180,9 +175,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                 <DarkSelect value={month} onChange={(e) => setMonth(e.target.value)} required>
                   {Array.from({ length: 12 }, (_, index) => (
                     <option key={index} value={(index + 1).toString().padStart(2, "0")}>
-                      {new Date(0, index).toLocaleString("default", {
-                        month: "long",
-                      })}
+                      {new Date(0, index).toLocaleString("default", { month: "long" })}
                     </option>
                   ))}
                 </DarkSelect>
@@ -193,7 +186,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                 <DarkInput
                   type="number"
                   value={year}
-                  onChange={(e) => setYear(parseInt(e.target.value))}
+                  onChange={(e) => setYear(parseInt(e.target.value, 10))}
                   min={2000}
                   required
                 />
@@ -211,16 +204,16 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                 </DarkSelect>
               </FormGroup>
 
-              {ordemCampos.map((key) => {
+              {ordemCampos.map((key: Campo) => {
                 const isVocal = key === "vocal";
-                const options = musiciansBySkill[isVocal ? "vocal" : key] || [];
+                const options = musiciansBySkill[isVocal ? "vocal" : key];
 
                 return (
                   <FormGroup key={key}>
                     <DarkLabel>{labels[key] || key}:</DarkLabel>
                     <DarkSelect
                       multiple={isVocal}
-                      value={isVocal ? músicos.vocal : músicos[key as keyof Musicos] || ""}
+                      value={isVocal ? músicos.vocal : músicos[key] || ""}
                       onChange={(e) => {
                         if (isVocal) {
                           const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
@@ -237,9 +230,9 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                       }}
                     >
                       {!isVocal && <option value="">Selecione</option>}
-                      {options.map((musico) => (
-                        <option key={musico} value={musico}>
-                          {musico}
+                      {options.map((musico: { value: string; label: string }) => (
+                        <option key={musico.value} value={musico.value}>
+                          {musico.label}
                         </option>
                       ))}
                     </DarkSelect>
@@ -252,9 +245,7 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                 <DarkInput
                   type="text"
                   value={músicos.outfitColor || ""}
-                  onChange={(e) =>
-                    setMúsicos((prev) => ({ ...prev, outfitColor: e.target.value }))
-                  }
+                  onChange={(e) => setMúsicos((prev) => ({ ...prev, outfitColor: e.target.value }))}
                   placeholder="Ex.: Preto e branco"
                 />
               </FormGroup>

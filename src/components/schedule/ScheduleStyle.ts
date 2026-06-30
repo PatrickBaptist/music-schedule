@@ -181,6 +181,8 @@ export const SeeScale = styled.div`
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 12px;
     border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: 6px;
 
