@@ -58,6 +58,9 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     };
   }, [users]);
 
+  const guestOption = { value: "Convidado", label: "Convidado" };
+  const allSingersOption = { value: "Todos cantam", label: "Todos cantam" };
+
   const labels: Record<string, string> = {
     minister: "Ministro",
     teclas: "Teclado",
@@ -193,7 +196,13 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
 
               {ordemCampos.map((key: Campo) => {
                 const isVocal = key === "vocal";
-                const options = musiciansBySkill[isVocal ? "vocal" : key];
+                const options = isVocal
+                  ? [...musiciansBySkill.vocal, guestOption, allSingersOption]
+                  : [...musiciansBySkill[key], guestOption];
+
+                const uniqueOptions = Array.from(
+                  new Map(options.map((option) => [option.value, option])).values()
+                );
 
                 return (
                   <FormGroup key={key}>
@@ -218,7 +227,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                       }}
                     >
                       {!isVocal && <option value="">Selecione</option>}
-                      {options.map((musico) => (
+                      {uniqueOptions.map((musico) => (
                         <option key={musico.value} value={musico.value}>
                           {musico.label}
                         </option>
