@@ -296,6 +296,8 @@ const mergeScheduleOutfitColor = (item?: any, source?: LegacyMusicosPayload | nu
   outfitColor: item?.outfitColor || source?.outfitColor || '',
 });
 
+void mergeScheduleOutfitColor;
+
 export interface Schedule {
   date: string;
   músicos: MusicosDetalhados;

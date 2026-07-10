@@ -64,6 +64,7 @@ const MePage: React.FC = () => {
     name: "",
     nickname: "",
     phone: "",
+    photoURL: "",
     birthDate: "",
   });
 
@@ -107,6 +108,7 @@ const MePage: React.FC = () => {
       name: user.name || "",
       nickname: user.nickname || "",
       phone: user.phone || "",
+      photoURL: user.photoURL || "",
       birthDate: user.birthDate || "",
     });
   }, [user]);
@@ -333,6 +335,7 @@ const MePage: React.FC = () => {
         name: profileDraft.name,
         nickname: profileDraft.nickname,
         phone: profileDraft.phone,
+        photoURL: profileDraft.photoURL,
       });
       setIsEditingProfile(false);
       toast.success("Seus dados foram atualizados.", { id: toastId });
@@ -460,9 +463,24 @@ const MePage: React.FC = () => {
                   <CompletionSectionHint>
                     Adicione uma foto para facilitar sua identificação dentro do sistema.
                   </CompletionSectionHint>
+                  <FormGroup>
+                    <FieldLabel htmlFor="completion-photoURL">URL da foto</FieldLabel>
+                    <DarkInput
+                      id="completion-photoURL"
+                      value={profileDraft.photoURL}
+                      onChange={(event) => setProfileDraft((current) => ({ ...current, photoURL: event.target.value }))}
+                      placeholder="https://site.com/sua-foto.jpg"
+                    />
+                  </FormGroup>
                   <CompletionSectionActions>
                     <PrimaryActionButton type="button" onClick={() => void handleImportGooglePhoto()}>
                       Importar foto do Google
+                    </PrimaryActionButton>
+                    <PrimaryActionButton
+                      type="button"
+                      onClick={() => void handleCompletionUpdate({ photoURL: profileDraft.photoURL })}
+                    >
+                      Salvar URL
                     </PrimaryActionButton>
                   </CompletionSectionActions>
                 </CompletionSection>
@@ -605,6 +623,16 @@ const MePage: React.FC = () => {
                   value={profileDraft.phone}
                   onChange={(event) => setProfileDraft((current) => ({ ...current, phone: event.target.value }))}
                   placeholder="(00) 9 0000-0000"
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <FieldLabel htmlFor="profile-photoURL">URL da foto</FieldLabel>
+                <DarkInput
+                  id="profile-photoURL"
+                  value={profileDraft.photoURL}
+                  onChange={(event) => setProfileDraft((current) => ({ ...current, photoURL: event.target.value }))}
+                  placeholder="https://site.com/sua-foto.jpg"
                 />
               </FormGroup>
 
