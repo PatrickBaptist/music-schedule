@@ -227,7 +227,7 @@ const HomePage: React.FC = () => {
                       </p>
                       <p>
                         <strong>Paleta de cores: </strong>
-                        <span style={{ fontStyle: 'italic' }}>{nextSundaySchedule.músicos.outfitColor || 'Não definido'}</span>
+                        <span style={{ fontStyle: 'italic' }}>{nextSundaySchedule.músicosIds.outfitColor || 'Não definido'}</span>
                       </p>
                     </div>
                   ) : (

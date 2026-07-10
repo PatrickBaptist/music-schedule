@@ -291,6 +291,13 @@ export const getScheduleMusicosIdsSource = (item?: any) => {
   return item?.músicosIds ?? item?.musicosIds ?? item?.["mÃºsicosIds"] ?? item?.músicos ?? item?.musicos ?? item?.["mÃºsicos"] ?? item;
 };
 
+const mergeScheduleOutfitColor = (item?: any, source?: LegacyMusicosPayload | null) => ({
+  ...(source || {}),
+  outfitColor: item?.outfitColor || source?.outfitColor || '',
+});
+
+void mergeScheduleOutfitColor;
+
 export interface Schedule {
   date: string;
   músicos: MusicosDetalhados;
