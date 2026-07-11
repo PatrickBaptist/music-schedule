@@ -19,8 +19,8 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    margin-bottom: 5px;
-    touch-action: none;
+    margin-bottom: 4px;
+    touch-action: pan-y;
 
     &.is-dragging {
       opacity: 0.45;
@@ -34,7 +34,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       display: flex;
       align-items: center;
       box-sizing: border-box;
-      gap: 8px;
+      gap: 6px;
     }
 
     .drag-handle {
@@ -42,8 +42,10 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      min-width: 32px;
+      min-height: 44px;
       padding: 8px 4px;
-        color: var(--color-text-muted);
+      color: var(--color-text-muted);
       cursor: grab;
       background: transparent;
       border: none;
@@ -69,15 +71,20 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 2px 2px 6px var(--color-shadow);
+      padding: 14px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px var(--color-shadow);
       position: relative;
-      gap: 12px;
+      gap: 10px;
+      touch-action: pan-y;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-      &:hover {
-        transform: translateY(-1px);
-        transition: all 0.4s ease-in-out;
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 5px 14px var(--color-shadow);
+        }
       }
 
       .icon-description {
@@ -91,6 +98,11 @@ export const ListContainer = styled.ul<{ bg?: string }>`
         color: #6659b0; /* muda pra sua cor principal */
         transform: scale(1.2);
       }
+
+      @media (max-width: 600px) {
+        padding: 12px;
+        border-radius: 9px;
+      }
     }
 
     .music-header {
@@ -102,6 +114,11 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       position: relative;
       box-sizing: border-box;
 
+      .span-music {
+        min-width: 0;
+        align-items: center;
+      }
+
       @media (max-width: 600px) {
         gap: 8px;
       }
@@ -109,41 +126,45 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
     .span-name {
       flex: 1;
-      width: 100px;
+      min-width: 0;
       font-weight: bold;
-      font-size: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 17px;
+      line-height: 1.3;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
 
       @media (max-width: 600px) {
-        font-size: 18px;
+        font-size: 16px;
       }
     }
 
     .span-order {
       font-weight: bold;
-      font-size: 20px;
+      font-size: 16px;
       min-width: 30px;
       text-align: center;
       color: #f59e0b;
 
       @media (max-width: 600px) {
-        font-size: 18px;
+        font-size: 15px;
       }
     }
 
     .span-cifra {
+      flex-shrink: 0;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 15px;
       color: var(--color-text-strong);
-      min-width: 40px;
+      min-width: max-content;
       text-align: center;
-      padding: 4px 8px;
+      padding: 4px 7px;
+      background: rgba(148, 163, 184, 0.12);
+      white-space: nowrap;
       border-radius: 6px;
 
       @media (max-width: 600px) {
-        font-size: 18px;
+        font-size: 14px;
         padding: 3px 6px;
       }
     }
@@ -170,14 +191,14 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       font-size: 11px;
       font-weight: 500;
       justify-content: center;
-      padding: 10px;
+      padding: 8px;
       text-decoration: none;
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
       vertical-align: baseline;
-      width: 45px;
-      height: 15px;
+      width: 38px;
+      min-height: 34px;
       transition: all 0.3s ease;
     }
 
