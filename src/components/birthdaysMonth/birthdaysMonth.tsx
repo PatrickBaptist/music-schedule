@@ -64,7 +64,7 @@ const BirthdaysThisMonth: React.FC = () => {
 
   return (
     <>
-      <div style={{ width: '100%', borderTop: '1px solid #444', margin: '55px 0' }} />
+      <div style={{ width: 'min(100% - 32px, 1320px)', borderTop: '1px solid var(--color-border-soft)', margin: '32px auto 24px' }} />
       <Title>🎉 Aniversariantes do mês 🎂</Title>
 
       {isLoading ? (
