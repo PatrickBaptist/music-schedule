@@ -114,6 +114,11 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       position: relative;
       box-sizing: border-box;
 
+      .span-music {
+        min-width: 0;
+        align-items: center;
+      }
+
       @media (max-width: 600px) {
         gap: 8px;
       }
@@ -121,12 +126,13 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
     .span-name {
       flex: 1;
-      width: 100px;
+      min-width: 0;
       font-weight: bold;
       font-size: 17px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      line-height: 1.3;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
 
       @media (max-width: 600px) {
         font-size: 16px;
@@ -146,13 +152,15 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     }
 
     .span-cifra {
+      flex-shrink: 0;
       font-weight: bold;
       font-size: 15px;
       color: var(--color-text-strong);
-      min-width: 40px;
+      min-width: max-content;
       text-align: center;
       padding: 4px 7px;
       background: rgba(148, 163, 184, 0.12);
+      white-space: nowrap;
       border-radius: 6px;
 
       @media (max-width: 600px) {
