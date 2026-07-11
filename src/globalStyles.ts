@@ -12,6 +12,7 @@ const GlobalStyle = createGlobalStyle`
     --color-border: #2D3748;
     --color-border-soft: #1E2A3A;
     --color-primary: #2EBEF2;
+    --color-on-primary: #07131a;
     --color-scroll-track: #0e1e30ff;
     --color-shadow: rgba(0, 0, 0, 0.6);
     --color-modal-bg: #0D1117;
@@ -30,6 +31,7 @@ const GlobalStyle = createGlobalStyle`
     --color-border: #d9e2ec;
     --color-border-soft: #e8eef5;
     --color-primary: #1a6fa8;
+    --color-on-primary: #ffffff;
     --color-scroll-track: #EDE8DF;
     --color-shadow: rgba(45, 55, 72, 0.12);
     --color-modal-bg: #f6f8fb;

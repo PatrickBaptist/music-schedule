@@ -111,6 +111,7 @@ const PersonList = ({
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [scheduleTab, setScheduleTab] = useState<'sunday' | 'thursday' | 'special'>('sunday');
   const { nextSundaySchedule, specialSchedules, getSpecialSchedules } = useSchedulesContext();
   const { warning, getWarning } = useNotificationContext();
   const [isLoading, setIsLoading] = useState(true);
@@ -187,9 +188,25 @@ const HomePage: React.FC = () => {
 
             <div className="coluna-2">
               <div className="container-escala">
-                <h4>Escala do próximo domingo</h4>
+                <div className="schedule-heading">
+                  <div>
+                    <span className="section-kicker">Próximas equipes</span>
+                    <h4>Escalas</h4>
+                  </div>
+                  <div className="schedule-tabs" role="tablist" aria-label="Tipo de escala">
+                    <button type="button" role="tab" aria-selected={scheduleTab === 'sunday'} className={scheduleTab === 'sunday' ? 'active' : ''} onClick={() => setScheduleTab('sunday')}>Domingo</button>
+                    <button type="button" role="tab" aria-selected={scheduleTab === 'thursday'} className={scheduleTab === 'thursday' ? 'active' : ''} onClick={() => setScheduleTab('thursday')}>Quinta-feira</button>
+                    <button type="button" role="tab" aria-selected={scheduleTab === 'special'} className={scheduleTab === 'special' ? 'active' : ''} onClick={() => setScheduleTab('special')}>Especiais</button>
+                  </div>
+                </div>
                 <div className="content">
-                  {isLoading ? (
+                  {scheduleTab === 'special' ? (
+                    <div className="special-tab-panel">
+                      {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
+                    </div>
+                  ) : scheduleTab === 'thursday' ? (
+                    <div className="thursday-tab-panel"><ThursdaySchedule /></div>
+                  ) : isLoading ? (
                     <LoadingScreen />
                   ) : nextSundaySchedule ? (
                     <div className="content-escala">
@@ -233,22 +250,6 @@ const HomePage: React.FC = () => {
                   ) : (
                     <p>Não há escala disponível</p>
                   )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="desktop-layout-row-2">
-            <div className="coluna-1">
-              {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
-            </div>
-            <div className="coluna-2">
-              <div className="container-escala2">
-                <h4>Escala de ministros (Quinta-Feira)</h4>
-                <div className="content">
-                  <div className="content-escala" style={{ backgroundColor: 'transparent' }}>
-                    <ThursdaySchedule />
-                  </div>
                 </div>
               </div>
             </div>

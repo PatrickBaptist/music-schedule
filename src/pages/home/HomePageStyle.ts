@@ -6,7 +6,7 @@ export const Container = styled.div`
   align-items: center;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: hidden;
 `
 
 export const ContainerHome = styled.div`
@@ -15,16 +15,18 @@ export const ContainerHome = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 25px 0 10px 0;
+    padding: 24px 16px 40px;
     overflow: visible;
     box-sizing: border-box;
 
     /* Layout para desktop */
     .desktop-layout {
       width: 100%;
+      max-width: 1320px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
+      margin: 0 auto;
     }
 
     .desktop-layout-row-2 {
@@ -38,8 +40,9 @@ export const ContainerHome = styled.div`
     /* Media query para desktop */
     @media (min-width: 768px) {
       .desktop-layout {
-        flex-direction: row;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+        align-items: start;
       }
 
       .desktop-layout-row-2 {
@@ -48,7 +51,7 @@ export const ContainerHome = styled.div`
       }
 
       .coluna-1, .coluna-2 {
-        flex: 1;
+        min-width: 0;
         display: flex;
         flex-direction: column;
       }
@@ -56,8 +59,12 @@ export const ContainerHome = styled.div`
 
     .container-escala {
       width: 100%;
-      margin-top: 30px;
-      padding-top: 20px;
+      margin-top: 20px;
+      padding: 18px;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border-soft);
+      border-radius: 16px;
+      background: var(--color-surface-muted);
 
       @media (max-width: 768px) {
         border-top: 1px solid var(--color-border);
@@ -67,7 +74,7 @@ export const ContainerHome = styled.div`
         width: 100%;
         display: flex;
         justify-content: center;
-        margin: 12px 0;
+        margin: 16px 0 0;
       }
 
       .content-escala {
@@ -76,7 +83,7 @@ export const ContainerHome = styled.div`
         border-radius: 10px;
         padding: 20px 30px;
         box-shadow: 0 0 10px var(--color-shadow);
-        width: 90%;
+        width: 100%;
         max-width: 400px;
         color: var(--color-text);
 
@@ -141,6 +148,84 @@ export const ContainerHome = styled.div`
       }
     }
 
+    .schedule-heading {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+
+      h4 {
+        margin: 2px 0 0;
+        font-size: 22px;
+      }
+    }
+
+    .section-kicker {
+      color: var(--color-primary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .schedule-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+      padding: 4px;
+      border-radius: 10px;
+      background: var(--color-surface);
+
+      button {
+        min-height: 38px;
+        padding: 8px 10px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 13px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+
+        &:hover:not(.active) {
+          color: var(--color-primary);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--color-primary);
+          outline-offset: 2px;
+        }
+      }
+
+      button.active {
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+        box-shadow: 0 3px 10px color-mix(in srgb, var(--color-primary) 28%, transparent);
+      }
+    }
+
+    .thursday-tab-panel {
+      width: 100%;
+
+      > div > .content {
+        margin: 0;
+      }
+    }
+
+    .special-tab-panel {
+      width: 100%;
+
+      > div {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      h4 {
+        margin-left: 0;
+      }
+    }
+
     h4 {
       margin-left: 16px;
       font-size: 18px;
@@ -155,7 +240,7 @@ export const ContainerHome = styled.div`
       justify-content: left;
       box-sizing: border-box;
       padding-left: 12px;
-      margin-top: 20px;
+      margin-top: 8px;
 
       h4 {
         margin-right: 10px;
