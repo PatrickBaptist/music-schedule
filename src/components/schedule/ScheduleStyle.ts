@@ -205,8 +205,11 @@ export const SeeScale = styled.div`
 
 export const AddFormOverlay = styled(motion.div)`
   position: fixed;
-  inset: 0;
-  z-index: calc(var(--z-modal) + 20);
+  top: 70px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9998;
   background: rgba(8, 15, 24, 0.92);
   display: flex;
   align-items: center;
@@ -217,7 +220,7 @@ export const AddFormOverlay = styled(motion.div)`
   overscroll-behavior: contain;
 
   @media (max-width: 720px) {
-    align-items: flex-start;
-    padding: 82px 12px 106px;
+    bottom: 90px;
+    padding: 12px;
   }
 `;

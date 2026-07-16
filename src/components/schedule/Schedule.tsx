@@ -314,7 +314,7 @@ const Schedule: React.FC = () => {
                     <div className="content-escala">
                       <p style={{ fontWeight: '500', color: '#f59e0b' }}>
                         <strong>Ministro: </strong>
-                        <PersonBadge person={musician.músicosIds.minister || musician.músicos.minister} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.minister.length > 0 ? musician.músicosIds.minister : musician.músicos.minister} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Vocal: </strong>
@@ -322,27 +322,27 @@ const Schedule: React.FC = () => {
                       </p>
                       <p>
                         <strong>Teclas: </strong>
-                        <PersonBadge person={musician.músicosIds.teclas || musician.músicos.teclas} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.teclas.length > 0 ? musician.músicosIds.teclas : musician.músicos.teclas} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Violão: </strong>
-                        <PersonBadge person={musician.músicosIds.violao || musician.músicos.violao} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.violao.length > 0 ? musician.músicosIds.violao : musician.músicos.violao} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Batera: </strong>
-                        <PersonBadge person={musician.músicosIds.batera || musician.músicos.batera} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.batera.length > 0 ? musician.músicosIds.batera : musician.músicos.batera} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Bass: </strong>
-                        <PersonBadge person={musician.músicosIds.bass || musician.músicos.bass} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.bass.length > 0 ? musician.músicosIds.bass : musician.músicos.bass} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Guita: </strong>
-                        <PersonBadge person={musician.músicosIds.guita || musician.músicos.guita} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.guita.length > 0 ? musician.músicosIds.guita : musician.músicos.guita} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Op. Som: </strong>
-                        <PersonBadge person={musician.músicosIds.sound || musician.músicos.sound} usersById={usersById} />
+                        <PersonList people={musician.músicosIds.sound.length > 0 ? musician.músicosIds.sound : musician.músicos.sound} usersById={usersById} />
                       </p>
                     </div>
                   </SeeScale>

@@ -5,6 +5,7 @@ import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { toast } from "sonner";
+import MultiMusicianSelect from "../multiMusicianSelect/MultiMusicianSelect";
 
 type ScheduleInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -112,14 +113,14 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
       const normalized = normalizeMusicos(found.músicosIds ?? found.músicos);
       setMúsicos({
         ...normalized,
-        minister: resolveUserId(normalized.minister),
+        minister: normalized.minister.map(resolveUserId),
         vocal: normalized.vocal.map(resolveUserId),
-        teclas: resolveUserId(normalized.teclas),
-        violao: resolveUserId(normalized.violao),
-        batera: resolveUserId(normalized.batera),
-        bass: resolveUserId(normalized.bass),
-        guita: resolveUserId(normalized.guita),
-        sound: resolveUserId(normalized.sound),
+        teclas: normalized.teclas.map(resolveUserId),
+        violao: normalized.violao.map(resolveUserId),
+        batera: normalized.batera.map(resolveUserId),
+        bass: normalized.bass.map(resolveUserId),
+        guita: normalized.guita.map(resolveUserId),
+        sound: normalized.sound.map(resolveUserId),
       });
     }
     else setMúsicos(createEmptyMusicos());
@@ -213,38 +214,17 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
                   ? [...musiciansBySkill.vocal, guestOption, allSingersOption]
                   : [...musiciansBySkill[key], guestOption];
 
-                const uniqueOptions = Array.from(
-                  new Map(options.map((option) => [option.value, option])).values()
-                );
-
                 return (
                   <FormGroup key={key}>
-                    <DarkLabel>{labels[key] || key}:</DarkLabel>
-                    <DarkSelect
-                      multiple={isVocal}
-                      value={isVocal ? músicos.vocal : músicos[key] || ""}
-                      onChange={(e) => {
-                        if (isVocal) {
-                          const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
-                          setMúsicos((prev) => ({
-                            ...prev,
-                            vocal: selected,
-                          }));
-                        } else {
-                          setMúsicos((prev) => ({
-                            ...prev,
-                            [key]: e.target.value,
-                          }));
-                        }
-                      }}
-                    >
-                      {!isVocal && <option value="">Selecione</option>}
-                      {uniqueOptions.map((musico: { value: string; label: string }) => (
-                        <option key={musico.value} value={musico.value}>
-                          {musico.label}
-                        </option>
-                      ))}
-                    </DarkSelect>
+                    <MultiMusicianSelect
+                      label={labels[key] || key}
+                      options={options}
+                      selected={músicos[key]}
+                      onChange={(selected) =>
+                        setMúsicos((prev) => ({ ...prev, [key]: selected }))
+                      }
+                      exclusiveValues={isVocal ? [allSingersOption.value] : []}
+                    />
                   </FormGroup>
                 );
               })}
