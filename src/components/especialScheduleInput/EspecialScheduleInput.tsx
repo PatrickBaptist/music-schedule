@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedulePayload } from "../../services/ScheduleService";
-import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./EspecialScheduleInputStyle";
+import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, FormGroup } from "./EspecialScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { toast } from "sonner";
+import MultiMusicianSelect from "../multiMusicianSelect/MultiMusicianSelect";
 
 type EspecialScheduleInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -110,14 +111,14 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     });
     setMusicosIds({
       ...normalized,
-      minister: resolveUserId(normalized.minister),
+      minister: normalized.minister.map(resolveUserId),
       vocal: normalized.vocal.map(resolveUserId),
-      teclas: resolveUserId(normalized.teclas),
-      violao: resolveUserId(normalized.violao),
-      batera: resolveUserId(normalized.batera),
-      bass: resolveUserId(normalized.bass),
-      guita: resolveUserId(normalized.guita),
-      sound: resolveUserId(normalized.sound),
+      teclas: normalized.teclas.map(resolveUserId),
+      violao: normalized.violao.map(resolveUserId),
+      batera: normalized.batera.map(resolveUserId),
+      bass: normalized.bass.map(resolveUserId),
+      guita: normalized.guita.map(resolveUserId),
+      sound: normalized.sound.map(resolveUserId),
     });
   }, [specialMeta.data, specialSchedules, users]);
 
@@ -200,39 +201,17 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                   ? [...musiciansBySkill.vocal, guestOption, allSingersOption]
                   : [...musiciansBySkill[key], guestOption];
 
-                const uniqueOptions = Array.from(
-                  new Map(options.map((option) => [option.value, option])).values()
-                );
-
                 return (
                   <FormGroup key={key}>
-                    <DarkLabel>{labels[key] || key}:</DarkLabel>
-                    <DarkSelect
-                      multiple={isVocal}
-                      value={isVocal ? musicosIds.vocal : musicosIds[key] || ""}
-                      onChange={(e) => {
-                        if (isVocal) {
-                          const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
-                          setMusicosIds((prev) => ({
-                            ...prev,
-                            vocal: selected,
-                          }));
-                          return;
-                        }
-
-                        setMusicosIds((prev) => ({
-                          ...prev,
-                          [key]: e.target.value,
-                        }));
-                      }}
-                    >
-                      {!isVocal && <option value="">Selecione</option>}
-                      {uniqueOptions.map((musico) => (
-                        <option key={musico.value} value={musico.value}>
-                          {musico.label}
-                        </option>
-                      ))}
-                    </DarkSelect>
+                    <MultiMusicianSelect
+                      label={labels[key] || key}
+                      options={options}
+                      selected={musicosIds[key]}
+                      onChange={(selected) =>
+                        setMusicosIds((prev) => ({ ...prev, [key]: selected }))
+                      }
+                      exclusiveValues={isVocal ? [allSingersOption.value] : []}
+                    />
                   </FormGroup>
                 );
               })}

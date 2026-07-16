@@ -3,7 +3,8 @@ import styled from 'styled-components';
 export const ContainerForm = styled.div`
   width: 100%;
   max-width: 620px;
-  max-height: calc(100dvh - 32px);
+  height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,8 +22,8 @@ export const ContainerForm = styled.div`
   @media (max-width: 768px) {
     width: 100%;
     max-width: 620px;
-    max-height: calc(100dvh - 188px);
-    padding: 18px;
+    max-height: 100%;
+    padding: 16px;
   }
 
   .form-column {
@@ -96,7 +97,7 @@ export const ContainerForm = styled.div`
 
 export const DarkForm = styled.form`
   width: 100%;
-  max-height: 550px;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1;

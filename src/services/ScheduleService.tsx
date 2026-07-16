@@ -12,14 +12,14 @@ import type { User } from './UsersService';
 
 export interface Musicos {
   date?: string;
-  minister: string;
+  minister: string[];
   vocal: string[];
-  teclas: string;
-  violao: string;
-  batera: string;
-  bass: string;
-  guita: string;
-  sound: string;
+  teclas: string[];
+  violao: string[];
+  batera: string[];
+  bass: string[];
+  guita: string[];
+  sound: string[];
   outfitColor?: string;
 }
 
@@ -31,14 +31,14 @@ export interface MusicoDetalhe {
 }
 
 export interface MusicosDetalhados {
-  minister: MusicoDetalhe | null;
+  minister: MusicoDetalhe[];
   vocal: MusicoDetalhe[];
-  teclas: MusicoDetalhe | null;
-  violao: MusicoDetalhe | null;
-  batera: MusicoDetalhe | null;
-  bass: MusicoDetalhe | null;
-  guita: MusicoDetalhe | null;
-  sound: MusicoDetalhe | null;
+  teclas: MusicoDetalhe[];
+  violao: MusicoDetalhe[];
+  batera: MusicoDetalhe[];
+  bass: MusicoDetalhe[];
+  guita: MusicoDetalhe[];
+  sound: MusicoDetalhe[];
   outfitColor?: string;
 }
 
@@ -144,6 +144,15 @@ const normalizeVocalList = (value?: any, vocal1?: any, vocal2?: any) => {
     .filter((item): item is string => Boolean(item));
 };
 
+const normalizeMusicianList = (value?: unknown) => {
+  if (Array.isArray(value)) {
+    return Array.from(new Set(value.map((item) => normalizeMusicianId(item)).filter(Boolean)));
+  }
+
+  const single = normalizeMusicianId(value);
+  return single ? [single] : [];
+};
+
 const normalizeVocalDetails = (value?: any, vocal1?: any, vocal2?: any) => {
   if (Array.isArray(value)) {
     return value
@@ -161,6 +170,13 @@ const normalizeVocalDetails = (value?: any, vocal1?: any, vocal2?: any) => {
   }
 
   return [vocal1, vocal2]
+    .map((item) => normalizeMusicianDetail(item))
+    .filter((item): item is MusicoDetalhe => Boolean(item));
+};
+
+const normalizeMusicianDetails = (value?: unknown) => {
+  const list = Array.isArray(value) ? value : value ? [value] : [];
+  return list
     .map((item) => normalizeMusicianDetail(item))
     .filter((item): item is MusicoDetalhe => Boolean(item));
 };
@@ -200,14 +216,14 @@ export const normalizeMusicos = (musicos?: any): Musicos => {
 
   return {
     date: musicos?.date,
-    minister: normalizeMusicianId(source?.minister) || '',
+    minister: normalizeMusicianList(source?.minister),
     vocal: normalizeVocalList(source?.vocal, source?.vocal1, source?.vocal2),
-    teclas: normalizeMusicianId(source?.teclas) || '',
-    violao: normalizeMusicianId(source?.violao) || '',
-    batera: normalizeMusicianId(source?.batera) || '',
-    bass: normalizeMusicianId(source?.bass) || '',
-    guita: normalizeMusicianId(source?.guita) || '',
-    sound: normalizeMusicianId(source?.sound) || '',
+    teclas: normalizeMusicianList(source?.teclas),
+    violao: normalizeMusicianList(source?.violao),
+    batera: normalizeMusicianList(source?.batera),
+    bass: normalizeMusicianList(source?.bass),
+    guita: normalizeMusicianList(source?.guita),
+    sound: normalizeMusicianList(source?.sound),
     outfitColor: source?.outfitColor || musicos?.outfitColor || '',
   };
 };
@@ -216,14 +232,14 @@ export const normalizeMusicosDetalhados = (musicos?: any): MusicosDetalhados => 
   const source = extractDisplaySource(musicos) as LegacyMusicosPayload;
 
   return {
-    minister: normalizeMusicianDetail(source?.minister),
+    minister: normalizeMusicianDetails(source?.minister),
     vocal: normalizeVocalDetails(source?.vocal, source?.vocal1, source?.vocal2),
-    teclas: normalizeMusicianDetail(source?.teclas),
-    violao: normalizeMusicianDetail(source?.violao),
-    batera: normalizeMusicianDetail(source?.batera),
-    bass: normalizeMusicianDetail(source?.bass),
-    guita: normalizeMusicianDetail(source?.guita),
-    sound: normalizeMusicianDetail(source?.sound),
+    teclas: normalizeMusicianDetails(source?.teclas),
+    violao: normalizeMusicianDetails(source?.violao),
+    batera: normalizeMusicianDetails(source?.batera),
+    bass: normalizeMusicianDetails(source?.bass),
+    guita: normalizeMusicianDetails(source?.guita),
+    sound: normalizeMusicianDetails(source?.sound),
     outfitColor: source?.outfitColor || musicos?.outfitColor || '',
   };
 };
@@ -272,14 +288,14 @@ export const formatVocalList = (
 };
 
 export const createEmptyMusicos = (): Musicos => ({
-  minister: '',
+  minister: [],
   vocal: [],
-  teclas: '',
-  violao: '',
-  batera: '',
-  bass: '',
-  guita: '',
-  sound: '',
+  teclas: [],
+  violao: [],
+  batera: [],
+  bass: [],
+  guita: [],
+  sound: [],
   outfitColor: '',
 });
 

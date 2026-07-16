@@ -212,7 +212,7 @@ const HomePage: React.FC = () => {
                     <div className="content-escala">
                       <p style={{ fontWeight: 'bold', color: '#f59e0b' }}>
                         <strong>Ministro: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.minister || nextSundaySchedule.músicos.minister} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.minister.length > 0 ? nextSundaySchedule.músicosIds.minister : nextSundaySchedule.músicos.minister} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Vocal: </strong>
@@ -220,27 +220,27 @@ const HomePage: React.FC = () => {
                       </p>
                       <p>
                         <strong>Teclas: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.teclas || nextSundaySchedule.músicos.teclas} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.teclas.length > 0 ? nextSundaySchedule.músicosIds.teclas : nextSundaySchedule.músicos.teclas} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Violão: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.violao || nextSundaySchedule.músicos.violao} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.violao.length > 0 ? nextSundaySchedule.músicosIds.violao : nextSundaySchedule.músicos.violao} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Batera: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.batera || nextSundaySchedule.músicos.batera} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.batera.length > 0 ? nextSundaySchedule.músicosIds.batera : nextSundaySchedule.músicos.batera} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Bass: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.bass || nextSundaySchedule.músicos.bass} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.bass.length > 0 ? nextSundaySchedule.músicosIds.bass : nextSundaySchedule.músicos.bass} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Guita: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.guita || nextSundaySchedule.músicos.guita} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.guita.length > 0 ? nextSundaySchedule.músicosIds.guita : nextSundaySchedule.músicos.guita} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Op. Som: </strong>
-                        <PersonBadge person={nextSundaySchedule.músicosIds.sound || nextSundaySchedule.músicos.sound} usersById={usersById} />
+                        <PersonList people={nextSundaySchedule.músicosIds.sound.length > 0 ? nextSundaySchedule.músicosIds.sound : nextSundaySchedule.músicos.sound} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Paleta de cores: </strong>

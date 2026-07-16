@@ -113,6 +113,14 @@ const PersonList = ({
   );
 };
 
+const firstAvailablePeople = (...values: Array<PersonRef[] | PersonRef>) => {
+  for (const value of values) {
+    const list = Array.isArray(value) ? value.filter(Boolean) : value ? [value] : [];
+    if (list.length > 0) return list;
+  }
+  return [];
+};
+
 const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ usersRoles, schedules, loading }) => {
   const { deleteSpecialSchedules } = useSchedulesContext();
   const { users } = useUsersContext();
@@ -181,27 +189,21 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ usersRoles, schedul
               <p><strong>Data:</strong> {formatDateDDMMYYYY(escala.data)}</p>
               <p style={{ fontWeight: 'bold', color: '#f59e0b' }}>
                 <strong>Ministro:</strong>
-                <PersonBadge person={escala.músicosIds?.minister || escala.músicos?.minister || escala.minister} usersById={usersById} />
+                <PersonList people={firstAvailablePeople(escala.músicosIds?.minister, escala.músicos?.minister, escala.minister)} usersById={usersById} />
               </p>
               <p>
                 <strong>Vocal:</strong>
                 <PersonList
-                  people={
-                    escala.músicosIds?.vocal?.length
-                      ? escala.músicosIds.vocal
-                      : escala.músicos?.vocal?.length
-                        ? escala.músicos.vocal
-                        : [escala.vocal1, escala.vocal2]
-                  }
+                  people={firstAvailablePeople(escala.músicosIds?.vocal, escala.músicos?.vocal, [escala.vocal1, escala.vocal2])}
                   usersById={usersById}
                 />
               </p>
-              <p><strong>Teclas:</strong> <PersonBadge person={escala.músicosIds?.teclas || escala.músicos?.teclas || escala.teclas} usersById={usersById} /></p>
-              <p><strong>Violão:</strong> <PersonBadge person={escala.músicosIds?.violao || escala.músicos?.violao || escala.violao} usersById={usersById} /></p>
-              <p><strong>Batera:</strong> <PersonBadge person={escala.músicosIds?.batera || escala.músicos?.batera || escala.batera} usersById={usersById} /></p>
-              <p><strong>Bass:</strong> <PersonBadge person={escala.músicosIds?.bass || escala.músicos?.bass || escala.bass} usersById={usersById} /></p>
-              <p><strong>Guita:</strong> <PersonBadge person={escala.músicosIds?.guita || escala.músicos?.guita || escala.guita} usersById={usersById} /></p>
-              <p><strong>Op. som: </strong><PersonBadge person={escala.músicosIds?.sound || escala.músicos?.sound || escala.sound} usersById={usersById} /></p>
+              <p><strong>Teclas:</strong> <PersonList people={firstAvailablePeople(escala.músicosIds?.teclas, escala.músicos?.teclas, escala.teclas)} usersById={usersById} /></p>
+              <p><strong>Violão:</strong> <PersonList people={firstAvailablePeople(escala.músicosIds?.violao, escala.músicos?.violao, escala.violao)} usersById={usersById} /></p>
+              <p><strong>Batera:</strong> <PersonList people={firstAvailablePeople(escala.músicosIds?.batera, escala.músicos?.batera, escala.batera)} usersById={usersById} /></p>
+              <p><strong>Bass:</strong> <PersonList people={firstAvailablePeople(escala.músicosIds?.bass, escala.músicos?.bass, escala.bass)} usersById={usersById} /></p>
+              <p><strong>Guita:</strong> <PersonList people={firstAvailablePeople(escala.músicosIds?.guita, escala.músicos?.guita, escala.guita)} usersById={usersById} /></p>
+              <p><strong>Op. som: </strong><PersonList people={firstAvailablePeople(escala.músicosIds?.sound, escala.músicos?.sound, escala.sound)} usersById={usersById} /></p>
               <p><strong>Paleta de cores:</strong> <span style={{ fontStyle: 'italic' }}>{escala.outfitColor || escala.músicosIds?.outfitColor || escala.músicos?.outfitColor || "Não definido"}</span></p>
               {canAddSchedule && (
                 <motion.button
