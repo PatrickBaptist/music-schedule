@@ -95,7 +95,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       }
 
       .icon-description:hover {
-        color: #6659b0; /* muda pra sua cor principal */
+        color: #2EBEF2;
         transform: scale(1.2);
       }
 

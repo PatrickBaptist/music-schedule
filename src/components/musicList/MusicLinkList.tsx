@@ -654,7 +654,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                 Informações da "
                 <strong>{selectedDescription.name}</strong>"
               </h3>
-              <pre className="modal-text" style={{ color: "#000" }}>
+              <pre className="modal-text">
                 {selectedDescription.description}
               </pre>
               <button onClick={closeModal} className="close-btn">
