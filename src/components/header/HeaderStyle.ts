@@ -120,8 +120,8 @@ export const ContainerLogo = styled.div`
   gap: 20px;
 
   .logo {
-    width: 90px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
   }
 `;
 

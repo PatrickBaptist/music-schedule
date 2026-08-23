@@ -5,7 +5,7 @@ const GlobalStyle = createGlobalStyle`
     --color-page-bg: #0D1117;
     --color-surface: #161b22;
     --color-surface-muted: #080D13;
-    --color-text: #e0e0e0;
+    --color-text: #ffffff;
     --color-text-strong: #fff;
     --color-text-strong2: #fff;
     --color-text-muted: #8b949e;
@@ -21,9 +21,9 @@ const GlobalStyle = createGlobalStyle`
   }
 
   :root[data-theme='light'] {
-    --color-page-bg: #e0dcd4;
+    --color-page-bg: #f6f6ff;
     --color-surface: #ffffff;
-    --color-surface-muted: #EDE8DF;
+    --color-surface-muted: #f6f6ff;
     --color-text: #2d3748;
     --color-text-strong: #172033;
     --color-text-strong2: #fff;
@@ -32,7 +32,7 @@ const GlobalStyle = createGlobalStyle`
     --color-border-soft: #e8eef5;
     --color-primary: #1a6fa8;
     --color-on-primary: #ffffff;
-    --color-scroll-track: #EDE8DF;
+    --color-scroll-track: #f6f6ff;
     --color-shadow: rgba(45, 55, 72, 0.12);
     --color-modal-bg: #f6f8fb;
     --color-input-bg: #ffffff;
