@@ -29,7 +29,7 @@ export const ContainerLogo = styled.div`
   margin-bottom: 40px;
 
   .logo {
-    width: 190px;
+    width: 110px;
     height: 110px;
   }
 `;
