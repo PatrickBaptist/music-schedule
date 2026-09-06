@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Button from "../buttons/Buttons";
 
 export type MusicianOption = {
   value: string;
@@ -32,7 +33,7 @@ const Chips = styled.div`
   margin-bottom: 7px;
 `;
 
-const Chip = styled.button`
+const Chip = styled(Button).attrs({ variant: "unstyled" })`
   display: inline-flex;
   align-items: center;
   gap: 6px;

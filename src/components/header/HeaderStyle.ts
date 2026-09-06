@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import SharedButton from '../buttons/Buttons';
 
 export const HeaderContainer = styled.div`
   width: 100%;
@@ -27,7 +28,7 @@ export const HeaderActions = styled.div`
   }
 `;
 
-export const ProfileButton = styled.button`
+export const ProfileButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   position: relative;
   width: 38px;
   height: 38px;

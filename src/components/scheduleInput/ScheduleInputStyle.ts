@@ -151,48 +151,6 @@ export const DarkSelect = styled.select`
   }
 `;
 
-export const DarkButtonCancel = styled.button`
-  max-width: 400px;
-  background-color: var(--color-text-muted);
-  color: #fff;
-  font-size: 13px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  padding: 10px 10px;
-
-  &:hover {
-    background-color: #acacac;
-    transform: scale(1.05);
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-export const DarkButton = styled.button`
-  max-width: 400px;
-  background-color: #007BFF;
-  color: #fff;
-  font-size: 13px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  padding: 10px 10px;
-
-  &:hover {
-    background-color: #2EBEF2;
-    transform: scale(1.05);
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
 export const DarkLabel = styled.label`
   font-size: 13px;
   font-weight: 600;
@@ -200,10 +158,3 @@ export const DarkLabel = styled.label`
   letter-spacing: 0.5px;
 `;
 
-export const BackButton = styled(DarkButton)`
-  background-color: var(--color-text-muted);
-
-  &:hover {
-    background-color: var(--color-text-strong);
-  }
-`;

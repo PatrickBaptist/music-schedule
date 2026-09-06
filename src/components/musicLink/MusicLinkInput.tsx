@@ -310,7 +310,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       </div>
 
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <Button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+        <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
           Cancelar
         </Button>
         <Button onClick={handleAddLink}>
@@ -334,7 +334,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
               </select>
             </SelectContainer>
             <div style={{ width: '100%', marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
-              <Button onClick={() => setMinisterModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+              <Button variant="secondary" onClick={() => setMinisterModalOpen(false)}>
                 Cancelar
               </Button>
               <Button onClick={() => { setMinisterModalOpen(false); handleAddLink(); }}>
@@ -377,7 +377,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
             </SelectContainer>
 
             <div style={{ marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+              <Button variant="secondary" onClick={() => setWorshipMomentModalOpen(false)}>
                 Cancelar
               </Button>
               <Button onClick={confirmAddWithMoment}>Confirmar</Button>

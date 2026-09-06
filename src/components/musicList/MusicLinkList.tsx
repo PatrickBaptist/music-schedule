@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
-import Button from "../buttons/Buttons";
+import Button, { MotionButton } from "../buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
 import {
   ContainerVd,
@@ -617,14 +617,13 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                   }}
                 >
                   <Button
+                    variant="secondary"
                     onClick={handleCancelEdit}
-                    style={{ backgroundColor: "#9e9e9e" }}
                   >
                     Cancelar
                   </Button>
                   <Button
                     onClick={handleSaveEdit}
-                    style={{ backgroundColor: "#007BFF" }}
                   >
                     Salvar
                   </Button>
@@ -657,9 +656,9 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
               <pre className="modal-text">
                 {selectedDescription.description}
               </pre>
-              <button onClick={closeModal} className="close-btn">
+              <Button variant="secondary" onClick={closeModal} className="close-btn">
                 Fechar
-              </button>
+              </Button>
             </motion.div>
           </motion.div>
         )}
@@ -772,15 +771,15 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
     >
       <div className="container-card">
         {canReorder && (
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
             className="drag-handle"
             aria-label="Arrastar para reordenar"
             {...attributes}
             {...listeners}
           >
             <FaGripVertical size={16} />
-          </button>
+          </Button>
         )}
         <div className="card">
           {loadingCards[musicLink.id!] ? (
@@ -817,7 +816,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                   <span className="span-cifra">{musicLink.cifra}</span>
                 )}
 
-                <motion.button
+                <MotionButton variant="unstyled"
                   className="btns toggle-btn"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -833,7 +832,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                   ) : (
                     <FaEllipsisV size={16} />
                   )}
-                </motion.button>
+                </MotionButton>
               </div>
 
               <AnimatePresence>
@@ -846,7 +845,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                     transition={{ duration: 0.3 }}
                   >
                     {musicLink.link && (
-                      <motion.button
+                      <MotionButton variant="unstyled"
                         className="btns youtube-btn"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
@@ -858,11 +857,11 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                         title="Assistir vídeo"
                       >
                         <FaYoutube size={16} />
-                      </motion.button>
+                      </MotionButton>
                     )}
 
                     {musicLink.letter && (
-                      <motion.button
+                      <MotionButton variant="unstyled"
                         className="btns letter-btn"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
@@ -873,11 +872,11 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                         title="Abrir letra"
                       >
                         <FaFileAlt size={16} />
-                      </motion.button>
+                      </MotionButton>
                     )}
 
                     {musicLink.spotify && (
-                      <motion.button
+                      <MotionButton variant="unstyled"
                         className="btns spotify-btn"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
@@ -888,10 +887,10 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                         title="Abrir no Spotify"
                       >
                         <FaSpotify size={16} />
-                      </motion.button>
+                      </MotionButton>
                     )}
 
-                    <motion.button
+                    <MotionButton variant="unstyled"
                       className="btns edit-btn"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
@@ -899,17 +898,17 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                       title="Editar"
                     >
                       <FaEdit size={16} />
-                    </motion.button>
+                    </MotionButton>
 
                     {canDeleteMusic && (
-                      <motion.button
+                      <MotionButton variant="unstyled"
                         whileHover={{ scale: 1.1 }}
                         className="btns delete-icon"
                         onClick={() => handleDelete(musicLink.id!)}
                         title="Deletar música"
                       >
                         <FaTrashAlt size={16} />
-                      </motion.button>
+                      </MotionButton>
                     )}
                   </motion.div>
                 )}

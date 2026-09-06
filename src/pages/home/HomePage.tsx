@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
 import MusicLinkList from '../../components/musicList/MusicLinkList';
@@ -19,6 +18,7 @@ import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import useUsersContext from '../../context/hooks/useUsersContext';
 import type { User } from '../../services/UsersService';
+import Button, { MotionButton } from '../../components/buttons/Buttons';
 
 type PersonRef = string | MusicoDetalhe | null | undefined;
 
@@ -159,14 +159,14 @@ const HomePage: React.FC = () => {
               {canAddMusic && (
                 <div className="content-louvores">
                   <h4>Adicionar louvor</h4>
-                  <motion.button
+                  <MotionButton variant="unstyled"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     className="btns add-btn"
                     onClick={() => setIsModalOpen(true)}
                   >
                     <FaPlus size={12} />
-                  </motion.button>
+                  </MotionButton>
                 </div>
               )}
 
@@ -194,9 +194,9 @@ const HomePage: React.FC = () => {
                     <h4>Escalas</h4>
                   </div>
                   <div className="schedule-tabs" role="tablist" aria-label="Tipo de escala">
-                    <button type="button" role="tab" aria-selected={scheduleTab === 'sunday'} className={scheduleTab === 'sunday' ? 'active' : ''} onClick={() => setScheduleTab('sunday')}>Domingo</button>
-                    <button type="button" role="tab" aria-selected={scheduleTab === 'thursday'} className={scheduleTab === 'thursday' ? 'active' : ''} onClick={() => setScheduleTab('thursday')}>Quinta-feira</button>
-                    <button type="button" role="tab" aria-selected={scheduleTab === 'special'} className={scheduleTab === 'special' ? 'active' : ''} onClick={() => setScheduleTab('special')}>Especiais</button>
+                    <Button variant="tab" role="tab" aria-selected={scheduleTab === 'sunday'} className={scheduleTab === 'sunday' ? 'active' : ''} onClick={() => setScheduleTab('sunday')}>Domingo</Button>
+                    <Button variant="tab" role="tab" aria-selected={scheduleTab === 'thursday'} className={scheduleTab === 'thursday' ? 'active' : ''} onClick={() => setScheduleTab('thursday')}>Quinta-feira</Button>
+                    <Button variant="tab" role="tab" aria-selected={scheduleTab === 'special'} className={scheduleTab === 'special' ? 'active' : ''} onClick={() => setScheduleTab('special')}>Especiais</Button>
                   </div>
                 </div>
                 <div className="content">

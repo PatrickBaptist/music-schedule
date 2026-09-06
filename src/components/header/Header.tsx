@@ -19,6 +19,7 @@ import { UserRole } from '../../types/UserRole';
 import { FaDesktop, FaMoon, FaSun } from 'react-icons/fa';
 import useThemePreference from '../../context/hooks/useThemePreference';
 import { getPendingProfileFields } from '../../helpers/profileCompletion';
+import Button, { MotionButton } from '../buttons/Buttons';
 
 const Header: React.FC = () => {
 
@@ -88,33 +89,33 @@ const Header: React.FC = () => {
 
       <HeaderActions>
         <ThemeSwitcher aria-label="Escolher tema">
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
             className={mode === "light" ? "active" : ""}
             title="Modo claro"
             aria-label="Modo claro"
             onClick={() => setMode("light")}
           >
             <FaSun size={14} />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="unstyled"
             className={mode === "dark" ? "active" : ""}
             title="Modo escuro"
             aria-label="Modo escuro"
             onClick={() => setMode("dark")}
           >
             <FaMoon size={14} />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="unstyled"
             className={mode === "system" ? "active" : ""}
             title="Tema do sistema"
             aria-label="Tema do sistema"
             onClick={() => setMode("system")}
           >
             <FaDesktop size={14} />
-          </button>
+          </Button>
         </ThemeSwitcher>
         <ProfileButton
           type="button"
@@ -138,7 +139,8 @@ const Header: React.FC = () => {
             </span>
           </span>
         )}
-        <motion.button
+        <MotionButton
+          variant="unstyled"
           onClick={logout}
           title='Sair'
           style={{
@@ -160,7 +162,7 @@ const Header: React.FC = () => {
           }}
         >
           <img src={Logout} alt="Logout" style={{ width: 28, height: 28 }} />
-        </motion.button>
+        </MotionButton>
       </HeaderActions>
     </HeaderContainer>
   );

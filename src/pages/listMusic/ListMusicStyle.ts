@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import styled from 'styled-components';
+import SharedButton from '../../components/buttons/Buttons';
 
 export const Container = styled.div`
   display: flex;
@@ -329,7 +330,7 @@ export const ContentVd = styled.div`
     }
 `
 
-export const CloseButton = styled.button`
+export const CloseButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   width: 20px;
   height: 20px;
   position: absolute;

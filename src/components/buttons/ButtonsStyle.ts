@@ -1,58 +1,130 @@
-import styled from 'styled-components'
+import styled, { css } from "styled-components";
+import type { ButtonSize, ButtonVariant } from "./Buttons";
 
-export const ContainerButton = styled.button`
-  align-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+interface ContainerButtonProps {
+  $variant: ButtonVariant;
+  $size: ButtonSize;
+  $fullWidth: boolean;
+}
+
+const sizes = {
+  sm: css`
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.8rem;
+  `,
+  md: css`
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 0.9rem;
+  `,
+  lg: css`
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 1rem;
+  `,
+};
+
+const variants = {
+  primary: css`
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.92);
+    }
+  `,
+  secondary: css`
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-strong);
+
+    &:hover:not(:disabled) {
+      background: var(--color-surface-muted);
+    }
+  `,
+  danger: css`
+    border-color: #dc2626;
+    background: #ef4444;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: #dc2626;
+    }
+  `,
+  ghost: css`
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-text-strong);
+    &:hover:not(:disabled) {
+      background: var(--color-surface-muted);
+      color: var(--color-primary);
+    }
+  `,
+  icon: css`
+    min-width: 40px;
+    width: 40px;
+    padding: 0;
+    border-color: transparent;
+    background: var(--color-surface-muted);
+    color: var(--color-text-strong);
+    border-radius: 999px;
+    &:hover:not(:disabled) {
+      border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+      color: var(--color-primary);
+    }
+  `,
+  tab: css`
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-text-muted);
+    &[aria-selected="true"], &.active {
+      background: var(--color-surface-muted);
+      color: var(--color-primary);
+    }
+  `,
+  unstyled: css`
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+  `,
+};
+
+export const ContainerButton = styled.button<ContainerButtonProps>`
+  appearance: none;
   box-sizing: border-box;
-  color: rgba(0, 0, 0, 0.85);
-  cursor: pointer;
   display: inline-flex;
-  font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 11px;
-  font-weight: 500;
+  align-items: center;
   justify-content: center;
-  padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+  gap: 8px;
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1;
   text-decoration: none;
-  transition: all 250ms;
+  cursor: pointer;
   user-select: none;
-  -webkit-user-select: none;
   touch-action: manipulation;
-  vertical-align: baseline;
-  width: auto;
-  height: 14px;
-  background-color: #F0F0F1;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    filter 0.15s ease;
 
- &:hover, &:focus {
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
-  color: rgba(0, 0, 0, 0.65);
-}
+  ${({ $size }) => sizes[$size]}
+  ${({ $variant }) => variants[$variant]}
 
- &:hover {
-  transform: translateY(-1px);
-}
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 
- &:active {
-  background-color: #F0F0F1;
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
-  color: rgba(0, 0, 0, 0.65);
-  transform: translateY(0);
-}
-
-&:disabled {
-  background-color: #d1d1d1;
-  color: rgba(0,0,0,0.35);
-  border-color: #b0b0b0;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-  opacity: 0.6;
-}
-
-div {
-    display: block;
-}
-`
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    filter: grayscale(0.15);
+  }
+`;

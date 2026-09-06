@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion } from 'framer-motion';
 import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
@@ -13,6 +12,7 @@ import useAuthContext from '../../context/hooks/useAuthContext';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import useUsersContext from '../../context/hooks/useUsersContext';
 import type { User } from '../../services/UsersService';
+import { MotionButton } from '../buttons/Buttons';
 import {
   getMusicianDisplayName,
   getMusicianPhotoURL,
@@ -264,17 +264,17 @@ const Schedule: React.FC = () => {
           {canManageSchedule && (
             <div className="add-schedule">
               <h4>Adicionar escala</h4>
-              <motion.button
+              <MotionButton variant="unstyled"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="btns add-btn"
                 onClick={() => setIsModalOpen(true)}
               >
                 <FaPlus size={12} />
-              </motion.button>
+              </MotionButton>
 
               <h4>Gerar automático</h4>
-              <motion.button
+              <MotionButton variant="unstyled"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="btns generate-btn"
@@ -282,7 +282,7 @@ const Schedule: React.FC = () => {
                 disabled={isGenerating}
               >
                 <FaMagic size={12} />
-              </motion.button>
+              </MotionButton>
             </div>
           )}
 

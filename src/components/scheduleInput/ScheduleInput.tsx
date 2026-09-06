@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createEmptyMusicos, Musicos, normalizeMusicos } from "../../services/ScheduleService";
-import { ContainerForm, DarkButton, DarkButtonCancel, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./ScheduleInputStyle";
+import { ContainerForm, DarkForm, DarkInput, DarkLabel, DarkSelect, FormGroup } from "./ScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { toast } from "sonner";
 import MultiMusicianSelect from "../multiMusicianSelect/MultiMusicianSelect";
+import Button from "../buttons/Buttons";
 
 type ScheduleInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -242,12 +243,12 @@ const ScheduleInput: React.FC<ScheduleInputProps> = ({ setIsModalOpen }) => {
           </div>
 
           <div className="button-container">
-            <DarkButtonCancel type="button" onClick={setIsModalOpen.bind(null, false)}>
+            <Button variant="secondary" onClick={setIsModalOpen.bind(null, false)}>
               Cancelar
-            </DarkButtonCancel>
-            <DarkButton type="button" onClick={handleSubmit}>
+            </Button>
+            <Button onClick={handleSubmit}>
               Salvar Escala
-            </DarkButton>
+            </Button>
           </div>
         </div>
       </div>
