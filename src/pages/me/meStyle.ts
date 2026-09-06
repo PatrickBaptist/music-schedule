@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import styled from "styled-components";
+import SharedButton from "../../components/buttons/Buttons";
 
 export const ProfileTitle = styled(motion.h1)`
   font-size: 2.2rem;
@@ -195,7 +196,7 @@ export const DarkSelect = styled.select`
   }
 `;
 
-export const DarkButton = styled.button`
+export const DarkButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   max-width: 400px;
   background-color: #007BFF;
   color: #fff;

@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import SharedButton from "../../components/buttons/Buttons";
 
 export const Container = styled.div`
   display: flex;
@@ -37,7 +38,7 @@ export const Input = styled.input`
     }
 `;
 
-export const Button = styled.button`
+export const Button = styled(SharedButton).attrs({ variant: "unstyled" })`
   width: 100%;
   padding: 10px;
   background-color: #007BFF;
@@ -69,7 +70,7 @@ export const Divider = styled.div`
   }
 `;
 
-export const GoogleButton = styled.button`
+export const GoogleButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   width: 100%;
   padding: 10px;
   border: 1px solid rgba(0, 0, 0, 0.12);

@@ -4,9 +4,9 @@ import { formatDateDDMMYYYY } from "../../helpers/helpers";
 import { toast } from "sonner";
 import Delete from '../../assets/imgs/delete.png'
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
-import { motion } from "framer-motion";
 import LoadingScreen from "../loading/LoadingScreen";
 import { FaPlus } from "react-icons/fa";
+import { MotionButton } from "../buttons/Buttons";
 import EspecialScheduleInput from "../especialScheduleInput/EspecialScheduleInput";
 import { UserRole } from "../../types/UserRole";
 import useUsersContext from "../../context/hooks/useUsersContext";
@@ -160,14 +160,14 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ usersRoles, schedul
       <div className='add-schedule'>
         <h4>Escalas Especiais</h4>
         {canAddSchedule && (
-          <motion.button
+          <MotionButton variant="unstyled"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             className="add-btn"
             onClick={() => setIsModalOpen(true)}
             >
             <FaPlus size={12} />
-          </motion.button>
+          </MotionButton>
         )}
       </div>
 
@@ -206,14 +206,14 @@ const SpecialSchedules: React.FC<SpecialSchedulesProps> = ({ usersRoles, schedul
               <p><strong>Op. som: </strong><PersonList people={firstAvailablePeople(escala.músicosIds?.sound, escala.músicos?.sound, escala.sound)} usersById={usersById} /></p>
               <p><strong>Paleta de cores:</strong> <span style={{ fontStyle: 'italic' }}>{escala.outfitColor || escala.músicosIds?.outfitColor || escala.músicos?.outfitColor || "Não definido"}</span></p>
               {canAddSchedule && (
-                <motion.button
+                <MotionButton variant="unstyled"
                   whileHover={{ scale: 1.1 }}
                   className='btns'
                   onClick={() => handleDelete(escala.id, escala.evento)}
                   style={{ backgroundColor: '#C0392B', width: '10px', height: '40px', border: 'none' }}
                 >
                   <img style={{ width: '20px', height: '20px' }} src={Delete} alt="delete"/>
-                </motion.button>
+                </MotionButton>
               )}
             </div>
           ))

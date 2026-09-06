@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { motion } from "motion/react";
+import SharedButton from "../../components/buttons/Buttons";
 
 export const AuditPageShell = styled.div`
   width: 100%;
@@ -44,7 +45,7 @@ export const HeaderActions = styled.div`
   margin-bottom: 18px;
 `;
 
-export const RefreshButton = styled.button`
+export const RefreshButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -54,7 +55,7 @@ export const RefreshButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   color: #fff;
-  background: linear-gradient(135deg, #0f8ec4, #2ebef2);
+  background: var(--color-primary);
   transition: transform 0.15s ease, opacity 0.15s ease;
 
   &:hover {

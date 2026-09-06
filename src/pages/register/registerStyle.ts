@@ -1,5 +1,6 @@
 import ReactInputMask from "react-input-mask";
 import styled from "styled-components";
+import SharedButton from "../../components/buttons/Buttons";
 
 export const ContainerRegiter = styled.div`
   width: 100%;
@@ -90,7 +91,7 @@ export const StyledInputMask = styled(ReactInputMask)`
   }
 `;
 
-export const Button = styled.button`
+export const Button = styled(SharedButton).attrs({ variant: "unstyled" })`
   width: 100%;
   padding: 12px;
   background-color: #007BFF;
@@ -122,7 +123,7 @@ export const Divider = styled.div`
   }
 `;
 
-export const GoogleButton = styled.button`
+export const GoogleButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   width: 100%;
   padding: 12px;
   border: 1px solid rgba(0, 0, 0, 0.12);

@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import SharedButton from "../../components/buttons/Buttons";
 
 export const Input = styled.input`
   width: 100%;
@@ -83,20 +84,9 @@ export const UserAvatar = styled.div`
   }
 `;
 
-export const CardActionButton = styled.button`
+export const CardActionButton = styled(SharedButton).attrs({ variant: "primary" })`
   && {
-  margin-top: 10px;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 700;
-  background: linear-gradient(135deg, #2ebef2, #0f8ec4);
-  color: #fff;
-
-  &:hover {
-    filter: brightness(1.05);
-  }
+    margin-top: 10px;
   }
 `;
 
@@ -156,19 +146,8 @@ export const ModalHeader = styled.div`
   }
 `;
 
-export const CloseButton = styled.button`
-  border: none;
-  border-radius: 999px;
-  width: 38px;
-  height: 38px;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.08);
-  color: inherit;
+export const CloseButton = styled(SharedButton).attrs({ variant: "icon", size: "sm" })`
   font-size: 1.1rem;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.14);
-  }
 `;
 
 export const ModalBody = styled.form`
@@ -254,23 +233,11 @@ export const ModalFooter = styled.div`
   padding-top: 4px;
 `;
 
-export const FooterButton = styled.button`
-  border: none;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-weight: 800;
-  cursor: pointer;
-`;
+export const FooterButton = styled(SharedButton).attrs({ variant: "secondary" })``;
 
-export const PrimaryActionButton = styled(FooterButton)`
-  background: linear-gradient(135deg, #2ebef2, #0f8ec4);
-  color: #fff;
-`;
+export const PrimaryActionButton = styled(FooterButton).attrs({ variant: "primary" })``;
 
-export const DangerActionButton = styled(FooterButton)`
-  background: #ef4444;
-  color: #fff;
-`;
+export const DangerActionButton = styled(FooterButton).attrs({ variant: "danger" })``;
 
 export const PageTopBar = styled.div<{ $centerTitle?: boolean }>`
   width: min(100%, 900px);

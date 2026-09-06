@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import useAllMusicHistoryContext from "../../context/hooks/useAllMusicHistoryContext";
-import Button from "../../components/buttons/Buttons";
+import Button, { MotionButton } from "../../components/buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
 import { AddFormOverlay, Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
 import { FirestoreTimestamp } from "../../helpers/helpers";
@@ -269,14 +269,14 @@ const ListMusic: React.FC = () => {
             {canAddMusic && (
               <div className='content-louvores'>
                 <h4>Adicionar louvor</h4>
-                <motion.button
+                <MotionButton variant="unstyled"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className="btns add-btn"
                   onClick={() => setIsModalOpen(true)}
                 >
                   <FaPlus size={12} />
-                </motion.button>
+                </MotionButton>
               </div>
               )}
 
@@ -348,10 +348,10 @@ const ListMusic: React.FC = () => {
                       </select>
                     </SelectContainer>
                       <div style={{ width: "100%", display: "flex", justifyContent: "space-between", gap: "10px" }}>
-                        <Button onClick={handleCancelEdit} style={{ backgroundColor: "#9e9e9e" }}>
+                        <Button variant="secondary" onClick={handleCancelEdit}>
                           Cancelar
                         </Button>
-                        <Button onClick={handleSaveEdit} style={{ backgroundColor: "#007BFF" }}>
+                        <Button onClick={handleSaveEdit}>
                           Salvar
                         </Button>
                       </div>
@@ -395,7 +395,7 @@ const ListMusic: React.FC = () => {
 
                           <div className="music-buttons">
                             {music.link && (
-                              <motion.button
+                              <MotionButton variant="unstyled"
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="btns youtube-btn"
@@ -403,11 +403,11 @@ const ListMusic: React.FC = () => {
                                 title="Assistir vídeo"
                               >
                                 <FaYoutube size={14} />
-                              </motion.button>
+                              </MotionButton>
                             )}
 
                             {music.spotify && (
-                              <motion.button
+                              <MotionButton variant="unstyled"
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="btns spotify-btn"
@@ -418,38 +418,38 @@ const ListMusic: React.FC = () => {
                                 title="Abrir no Spotify"
                               >
                                 <FaSpotify size={16} />
-                              </motion.button>
+                              </MotionButton>
                             )}
 
-                            <motion.button
+                            <MotionButton variant="unstyled"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
                               className="btns edit-btn"
                               onClick={() => handleUpdate(music.id)}
                             >
                               <FaEdit size={14} />
-                            </motion.button>
+                            </MotionButton>
 
                             {canDeleteMusic && (
-                              <motion.button
+                              <MotionButton variant="unstyled"
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="btns delete-btn"
                                 onClick={() => handleDelete(music.id, music.name)}
                               >
                                 <FaTrash size={14} />
-                              </motion.button>
+                              </MotionButton>
                             )}
 
                             {canAddMusic && (
-                              <motion.button
+                              <MotionButton variant="unstyled"
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="btns add-btn"
                                 onClick={() => handleAddToSunday(music.id)}
                               >
                                 <MdPlaylistAdd size={14} />
-                              </motion.button>
+                              </MotionButton>
                             )}
                           </div>
                         </>
@@ -461,7 +461,7 @@ const ListMusic: React.FC = () => {
             )}
 
             <div style={{ width: "100%", display: "flex", justifyContent: "center", gap: "45px", marginTop: "50px", paddingBottom: "70px" }}>
-              <Button 
+              <Button variant="secondary"
                 disabled={!hasPrevPage} 
                 onClick={() => {
                   getAllMusicLinks({ page: currentPage - 1, limit });
@@ -473,7 +473,7 @@ const ListMusic: React.FC = () => {
 
               <span><strong>Página {currentPage}</strong></span>
 
-              <Button 
+              <Button variant="secondary"
                 disabled={!hasNextPage}
                 onClick={() => {
                   getAllMusicLinks({ page: currentPage + 1, limit });
@@ -533,7 +533,7 @@ const ListMusic: React.FC = () => {
                   </SelectContainer>
 
                   <div style={{ width: '100%', marginTop: 20, display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
-                    <Button onClick={() => setWorshipMomentModalOpen(false)} style={{ backgroundColor: '#9e9e9e' }}>
+                    <Button variant="secondary" onClick={() => setWorshipMomentModalOpen(false)}>
                       Cancelar
                     </Button>
                     <Button onClick={confirmAddWithMoment}>Confirmar</Button>

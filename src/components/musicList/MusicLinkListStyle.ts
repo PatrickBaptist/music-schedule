@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import SharedButton from '../buttons/Buttons';
 
 export const ListContainer = styled.ul<{ bg?: string }>`
   width: 100%;
@@ -386,16 +387,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   .close-btn {
     margin-top: 16px;
     padding: 8px 16px;
-    background: #9e9e9e;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
     align-self: flex-end;
-  }
-
-  .close-btn:hover {
-    background: #c2c2c2ff;
   }
 `;
 
@@ -443,7 +435,7 @@ export const ContentVd = styled.div`
   }
 `;
 
-export const CloseButton = styled.button`
+export const CloseButton = styled(SharedButton).attrs({ variant: "unstyled" })`
   width: 20px;
   height: 20px;
   position: absolute;
