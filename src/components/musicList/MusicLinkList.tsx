@@ -16,6 +16,7 @@ import {
   FaEllipsisV,
   FaFileAlt,
   FaGripVertical,
+  FaLock,
   FaRegCommentDots,
   FaSpotify,
   FaTimes,
@@ -214,6 +215,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   );
   const groupedMusicRef = useRef<GroupedMusic>(groupedMusic);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const [isReorderMode, setIsReorderMode] = useState(false);
 
   const [selectedDescription, setSelectedDescription] = useState<{
     description: string;
@@ -240,7 +242,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: { delay: 250, tolerance: 6 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -299,7 +301,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   );
 
   const handleDragOver = (event: DragOverEvent) => {
-    if (!canReorder || isSavingOrder) return;
+    if (!canReorder || !isReorderMode || isSavingOrder) return;
 
     const { active, over } = event;
     if (!over) return;
@@ -319,10 +321,15 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    if (!canReorder || isSavingOrder) return;
+    if (!canReorder || !isReorderMode || isSavingOrder) return;
 
     const { over } = event;
-    if (!over) return;
+    if (!over) {
+      const originalOrder = buildGroupedMusic(musicLinks);
+      groupedMusicRef.current = originalOrder;
+      setGroupedMusic(originalOrder);
+      return;
+    }
 
     await persistOrderChanges(groupedMusicRef.current);
   };
@@ -436,6 +443,32 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   return (
     <ListContainer>
+      {canReorder && musicLinks.length > 1 && (
+        <div className="reorder-controls">
+          <Button
+            variant={isReorderMode ? "secondary" : "unstyled"}
+            className={`reorder-mode-btn${isReorderMode ? " is-active" : ""}`}
+            onClick={() => setIsReorderMode((current) => !current)}
+            disabled={isSavingOrder}
+            aria-pressed={isReorderMode}
+          >
+            {isReorderMode ? (
+              <>
+                <FaLock size={14} /> Concluir ajuste
+              </>
+            ) : (
+              <>
+                <FaGripVertical size={14} /> Ajustar ordem
+              </>
+            )}
+          </Button>
+          {isReorderMode && (
+            <span className="reorder-hint">
+              Segure o ícone ao lado da música e arraste.
+            </span>
+          )}
+        </div>
+      )}
       <AnimatePresence>
         {musicLinks.length > 0 ? (
           <DndContext
@@ -464,7 +497,9 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                         key={musicLink.id}
                         musicLink={musicLink}
                         orderDisplay={index + 1}
-                        canReorder={canReorder && !isSavingOrder}
+                        canReorder={
+                          canReorder && isReorderMode && !isSavingOrder
+                        }
                         canDeleteMusic={canDeleteMusic}
                         loadingCards={loadingCards}
                         openMenuId={openMenuId}
