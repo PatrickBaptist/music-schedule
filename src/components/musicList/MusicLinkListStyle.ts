@@ -10,6 +10,42 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   padding: 0 8px;
   box-sizing: border-box;
 
+  .reorder-controls {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 12px;
+
+    @media (max-width: 600px) {
+      align-items: flex-end;
+      flex-direction: column;
+    }
+  }
+
+  .reorder-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 8px;
+    color: var(--color-text-strong);
+
+    &.is-active {
+      border-color: #f59e0b;
+    }
+  }
+
+  .reorder-hint {
+    color: var(--color-text-muted);
+    font-size: 13px;
+  }
+
   .delete-edit {
     display: inline-flex;
   }
