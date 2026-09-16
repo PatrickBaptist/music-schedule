@@ -130,6 +130,13 @@ export const RoleChip = styled.span`
   font-weight: 750;
 `;
 
+export const CalendarButton = styled(Button)`
+  && {
+    width: 100%;
+    margin-top: 20px;
+  }
+`;
+
 export const EmptyState = styled.section`
   width: min(100%, 620px);
   margin: 0 auto;

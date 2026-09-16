@@ -1,19 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
+import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale, ViewToggle } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import { toast } from 'sonner';
 import PageWrapper from '../pageWrapper/pageWrapper';
-import { FaMagic, FaPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaMagic, FaPlus, FaThLarge } from 'react-icons/fa';
 import ScheduleInput from '../scheduleInput/ScheduleInput';
 import { UserRole } from '../../types/UserRole';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import useUsersContext from '../../context/hooks/useUsersContext';
 import type { User } from '../../services/UsersService';
-import { MotionButton } from '../buttons/Buttons';
+import Button, { MotionButton } from '../buttons/Buttons';
 import ScheduledPerson from '../scheduledPerson/ScheduledPerson';
+import ScheduleCalendar from '../scheduleCalendar/ScheduleCalendar';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -81,15 +82,17 @@ const formatScheduleDate = (date: string | Date): string => {
 };
 
 const Schedule: React.FC = () => {
-  const { monthlySchedule, getScheduleForMonth, nextSundaySchedule, generateMonthlySchedule } = useSchedulesContext();
+  const { monthlySchedule, getScheduleForMonth, nextSundaySchedule, generateMonthlySchedule, specialSchedules } = useSchedulesContext();
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'cards' | 'calendar'>('calendar');
   const { user: loggedUser } = useAuthContext();
   const { users } = useUsersContext();
 
   const currentMonth = getFormattedMonth();
   const nameMonth = getNameMonth();
+  const { targetMonth, targetYear } = getTargetMonthAndYear();
   const usersById = useMemo(
     () => users.reduce<Record<string, User>>((acc, user) => {
       acc[user.id] = user;
@@ -193,6 +196,27 @@ const Schedule: React.FC = () => {
             </div>
           )}
 
+          <ViewToggle role="group" aria-label="Escolher visualização da escala">
+            <Button
+              variant="tab"
+              size="sm"
+              className={viewMode === 'cards' ? 'active' : ''}
+              aria-pressed={viewMode === 'cards'}
+              onClick={() => setViewMode('cards')}
+            >
+              <FaThLarge aria-hidden="true" /> Cartões
+            </Button>
+            <Button
+              variant="tab"
+              size="sm"
+              className={viewMode === 'calendar' ? 'active' : ''}
+              aria-pressed={viewMode === 'calendar'}
+              onClick={() => setViewMode('calendar')}
+            >
+              <FaCalendarAlt aria-hidden="true" /> Calendário
+            </Button>
+          </ViewToggle>
+
           {isModalOpen &&
             createPortal(
               <AddFormOverlay
@@ -208,6 +232,16 @@ const Schedule: React.FC = () => {
 
           {loading ? (
             <LoadingScreen />
+          ) : viewMode === 'calendar' ? (
+            <ScheduleCalendar
+              schedules={monthlySchedule || []}
+              specialSchedules={specialSchedules || []}
+              month={targetMonth}
+              year={targetYear}
+              users={users}
+              usersById={usersById}
+              nextSundayDate={nextSundaySchedule?.date}
+            />
           ) : monthlySchedule && monthlySchedule.length > 0 ? (
             <CardsGrid>
               {monthlySchedule

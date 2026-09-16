@@ -145,6 +145,22 @@ export const CardsGrid = styled.div`
   }
 `;
 
+export const ViewToggle = styled.div`
+  display: inline-flex;
+  gap: 4px;
+  margin: 22px auto 4px;
+  padding: 4px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 10px;
+  background: var(--color-surface);
+
+  button.active,
+  button[aria-pressed='true'] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+`;
+
 export const SeeScale = styled.div`
   background-color: var(--color-surface);
   border-radius: 10px;

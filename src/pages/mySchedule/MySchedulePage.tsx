@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
-import { FaCalendarAlt, FaPalette } from 'react-icons/fa';
+import { FaCalendarAlt, FaCalendarPlus, FaPalette } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
 import useMyScheduleContext from '../../context/hooks/useMyScheduleContext';
+import { downloadCalendarEvent } from '../../helpers/calendar';
 import {
   AssignmentCard,
   AssignmentGrid,
+  CalendarButton,
   CardHeader,
   EmptyState,
   Hero,
@@ -79,6 +81,11 @@ const MySchedulePage = () => {
                   <FaPalette aria-hidden="true" />
                   <span><strong>Paleta:</strong> {assignment.outfitColor || 'Não definida'}</span>
                 </InfoLine>
+
+                <CalendarButton type="button" variant="secondary" onClick={() => downloadCalendarEvent(assignment)}>
+                  <FaCalendarPlus aria-hidden="true" />
+                  Adicionar à agenda
+                </CalendarButton>
               </AssignmentCard>
             ))}
           </AssignmentGrid>
