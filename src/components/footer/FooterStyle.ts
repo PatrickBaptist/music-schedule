@@ -28,6 +28,7 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
   flex-direction: column;
   align-items: center;
   a {
+    position: relative;
     text-decoration: none;
     color: ${(props) =>
       props.$active ? "var(--color-primary)" : "var(--color-text-muted)"};
@@ -42,4 +43,16 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
     height: 20px;
     margin-bottom: 2px;
   }
+`;
+
+export const FooterBadge = styled.span`
+  position: absolute;
+  top: -4px;
+  right: 4px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--color-page-bg);
+  border-radius: 50%;
+  background: #ff7f50;
+  box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.22);
 `;

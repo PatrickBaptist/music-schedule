@@ -5,6 +5,7 @@ import {
   HeaderActions,
   HeaderContainer,
   HeaderItem,
+  NavBadge,
   ProfileAvatarFrame,
   ProfileBadge,
   ProfileButton,
@@ -20,6 +21,7 @@ import { FaDesktop, FaMoon, FaSun } from 'react-icons/fa';
 import useThemePreference from '../../context/hooks/useThemePreference';
 import { getPendingProfileFields } from '../../helpers/profileCompletion';
 import Button, { MotionButton } from '../buttons/Buttons';
+import useMyScheduleContext from '../../context/hooks/useMyScheduleContext';
 
 const Header: React.FC = () => {
 
@@ -27,6 +29,7 @@ const Header: React.FC = () => {
   const { mode, setMode } = useThemePreference();
   const location = useLocation();
   const navigate = useNavigate();
+  const { hasUnseenAssignments } = useMyScheduleContext();
   
   const isGuest = user?.roles?.includes(UserRole.Guest);
   const pendingProfileFields = useMemo(() => getPendingProfileFields(user), [user]);
@@ -46,7 +49,7 @@ const Header: React.FC = () => {
     { name: "Escala", path: "/schedule" },
     { name: "Canções", path: "/listMusic", blocked: isGuest },
     { name: "Usuários", path: "/users", blocked: isGuest },
-    { name: "Perfil", path: "/profile" },
+    { name: "Minha Escala", path: "/my-schedule" },
   ];
 
   return (
@@ -67,6 +70,9 @@ const Header: React.FC = () => {
               ) : (
                 <Link to={item.path}>
                   <span>{item.name}</span>
+                  {item.path === "/my-schedule" && hasUnseenAssignments && (
+                    <NavBadge title="Você tem uma escala nova" aria-label="Você tem uma escala nova" />
+                  )}
                   {isActive && (
                     <motion.div
                       layoutId="underline"

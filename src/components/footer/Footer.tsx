@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { ContainerFooter, FooterItem, NavFooter } from "./FooterStyle";
+import { ContainerFooter, FooterBadge, FooterItem, NavFooter } from "./FooterStyle";
 import Home from "../../assets/imgs/home.png";
 import ScheduleIcon from "../../assets/imgs/agenda.png";
 import MusicIcon from "../../assets/imgs/musicas.png";
@@ -9,19 +9,21 @@ import { motion } from "framer-motion";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import { FaBan } from "react-icons/fa";
 import { UserRole } from "../../types/UserRole";
+import useMyScheduleContext from "../../context/hooks/useMyScheduleContext";
 
 const Footer: React.FC = () => {
   const location = useLocation();
 
   const { user } = useAuthContext();
+  const { hasUnseenAssignments } = useMyScheduleContext();
   const isGuest = user?.roles?.includes(UserRole.Guest);
 
   const menuItems = [
     { name: "Início", path: "/", icon: Home },
     { name: "Escala", path: "/schedule", icon: ScheduleIcon },
     { name: "Canções", path: "/listMusic", icon: MusicIcon, blocked: isGuest },
-    { name: "usuários", path: "/users", icon: Users, blocked: isGuest },
-    { name: "eu", path: "/profile", icon: UserIcon },
+    { name: "Usuários", path: "/users", icon: Users, blocked: isGuest },
+    { name: "Minha Escala", path: "/my-schedule", icon: UserIcon },
   ];
 
   return (
@@ -80,6 +82,9 @@ const Footer: React.FC = () => {
                     }}
                     style={{ width: 30, height: 30, marginBottom: 2 }}
                   />
+                  {item.path === "/my-schedule" && hasUnseenAssignments && (
+                    <FooterBadge title="Você tem uma escala nova" aria-label="Você tem uma escala nova" />
+                  )}
                   <span>{item.name}</span>
                 </Link>
               )}

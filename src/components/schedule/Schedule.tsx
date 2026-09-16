@@ -1,23 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale } from './ScheduleStyle';
+import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale, ViewToggle } from './ScheduleStyle';
 import LoadingScreen from '../loading/LoadingScreen';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import { toast } from 'sonner';
 import PageWrapper from '../pageWrapper/pageWrapper';
-import { FaMagic, FaPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaMagic, FaPlus, FaThLarge } from 'react-icons/fa';
 import ScheduleInput from '../scheduleInput/ScheduleInput';
 import { UserRole } from '../../types/UserRole';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import useUsersContext from '../../context/hooks/useUsersContext';
 import type { User } from '../../services/UsersService';
-import { MotionButton } from '../buttons/Buttons';
-import {
-  getMusicianDisplayName,
-  getMusicianPhotoURL,
-  MusicoDetalhe,
-} from '../../services/ScheduleService';
+import Button, { MotionButton } from '../buttons/Buttons';
+import ScheduledPerson from '../scheduledPerson/ScheduledPerson';
+import ScheduleCalendar from '../scheduleCalendar/ScheduleCalendar';
 
 const getTargetMonthAndYear = () => {
   const today = new Date();
@@ -84,105 +81,18 @@ const formatScheduleDate = (date: string | Date): string => {
   return parseScheduleDate(date).toLocaleDateString('pt-BR');
 };
 
-type PersonRef = string | MusicoDetalhe | null | undefined;
-
-const PersonBadge = ({
-  person,
-  usersById,
-}: {
-  person: PersonRef;
-  usersById: Record<string, User>;
-}) => {
-  const displayName = getMusicianDisplayName(person, usersById);
-  const photoURL = getMusicianPhotoURL(person, usersById);
-
-  if (!person) {
-    return <span style={{ color: '#9ca3af' }}>Não definido</span>;
-  }
-
-  const initials = displayName
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('');
-
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '8px',
-        justifyContent: 'flex-end',
-        maxWidth: '100%',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      <span
-        style={{
-          width: '26px',
-          height: '26px',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          background: '#1f2937',
-          color: '#fff',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          fontSize: '0.72rem',
-          fontWeight: 700,
-        }}
-      >
-        {photoURL ? <img src={photoURL} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials || '?'}
-      </span>
-      <span style={{ textAlign: 'right' }}>{displayName}</span>
-    </span>
-  );
-};
-
-const PersonList = ({
-  people,
-  usersById,
-}: {
-  people: PersonRef[] | PersonRef;
-  usersById: Record<string, User>;
-}) => {
-  const list = Array.isArray(people) ? people : [people];
-  const validPeople = list.filter(Boolean);
-
-  if (validPeople.length === 0) {
-    return <span style={{ color: '#9ca3af' }}>Não definido</span>;
-  }
-
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '8px',
-        justifyContent: 'flex-end',
-        maxWidth: 'calc(100% - 90px)',
-      }}
-    >
-      {validPeople.map((person, index) => (
-        <PersonBadge key={`${typeof person === 'string' ? person : person?.id}-${index}`} person={person} usersById={usersById} />
-      ))}
-    </span>
-  );
-};
-
 const Schedule: React.FC = () => {
-  const { monthlySchedule, getScheduleForMonth, nextSundaySchedule, generateMonthlySchedule } = useSchedulesContext();
+  const { monthlySchedule, getScheduleForMonth, nextSundaySchedule, generateMonthlySchedule, specialSchedules } = useSchedulesContext();
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'cards' | 'calendar'>('calendar');
   const { user: loggedUser } = useAuthContext();
   const { users } = useUsersContext();
 
   const currentMonth = getFormattedMonth();
   const nameMonth = getNameMonth();
+  const { targetMonth, targetYear } = getTargetMonthAndYear();
   const usersById = useMemo(
     () => users.reduce<Record<string, User>>((acc, user) => {
       acc[user.id] = user;
@@ -286,6 +196,27 @@ const Schedule: React.FC = () => {
             </div>
           )}
 
+          <ViewToggle role="group" aria-label="Escolher visualização da escala">
+            <Button
+              variant="tab"
+              size="sm"
+              className={viewMode === 'cards' ? 'active' : ''}
+              aria-pressed={viewMode === 'cards'}
+              onClick={() => setViewMode('cards')}
+            >
+              <FaThLarge aria-hidden="true" /> Cartões
+            </Button>
+            <Button
+              variant="tab"
+              size="sm"
+              className={viewMode === 'calendar' ? 'active' : ''}
+              aria-pressed={viewMode === 'calendar'}
+              onClick={() => setViewMode('calendar')}
+            >
+              <FaCalendarAlt aria-hidden="true" /> Calendário
+            </Button>
+          </ViewToggle>
+
           {isModalOpen &&
             createPortal(
               <AddFormOverlay
@@ -301,6 +232,16 @@ const Schedule: React.FC = () => {
 
           {loading ? (
             <LoadingScreen />
+          ) : viewMode === 'calendar' ? (
+            <ScheduleCalendar
+              schedules={monthlySchedule || []}
+              specialSchedules={specialSchedules || []}
+              month={targetMonth}
+              year={targetYear}
+              users={users}
+              usersById={usersById}
+              nextSundayDate={nextSundaySchedule?.date}
+            />
           ) : monthlySchedule && monthlySchedule.length > 0 ? (
             <CardsGrid>
               {monthlySchedule
@@ -314,35 +255,35 @@ const Schedule: React.FC = () => {
                     <div className="content-escala">
                       <p style={{ fontWeight: '500', color: '#f59e0b' }}>
                         <strong>Ministro: </strong>
-                        <PersonList people={musician.músicosIds.minister.length > 0 ? musician.músicosIds.minister : musician.músicos.minister} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.minister.length > 0 ? musician.músicosIds.minister : musician.músicos.minister} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Vocal: </strong>
-                        <PersonList people={musician.músicosIds.vocal.length > 0 ? musician.músicosIds.vocal : musician.músicos.vocal} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.vocal.length > 0 ? musician.músicosIds.vocal : musician.músicos.vocal} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Teclas: </strong>
-                        <PersonList people={musician.músicosIds.teclas.length > 0 ? musician.músicosIds.teclas : musician.músicos.teclas} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.teclas.length > 0 ? musician.músicosIds.teclas : musician.músicos.teclas} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Violão: </strong>
-                        <PersonList people={musician.músicosIds.violao.length > 0 ? musician.músicosIds.violao : musician.músicos.violao} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.violao.length > 0 ? musician.músicosIds.violao : musician.músicos.violao} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Batera: </strong>
-                        <PersonList people={musician.músicosIds.batera.length > 0 ? musician.músicosIds.batera : musician.músicos.batera} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.batera.length > 0 ? musician.músicosIds.batera : musician.músicos.batera} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Bass: </strong>
-                        <PersonList people={musician.músicosIds.bass.length > 0 ? musician.músicosIds.bass : musician.músicos.bass} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.bass.length > 0 ? musician.músicosIds.bass : musician.músicos.bass} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Guita: </strong>
-                        <PersonList people={musician.músicosIds.guita.length > 0 ? musician.músicosIds.guita : musician.músicos.guita} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.guita.length > 0 ? musician.músicosIds.guita : musician.músicos.guita} usersById={usersById} />
                       </p>
                       <p>
                         <strong>Op. Som: </strong>
-                        <PersonList people={musician.músicosIds.sound.length > 0 ? musician.músicosIds.sound : musician.músicos.sound} usersById={usersById} />
+                        <ScheduledPerson people={musician.músicosIds.sound.length > 0 ? musician.músicosIds.sound : musician.músicos.sound} usersById={usersById} />
                       </p>
                     </div>
                   </SeeScale>

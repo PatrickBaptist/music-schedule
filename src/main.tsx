@@ -15,6 +15,7 @@ import { ScrollProvider } from './context/scrollContext';
 import WakeUpScreen from './components/WakeUpSistem/wakeUpLoader';
 import { ServerProvider } from './services/wakeUpService';
 import { ThemePreferenceProvider } from './context/themeContext';
+import { MyScheduleProvider } from './services/MyScheduleService';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -28,13 +29,15 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 <AllMusicLinksProvider>
                   <MusicLinksProvider>
                     <SchedulesProvider>
-                      <NotificationProvider>
-                        <LayoutWrapper>
-                          <ScrollProvider>
-                            <App />
-                          </ScrollProvider>
-                        </LayoutWrapper>
-                      </NotificationProvider>
+                      <MyScheduleProvider>
+                        <NotificationProvider>
+                          <LayoutWrapper>
+                            <ScrollProvider>
+                              <App />
+                            </ScrollProvider>
+                          </LayoutWrapper>
+                        </NotificationProvider>
+                      </MyScheduleProvider>
                     </SchedulesProvider>
                   </MusicLinksProvider>
                   <Toaster 
