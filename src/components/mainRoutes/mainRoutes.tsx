@@ -9,6 +9,7 @@ import ListMusic from '../../pages/listMusic/ListMusic';
 import UsersCardsPage from '../../pages/users/users';
 import MePage from '../../pages/me/me';
 import AuditPage from '../../pages/audit/audit';
+import MySchedulePage from '../../pages/mySchedule/MySchedulePage';
 import { UserRole } from '../../types/UserRole';
 
 const MainRoutes: React.FC = () => (
@@ -20,6 +21,7 @@ const MainRoutes: React.FC = () => (
     <Route path="/listMusic" element={<PrivateRoute><ListMusic /></PrivateRoute>} />
     <Route path="/users" element={<PrivateRoute><UsersCardsPage /></PrivateRoute>} />
     <Route path="/profile" element={<PrivateRoute><MePage /></PrivateRoute>} />
+    <Route path="/my-schedule" element={<PrivateRoute><MySchedulePage /></PrivateRoute>} />
     <Route
       path="/audit"
       element={<PrivateRoute allowedRoles={[UserRole.Admin, UserRole.Leader]}><AuditPage /></PrivateRoute>}

@@ -170,3 +170,15 @@ export const HeaderItem = styled.div`
     color: var(--color-primary);
   }
 `;
+
+export const NavBadge = styled.span`
+  position: absolute;
+  top: -7px;
+  right: -12px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--color-page-bg);
+  border-radius: 50%;
+  background: #ff7f50;
+  box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.22);
+`;
