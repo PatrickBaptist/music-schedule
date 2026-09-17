@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { FaCalendarAlt, FaCalendarPlus, FaPalette } from 'react-icons/fa';
+import { FaCalendarAlt, FaCalendarPlus, FaClock, FaPalette } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
@@ -71,6 +71,11 @@ const MySchedulePage = () => {
                 <InfoLine>
                   <FaCalendarAlt aria-hidden="true" />
                   <span>{formatLongDate(assignment.date)}</span>
+                </InfoLine>
+
+                <InfoLine>
+                  <FaClock aria-hidden="true" />
+                  <span>{assignment.startTime || 'Horário não definido'}</span>
                 </InfoLine>
 
                 <RoleList aria-label="Suas funções nesta escala">

@@ -6,51 +6,6 @@ export const CalendarBody = styled.section`
   box-sizing: border-box;
 `;
 
-export const FilterBar = styled.div`
-  width: min(100%, 1080px);
-  margin: 0 auto 14px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-
-  button {
-    min-height: 34px;
-    padding: 7px 11px;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-text-muted);
-    font: inherit;
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  button[aria-pressed='false'] {
-    opacity: 0.48;
-    filter: grayscale(1);
-  }
-
-  button:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-
-  i {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-  }
-
-  i.sunday { background: #2ebef2; }
-  i.thursday { background: #8b5cf6; }
-  i.special { background: #f59e0b; }
-`;
-
 export const CalendarGrid = styled.div`
   width: min(100%, 1080px);
   margin: 0 auto;
@@ -76,21 +31,20 @@ export const EmptyCalendarDay = styled.div`
   }
 `;
 
-export const CalendarDay = styled.button<{ $hasSchedule: boolean; $isNextSunday: boolean }>`
+export const CalendarDay = styled.button<{ $hasSchedule: boolean; $hasSelected: boolean; $interactive: boolean }>`
   position: relative;
   min-width: 0;
   min-height: 112px;
   padding: 9px;
   overflow: hidden;
-  border: 1px solid ${({ $isNextSunday, $hasSchedule }) =>
-    $isNextSunday ? '#ef4444' : $hasSchedule ? 'var(--color-primary)' : 'var(--color-border-soft)'};
+  border: 2px solid ${({ $hasSelected, $hasSchedule }) => $hasSelected ? '#22c55e' : $hasSchedule ? 'var(--color-primary)' : 'var(--color-border-soft)'};
   border-radius: 12px;
   background: ${({ $hasSchedule }) => $hasSchedule
     ? 'color-mix(in srgb, var(--color-primary) 8%, var(--color-surface))'
     : 'var(--color-surface)'};
   color: var(--color-text);
   text-align: left;
-  cursor: ${({ $hasSchedule }) => $hasSchedule ? 'pointer' : 'default'};
+  cursor: ${({ $interactive }) => $interactive ? 'pointer' : 'default'};
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 
   &:enabled:hover {
@@ -109,7 +63,7 @@ export const CalendarDay = styled.button<{ $hasSchedule: boolean; $isNextSunday:
 
   .day-number {
     display: block;
-    color: ${({ $isNextSunday }) => $isNextSunday ? '#ef4444' : 'var(--color-text-strong)'};
+    color: var(--color-text-strong);
     font-weight: 800;
   }
 
@@ -139,10 +93,9 @@ export const EventLabels = styled.span`
     white-space: nowrap;
   }
 
-  .sunday { background: #1686ad; }
-  .thursday { background: #7c3aed; }
-  .special { background: #b66a04; }
+  > span { background: #1686ad; }
   .more-events { background: var(--color-text-muted); }
+  .selected-events { background: #16803d; }
 
   @media (max-width: 700px) {
     > span {
@@ -224,11 +177,15 @@ export const CalendarModal = styled.div`
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+
+  .create-for-day {
+    margin-bottom: 12px;
+  }
 `;
 
-export const EventBlock = styled.section`
+export const EventBlock = styled.section<{ $selected: boolean }>`
   padding: 16px;
-  border: 1px solid var(--color-border-soft);
+  border: 2px solid ${({ $selected }) => $selected ? '#22c55e' : 'var(--color-border-soft)'};
   border-radius: 14px;
   background: var(--color-surface-muted);
 
@@ -247,22 +204,52 @@ export const EventBlock = styled.section`
     margin: 0;
     font-size: 1rem;
   }
+
+  .event-time {
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--color-text-muted);
+    font-size: 0.86rem;
+  }
 `;
 
-export const TypeBadge = styled.span<{ $type: 'sunday' | 'thursday' | 'special' }>`
+export const TypeBadge = styled.span`
   padding: 4px 8px;
   border-radius: 999px;
-  background: ${({ $type }) => $type === 'sunday' ? '#1686ad' : $type === 'thursday' ? '#7c3aed' : '#b66a04'};
+  background: #1686ad;
   color: #fff;
   font-size: 0.68rem;
   font-weight: 800;
 `;
 
-export const PredictionLabel = styled.p`
-  margin: 0 0 8px;
-  color: #8b5cf6;
-  font-size: 0.78rem;
-  font-weight: 700;
+export const SelectEventButton = styled.button<{ $selected: boolean }>`
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid ${({ $selected }) => $selected ? '#22c55e' : 'var(--color-primary)'};
+  border-radius: 9px;
+  background: ${({ $selected }) => $selected ? '#16803d' : 'transparent'};
+  color: ${({ $selected }) => $selected ? '#fff' : 'var(--color-primary)'};
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+`;
+
+export const EventActions = styled.div`
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+  }
 `;
 
 export const CalendarModalHeader = styled.header`
