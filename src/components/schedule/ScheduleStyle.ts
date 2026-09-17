@@ -161,6 +161,85 @@ export const ViewToggle = styled.div`
   }
 `;
 
+export const MonthNavigation = styled.div`
+  width: min(calc(100% - 40px), 1080px);
+  display: grid;
+  grid-template-columns: 42px 1fr 42px;
+  align-items: center;
+  gap: 10px;
+  margin: -12px auto 12px;
+
+  strong {
+    color: var(--color-text-strong);
+    font-size: 1.05rem;
+    text-align: center;
+    text-transform: capitalize;
+  }
+`;
+
+export const GenerationPanel = styled.section`
+  width: min(calc(100% - 40px), 1080px);
+  margin: 14px auto 0;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(240px, auto) auto;
+  align-items: end;
+  gap: 16px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface));
+
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  strong {
+    color: var(--color-text-strong);
+  }
+
+  span {
+    color: var(--color-text-muted);
+    font-size: 0.84rem;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  select {
+    min-height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .generation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+
+    .generation-actions {
+      justify-content: stretch;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+`;
+
 export const SeeScale = styled.div`
   background-color: var(--color-surface);
   border-radius: 10px;
@@ -190,6 +269,15 @@ export const SeeScale = styled.div`
     @media (max-height: 700px) and (max-width: 768px) {
       margin-bottom: 8px;
     }
+  }
+
+  .schedule-meta {
+    margin: -6px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
   }
 
   .content-escala p {

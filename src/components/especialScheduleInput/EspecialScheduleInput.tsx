@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedulePayload } from "../../services/ScheduleService";
+import React, { useMemo, useState } from "react";
+import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedule, SpecialSchedulePayload } from "../../services/ScheduleService";
 import { ContainerForm, DarkForm, DarkInput, DarkLabel, FormGroup } from "./EspecialScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
 import { UserRole } from "../../types/UserRole";
@@ -10,43 +10,36 @@ import Button from "../buttons/Buttons";
 
 type EspecialScheduleInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  initialSchedule?: SpecialSchedule | null;
+  initialDate?: string;
 };
 
 const emptyMeta = {
   id: "",
   evento: "",
   data: "",
+  startTime: "",
   outfitColor: "",
 };
 
-const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModalOpen }) => {
-  const [specialMeta, setSpecialMeta] = useState(emptyMeta);
-  const [musicosIds, setMusicosIds] = useState<Musicos>(createEmptyMusicos());
+const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModalOpen, initialSchedule, initialDate = "" }) => {
+  const initialMusicians = initialSchedule ? normalizeMusicos(initialSchedule) : createEmptyMusicos();
+  const [specialMeta, setSpecialMeta] = useState(() => initialSchedule ? {
+    id: initialSchedule.id,
+    evento: initialSchedule.evento || "",
+    data: initialSchedule.data.slice(0, 10),
+    startTime: initialSchedule.startTime || "",
+    outfitColor: initialSchedule.outfitColor || initialMusicians.outfitColor || "",
+  } : { ...emptyMeta, data: initialDate });
+  const [musicosIds, setMusicosIds] = useState<Musicos>(initialMusicians);
   const { users } = useUsersContext();
-  const { postSpecialSchedules, getSpecialSchedules, specialSchedules } = useSchedulesContext();
-
-  const getUserLabel = (user: (typeof users)[number]) => user.nickname?.trim() || user.name?.trim() || user.id;
-
-  const resolveUserId = (value?: string) => {
-    if (!value) return "";
-
-    const direct = users.find((user) => user.id === value);
-    if (direct) return direct.id;
-
-    const byLabel = users.find(
-      (user) =>
-        user.nickname?.trim() === value ||
-        user.name?.trim() === value
-    );
-
-    return byLabel?.id || value;
-  };
+  const { postSpecialSchedules } = useSchedulesContext();
 
   const musiciansBySkill = useMemo(() => {
     const byRole = (role: UserRole) =>
       users
         .filter((u) => u.roles?.includes(role) && u.status === "enabled")
-        .map((u) => ({ value: u.id, label: getUserLabel(u) }));
+        .map((u) => ({ value: u.id, label: u.nickname?.trim() || u.name?.trim() || u.id }));
 
     return {
       minister: byRole(UserRole.Minister),
@@ -87,45 +80,9 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
 
   type Campo = (typeof ordemCampos)[number];
 
-  useEffect(() => {
-    getSpecialSchedules();
-  }, [getSpecialSchedules]);
-
-  useEffect(() => {
-    if (!specialMeta.data || !specialSchedules) return;
-
-    const found = specialSchedules.find(
-      (schedule) => schedule.data.slice(0, 10) === specialMeta.data.slice(0, 10)
-    );
-
-    if (!found) {
-      setMusicosIds(createEmptyMusicos());
-      return;
-    }
-
-    const normalized = normalizeMusicos(found.músicosIds ?? found.músicos ?? found);
-    setSpecialMeta({
-      id: found.id || "",
-      evento: found.evento || "",
-      data: found.data?.slice(0, 10) || specialMeta.data,
-      outfitColor: found.outfitColor || normalized.outfitColor || "",
-    });
-    setMusicosIds({
-      ...normalized,
-      minister: normalized.minister.map(resolveUserId),
-      vocal: normalized.vocal.map(resolveUserId),
-      teclas: normalized.teclas.map(resolveUserId),
-      violao: normalized.violao.map(resolveUserId),
-      batera: normalized.batera.map(resolveUserId),
-      bass: normalized.bass.map(resolveUserId),
-      guita: normalized.guita.map(resolveUserId),
-      sound: normalized.sound.map(resolveUserId),
-    });
-  }, [specialMeta.data, specialSchedules, users]);
-
   const handleAddSpecialSchedule = async () => {
-    if (!specialMeta.evento || !specialMeta.data) {
-      toast.error("Evento e data obrigatórios!");
+    if (!specialMeta.data) {
+      toast.error("A data é obrigatória!");
       return;
     }
 
@@ -134,8 +91,9 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
       schedules: [
         {
           id: specialMeta.id || undefined,
-          evento: specialMeta.evento,
+          evento: specialMeta.evento.trim(),
           data: specialMeta.data,
+          startTime: specialMeta.startTime || null,
           outfitColor: specialMeta.outfitColor,
           músicosIds: {
             ...musicosIds,
@@ -149,12 +107,12 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
 
     try {
       await postSpecialSchedules(payload);
-      toast.success("Escala especial adicionada!", { id: toastId });
+      toast.success(initialSchedule ? "Escala atualizada!" : "Escala adicionada!", { id: toastId });
       setSpecialMeta(emptyMeta);
       setMusicosIds(createEmptyMusicos());
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao adicionar escala especial", { id: toastId });
+      toast.error("Erro ao adicionar escala", { id: toastId });
     }
   };
 
@@ -162,11 +120,11 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     <ContainerForm>
       <div className="form-column">
         <div className="form-container">
-          <h2>Escala especial</h2>
+          <h2>{initialSchedule ? 'Editar escala' : 'Nova escala'}</h2>
           <div className="form-content">
             <DarkForm>
               <FormGroup>
-                <DarkLabel>Evento:</DarkLabel>
+                <DarkLabel>Nome do evento (opcional):</DarkLabel>
                 <DarkInput
                   type="text"
                   value={specialMeta.evento}
@@ -176,8 +134,7 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                       evento: e.target.value,
                     }))
                   }
-                  placeholder="Nome do evento"
-                  required
+                  placeholder="Ex.: Culto, ensaio ou conferência"
                 />
               </FormGroup>
 
@@ -193,6 +150,15 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                     }))
                   }
                   required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <DarkLabel>Horário (opcional):</DarkLabel>
+                <DarkInput
+                  type="time"
+                  value={specialMeta.startTime}
+                  onChange={(e) => setSpecialMeta((prev) => ({ ...prev, startTime: e.target.value }))}
                 />
               </FormGroup>
 

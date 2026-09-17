@@ -46,6 +46,7 @@ export interface SpecialSchedule {
   id: string;
   evento: string;
   data: string;
+  startTime?: string | null;
   minister?: string;
   vocal1?: string;
   vocal2?: string;
@@ -66,6 +67,7 @@ export interface SpecialSchedulePayload {
   id?: string;
   evento: string;
   data: string;
+  startTime?: string | null;
   outfitColor?: string;
   músicosIds: Musicos;
 }
@@ -74,9 +76,10 @@ interface PostSpecialSchedulesPayload {
   schedules: SpecialSchedulePayload[];
 }
 
-interface GenerateMonthlyScheduleParams {
-  month: number;
-  year: number;
+export interface GenerateSelectedSchedulesParams {
+  scheduleIds: string[];
+  dates: string[];
+  mode: 'fill-empty' | 'replace';
 }
 
 type LegacyMusicosPayload = Record<string, any>;
@@ -332,7 +335,7 @@ export interface ScheduleContextProps {
   monthlySchedule: Schedule[] | null;
   getScheduleForMonth: (monthId: string) => void;
   saveOrUpdateSchedule: (data: UpsertScheduleParams) => Promise<void>;
-  generateMonthlySchedule: (data: GenerateMonthlyScheduleParams) => Promise<void>;
+  generateSelectedSchedules: (data: GenerateSelectedSchedulesParams) => Promise<void>;
 
   specialSchedules: SpecialSchedule[] | null;
   getSpecialSchedules: () => Promise<void>;
@@ -483,31 +486,25 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   };
 
-  const generateMonthlySchedule = async ({ month, year }: GenerateMonthlyScheduleParams) => {
-    try {
-      const res = await fetch(`${API_URL}/schedule/generate-monthly`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify({ month, year }),
-      });
+  const generateSelectedSchedules = async (params: GenerateSelectedSchedulesParams) => {
+    const res = await fetch(`${API_URL}/schedule/special-schedule/generate`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(params),
+    });
 
-      if (!res.ok) {
-        let message = 'Erro ao gerar escala automática';
-
-        try {
-          const data = await res.json();
-          message = data?.message || data?.error || message;
-        } catch {
-          const text = await res.text();
-          if (text) message = text;
-        }
-
-        throw new Error(message);
+    if (!res.ok) {
+      let message = 'Não foi possível gerar as escalas selecionadas';
+      try {
+        const data = await res.json();
+        message = data?.message || data?.error || message;
+      } catch {
+        // Mantém a mensagem amigável quando o backend ainda não retorna JSON.
       }
-    } catch (err) {
-      console.error(err);
-      throw err;
+      throw new Error(message);
     }
+
+    await getSpecialSchedules();
   };
 
   const getSpecialSchedules = useCallback(async () => {
@@ -582,7 +579,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
         monthlySchedule,
         getScheduleForMonth,
         saveOrUpdateSchedule,
-        generateMonthlySchedule,
+        generateSelectedSchedules,
         specialSchedules,
         getSpecialSchedules,
         postSpecialSchedules,

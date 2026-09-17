@@ -1,300 +1,163 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AddFormOverlay, CardsGrid, ScheduleContainer, ScheduleContent, SeeScale, ViewToggle } from './ScheduleStyle';
-import LoadingScreen from '../loading/LoadingScreen';
-import useSchedulesContext from '../../context/hooks/useScheduleContext';
+import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaClock, FaMagic, FaThLarge } from 'react-icons/fa';
 import { toast } from 'sonner';
-import PageWrapper from '../pageWrapper/pageWrapper';
-import { FaCalendarAlt, FaMagic, FaPlus, FaThLarge } from 'react-icons/fa';
-import ScheduleInput from '../scheduleInput/ScheduleInput';
-import { UserRole } from '../../types/UserRole';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
+import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import useUsersContext from '../../context/hooks/useUsersContext';
+import type { MusicoDetalhe, SpecialSchedule } from '../../services/ScheduleService';
 import type { User } from '../../services/UsersService';
+import { UserRole } from '../../types/UserRole';
 import Button, { MotionButton } from '../buttons/Buttons';
-import ScheduledPerson from '../scheduledPerson/ScheduledPerson';
+import EspecialScheduleInput from '../especialScheduleInput/EspecialScheduleInput';
+import LoadingScreen from '../loading/LoadingScreen';
+import PageWrapper from '../pageWrapper/pageWrapper';
 import ScheduleCalendar from '../scheduleCalendar/ScheduleCalendar';
+import ScheduledPerson, { PersonRef } from '../scheduledPerson/ScheduledPerson';
+import { AddFormOverlay, CardsGrid, GenerationPanel, MonthNavigation, ScheduleContainer, ScheduleContent, SeeScale, ViewToggle } from './ScheduleStyle';
 
-const getTargetMonthAndYear = () => {
-  const today = new Date();
+type RoleKey = 'minister' | 'vocal' | 'teclas' | 'violao' | 'batera' | 'bass' | 'guita' | 'sound';
+const roles: Array<{ key: RoleKey; label: string }> = [
+  { key: 'minister', label: 'Ministro' }, { key: 'vocal', label: 'Vocal' },
+  { key: 'teclas', label: 'Teclas' }, { key: 'violao', label: 'Violão' },
+  { key: 'batera', label: 'Bateria' }, { key: 'bass', label: 'Baixo' },
+  { key: 'guita', label: 'Guitarra' }, { key: 'sound', label: 'Op. Som' },
+];
 
-  const nextSunday = new Date(today);
-  nextSunday.setDate(today.getDate() + ((7 - today.getDay()) % 7 || 7));
-
-  const nextSundayMonth = nextSunday.getMonth() + 1;
-  const nextSundayYear = nextSunday.getFullYear();
-
-  return {
-    targetMonth: nextSundayMonth,
-    targetYear: nextSundayYear,
-  };
+const getPeople = (schedule: SpecialSchedule, role: RoleKey): PersonRef[] => {
+  const ids = schedule.músicosIds?.[role] || schedule.musicosIds?.[role] || [];
+  if (ids.length) return ids;
+  const details = schedule.músicos?.[role] || schedule.musicos?.[role] || [];
+  if (details.length) return details as MusicoDetalhe[];
+  if (role === 'vocal') return [schedule.vocal1, schedule.vocal2].filter(Boolean) as string[];
+  return schedule[role] ? [schedule[role] as string] : [];
 };
 
-const getFormattedMonth = (): string => {
-  const { targetMonth, targetYear } = getTargetMonthAndYear();
-  const formattedMonth = targetMonth.toString().padStart(2, '0');
-  return `${formattedMonth}-${targetYear}`;
-};
-
-const getNameMonth = (): string => {
-  const monthNames = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
-  const { targetMonth } = getTargetMonthAndYear();
-  return monthNames[targetMonth - 1];
-};
-
-const parseScheduleDate = (date: string | Date): Date => {
-  if (date instanceof Date) return date;
-
-  const [dateOnly] = date.split('T');
-  const parts = dateOnly.split('-').map((value) => parseInt(value, 10));
-
-  if (parts.length === 3 && parts.every((value) => !Number.isNaN(value))) {
-    return new Date(parts[0], parts[1] - 1, parts[2]);
-  }
-
-  return new Date(date);
-};
-
-const formatDateToYYYYMMDD = (date: string | Date): string => {
-  const d = parseScheduleDate(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const formatScheduleDate = (date: string | Date): string => {
-  return parseScheduleDate(date).toLocaleDateString('pt-BR');
-};
-
-const Schedule: React.FC = () => {
-  const { monthlySchedule, getScheduleForMonth, nextSundaySchedule, generateMonthlySchedule, specialSchedules } = useSchedulesContext();
+const Schedule = () => {
+  const { specialSchedules, getSpecialSchedules, generateSelectedSchedules, deleteSpecialSchedules } = useSchedulesContext();
+  const { user } = useAuthContext();
+  const { users } = useUsersContext();
+  const [visibleMonth, setVisibleMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<SpecialSchedule | null>(null);
+  const [newScheduleDate, setNewScheduleDate] = useState('');
   const [viewMode, setViewMode] = useState<'cards' | 'calendar'>('calendar');
-  const { user: loggedUser } = useAuthContext();
-  const { users } = useUsersContext();
-
-  const currentMonth = getFormattedMonth();
-  const nameMonth = getNameMonth();
-  const { targetMonth, targetYear } = getTargetMonthAndYear();
-  const usersById = useMemo(
-    () => users.reduce<Record<string, User>>((acc, user) => {
-      acc[user.id] = user;
-      return acc;
-    }, {}),
-    [users]
-  );
-
-  const loggedRoles = loggedUser?.roles || [];
-  const allowedRoles = [UserRole.Leader, UserRole.Admin];
-  const canManageSchedule = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const [generationMode, setGenerationMode] = useState<'fill-empty' | 'replace'>('fill-empty');
 
   useBodyScrollLock(isModalOpen);
+  const canManage = (user?.roles || []).some((role) => [UserRole.Leader, UserRole.Admin].includes(role as UserRole));
+  const usersById = useMemo(() => users.reduce<Record<string, User>>((acc, current) => ({ ...acc, [current.id]: current }), {}), [users]);
+  const month = visibleMonth.getMonth() + 1;
+  const year = visibleMonth.getFullYear();
+  const monthTitle = visibleMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
   useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
+    setLoading(true);
+    getSpecialSchedules().catch(() => toast.error('Não foi possível carregar as escalas.')).finally(() => setLoading(false));
+  }, [getSpecialSchedules]);
 
-      try {
-        await getScheduleForMonth(currentMonth);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          if (!err.message.includes('404')) {
-            toast.error('Erro ao buscar escala: ' + err.message);
-          }
-        } else {
-          toast.error('Erro desconhecido ao buscar escala');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  const monthSchedules = useMemo(() => (specialSchedules || [])
+    .filter((schedule) => {
+      const [scheduleYear, scheduleMonth] = schedule.data.slice(0, 10).split('-').map(Number);
+      return scheduleYear === year && scheduleMonth === month;
+    })
+    .sort((a, b) => a.data.localeCompare(b.data) || (a.startTime || '99:99').localeCompare(b.startTime || '99:99')),
+  [specialSchedules, month, year]);
 
-    fetch();
-  }, [getScheduleForMonth, currentMonth]);
+  const changeMonth = (offset: number) => {
+    setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1));
+    setSelectedIds([]);
+    setSelectedDates([]);
+  };
+  const toggleSelected = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  const toggleSelectedDate = (date: string) => setSelectedDates((current) => current.includes(date) ? current.filter((item) => item !== date) : [...current, date].sort());
+  const cancelSelection = () => { setIsSelecting(false); setSelectedIds([]); setSelectedDates([]); };
 
-  const executeGenerateMonthlySchedule = async () => {
-    const [month, year] = currentMonth.split('-').map((value) => parseInt(value, 10));
-
-    const toastId = toast.loading('Chamando escala automática...');
+  const generate = async () => {
+    if ((!selectedIds.length && !selectedDates.length) || isGenerating) return;
+    const toastId = toast.loading('Gerando as equipes selecionadas...');
     setIsGenerating(true);
     try {
-      await generateMonthlySchedule({ month, year });
-      getScheduleForMonth(currentMonth);
-      toast.success('Escala automática criada com sucesso', { id: toastId });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Não foi possível gerar a escala automática';
-      toast.error(message, { id: toastId });
+      await generateSelectedSchedules({ scheduleIds: selectedIds, dates: selectedDates, mode: generationMode });
+      toast.success('Equipes geradas com sucesso.', { id: toastId });
+      cancelSelection();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível gerar as equipes.', { id: toastId });
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleGenerateMonthlySchedule = () => {
-    if (isGenerating) return;
+  const confirmGeneration = () => {
+    const totalSelected = selectedIds.length + selectedDates.length;
+    if (!totalSelected) return toast.error('Selecione pelo menos uma escala ou uma data vazia.');
+    toast(`Gerar ${totalSelected} escala${totalSelected > 1 ? 's' : ''}?`, {
+      description: generationMode === 'fill-empty' ? 'As funções preenchidas serão mantidas.' : 'As equipes atuais serão substituídas.',
+      action: { label: 'Confirmar', onClick: () => void generate() },
+    });
+  };
 
-    toast('Confirmar geração automática?', {
-      description: 'Clique em "Confirmar" para gerar a escala do mês atual.',
+  const confirmDelete = (schedule: SpecialSchedule) => {
+    toast('Excluir esta escala?', {
+      description: `${new Date(`${schedule.data.slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR')}${schedule.startTime ? ` às ${schedule.startTime}` : ''}. Esta ação não pode ser desfeita.`,
       action: {
-        label: 'Confirmar',
-        onClick: () => {
-          void executeGenerateMonthlySchedule();
+        label: 'Excluir',
+        onClick: async () => {
+          const toastId = toast.loading('Excluindo escala...');
+          try {
+            await deleteSpecialSchedules(schedule.id);
+            setSelectedIds((current) => current.filter((id) => id !== schedule.id));
+            toast.success('Escala excluída.', { id: toastId });
+          } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Não foi possível excluir a escala.', { id: toastId });
+          }
         },
       },
     });
   };
 
-  const isNextSunday = (dateString: string) => {
-    if (!nextSundaySchedule) return false;
-    return formatDateToYYYYMMDD(dateString) === nextSundaySchedule.date;
-  };
-
   return (
-    <ScheduleContainer>
-      <PageWrapper>
-        <ScheduleContent>
-          <h1>Escala de {nameMonth}</h1>
+    <ScheduleContainer><PageWrapper><ScheduleContent>
+      <h1>Escalas</h1>
+      <MonthNavigation>
+        <Button variant="ghost" size="sm" onClick={() => changeMonth(-1)} aria-label="Mês anterior"><FaChevronLeft /></Button>
+        <strong>{monthTitle}</strong>
+        <Button variant="ghost" size="sm" onClick={() => changeMonth(1)} aria-label="Próximo mês"><FaChevronRight /></Button>
+      </MonthNavigation>
 
-          {canManageSchedule && (
-            <div className="add-schedule">
-              <h4>Adicionar escala</h4>
-              <MotionButton variant="unstyled"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="btns add-btn"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <FaPlus size={12} />
-              </MotionButton>
+      {canManage && <div className="add-schedule">
+        <h4>Gerar equipes</h4><MotionButton variant="unstyled" className="btns generate-btn" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}><FaMagic size={12} /></MotionButton>
+      </div>}
 
-              <h4>Gerar automático</h4>
-              <MotionButton variant="unstyled"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="btns generate-btn"
-                onClick={handleGenerateMonthlySchedule}
-                disabled={isGenerating}
-              >
-                <FaMagic size={12} />
-              </MotionButton>
-            </div>
-          )}
+      <ViewToggle role="group" aria-label="Escolher visualização">
+        <Button variant="tab" size="sm" className={viewMode === 'cards' ? 'active' : ''} aria-pressed={viewMode === 'cards'} onClick={() => { setViewMode('cards'); cancelSelection(); }}><FaThLarge /> Cartões</Button>
+        <Button variant="tab" size="sm" className={viewMode === 'calendar' ? 'active' : ''} aria-pressed={viewMode === 'calendar'} onClick={() => setViewMode('calendar')}><FaCalendarAlt /> Calendário</Button>
+      </ViewToggle>
 
-          <ViewToggle role="group" aria-label="Escolher visualização da escala">
-            <Button
-              variant="tab"
-              size="sm"
-              className={viewMode === 'cards' ? 'active' : ''}
-              aria-pressed={viewMode === 'cards'}
-              onClick={() => setViewMode('cards')}
-            >
-              <FaThLarge aria-hidden="true" /> Cartões
-            </Button>
-            <Button
-              variant="tab"
-              size="sm"
-              className={viewMode === 'calendar' ? 'active' : ''}
-              aria-pressed={viewMode === 'calendar'}
-              onClick={() => setViewMode('calendar')}
-            >
-              <FaCalendarAlt aria-hidden="true" /> Calendário
-            </Button>
-          </ViewToggle>
+      {canManage && isSelecting && <GenerationPanel>
+        <div><strong>Selecione as escalas ou novas datas</strong><span>Um dia vazio cria uma escala. Quando já houver escalas no dia, a seleção será feita pelo card.</span></div>
+        <label>Como gerar<select value={generationMode} onChange={(event) => setGenerationMode(event.target.value as 'fill-empty' | 'replace')}><option value="fill-empty">Preencher funções vazias</option><option value="replace">Substituir toda a equipe</option></select></label>
+        <div className="generation-actions"><Button variant="ghost" onClick={cancelSelection}>Cancelar</Button><Button onClick={confirmGeneration} disabled={selectedIds.length + selectedDates.length === 0 || isGenerating}><FaMagic /> Gerar ({selectedIds.length + selectedDates.length})</Button></div>
+      </GenerationPanel>}
 
-          {isModalOpen &&
-            createPortal(
-              <AddFormOverlay
-                initial={{ opacity: 0, y: 18, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 18, scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 180, damping: 18 }}
-              >
-                <ScheduleInput setIsModalOpen={setIsModalOpen} />
-              </AddFormOverlay>,
-              document.body
-            )}
+      {isModalOpen && createPortal(<AddFormOverlay initial={{ opacity: 0 }} animate={{ opacity: 1 }}><EspecialScheduleInput setIsModalOpen={setIsModalOpen} initialSchedule={editingSchedule} initialDate={newScheduleDate} /></AddFormOverlay>, document.body)}
 
-          {loading ? (
-            <LoadingScreen />
-          ) : viewMode === 'calendar' ? (
-            <ScheduleCalendar
-              schedules={monthlySchedule || []}
-              specialSchedules={specialSchedules || []}
-              month={targetMonth}
-              year={targetYear}
-              users={users}
-              usersById={usersById}
-              nextSundayDate={nextSundaySchedule?.date}
-            />
-          ) : monthlySchedule && monthlySchedule.length > 0 ? (
-            <CardsGrid>
-              {monthlySchedule
-                .slice()
-                .sort((a, b) => parseScheduleDate(a.date).getTime() - parseScheduleDate(b.date).getTime())
-                .map((musician, index) => (
-                  <SeeScale key={index}>
-                    <h3 style={{ color: isNextSunday(musician.date) ? 'red' : '#2EBEF2' }}>
-                      {formatScheduleDate(musician.date)}
-                    </h3>
-                    <div className="content-escala">
-                      <p style={{ fontWeight: '500', color: '#f59e0b' }}>
-                        <strong>Ministro: </strong>
-                        <ScheduledPerson people={musician.músicosIds.minister.length > 0 ? musician.músicosIds.minister : musician.músicos.minister} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Vocal: </strong>
-                        <ScheduledPerson people={musician.músicosIds.vocal.length > 0 ? musician.músicosIds.vocal : musician.músicos.vocal} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Teclas: </strong>
-                        <ScheduledPerson people={musician.músicosIds.teclas.length > 0 ? musician.músicosIds.teclas : musician.músicos.teclas} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Violão: </strong>
-                        <ScheduledPerson people={musician.músicosIds.violao.length > 0 ? musician.músicosIds.violao : musician.músicos.violao} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Batera: </strong>
-                        <ScheduledPerson people={musician.músicosIds.batera.length > 0 ? musician.músicosIds.batera : musician.músicos.batera} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Bass: </strong>
-                        <ScheduledPerson people={musician.músicosIds.bass.length > 0 ? musician.músicosIds.bass : musician.músicos.bass} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Guita: </strong>
-                        <ScheduledPerson people={musician.músicosIds.guita.length > 0 ? musician.músicosIds.guita : musician.músicos.guita} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Op. Som: </strong>
-                        <ScheduledPerson people={musician.músicosIds.sound.length > 0 ? musician.músicosIds.sound : musician.músicos.sound} usersById={usersById} />
-                      </p>
-                    </div>
-                  </SeeScale>
-                ))}
-            </CardsGrid>
-          ) : (
-            <p>Nenhuma escala disponível para este mês</p>
-          )}
-        </ScheduleContent>
-      </PageWrapper>
-    </ScheduleContainer>
+      {loading ? <LoadingScreen /> : viewMode === 'calendar' ? (
+        <ScheduleCalendar schedules={monthSchedules} month={month} year={year} usersById={usersById} selectionMode={canManage && isSelecting} selectedScheduleIds={selectedIds} onToggleSchedule={toggleSelected} selectedNewDates={selectedDates} onToggleNewDate={toggleSelectedDate} canDelete={canManage} onDeleteSchedule={confirmDelete} canEdit={canManage} onEditSchedule={(schedule) => { setNewScheduleDate(''); setEditingSchedule(schedule); setIsModalOpen(true); }} onCreateSchedule={canManage ? (date) => { setEditingSchedule(null); setNewScheduleDate(date); setIsModalOpen(true); } : undefined} />
+      ) : monthSchedules.length ? (
+        <CardsGrid>{monthSchedules.map((schedule) => <SeeScale key={schedule.id}>
+          <h3>{schedule.evento}</h3>
+          <p className="schedule-meta">{new Date(`${schedule.data.slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR')} · <FaClock /> {schedule.startTime || 'Horário não definido'}</p>
+          <div className="content-escala">{roles.map(({ key, label }) => <p key={key}><strong>{label}:</strong><ScheduledPerson people={getPeople(schedule, key)} usersById={usersById} /></p>)}</div>
+        </SeeScale>)}</CardsGrid>
+      ) : <p>Nenhuma escala cadastrada neste mês.</p>}
+    </ScheduleContent></PageWrapper></ScheduleContainer>
   );
 };
 

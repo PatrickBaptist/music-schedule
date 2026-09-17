@@ -10,39 +10,40 @@ import Aviso from '../../components/warnings/warnings';
 import SpecialSchedules from '../../components/specialSchedule/specialSchedule';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { SpecialSchedule } from '../../services/ScheduleService';
-import ThursdaySchedule from '../../components/thursdaySchedule/thursday';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
 import { FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
-import useUsersContext from '../../context/hooks/useUsersContext';
-import type { User } from '../../services/UsersService';
-import Button, { MotionButton } from '../../components/buttons/Buttons';
-import ScheduledPerson from '../../components/scheduledPerson/ScheduledPerson';
+import { MotionButton } from '../../components/buttons/Buttons';
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [scheduleTab, setScheduleTab] = useState<'sunday' | 'thursday' | 'special'>('sunday');
-  const { nextSundaySchedule, specialSchedules, getSpecialSchedules } = useSchedulesContext();
+  const { specialSchedules, getSpecialSchedules } = useSchedulesContext();
   const { warning, getWarning } = useNotificationContext();
   const [isLoading, setIsLoading] = useState(true);
   const { user: loggedUser } = useAuthContext();
-  const { users } = useUsersContext();
 
   const isGuest = loggedUser?.roles?.includes(UserRole.Guest);
 
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
   const canAddMusic = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
-  const usersById = useMemo(
-    () => users.reduce<Record<string, User>>((acc, user) => {
-      acc[user.id] = user;
-      return acc;
-    }, {}),
-    [users]
-  );
+  const weeklySchedules = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
 
+    return (specialSchedules || []).filter((schedule) => {
+      const [year, month, day] = schedule.data.slice(0, 10).split('-').map(Number);
+      const scheduleDate = new Date(year, month - 1, day);
+      return scheduleDate >= monday && scheduleDate <= sunday;
+    });
+  }, [specialSchedules]);
   useBodyScrollLock(isModalOpen);
 
   useEffect(() => {
@@ -102,66 +103,14 @@ const HomePage: React.FC = () => {
               <div className="container-escala">
                 <div className="schedule-heading">
                   <div>
-                    <span className="section-kicker">Próximas equipes</span>
-                    <h4>Escalas</h4>
-                  </div>
-                  <div className="schedule-tabs" role="tablist" aria-label="Tipo de escala">
-                    <Button variant="tab" role="tab" aria-selected={scheduleTab === 'sunday'} className={scheduleTab === 'sunday' ? 'active' : ''} onClick={() => setScheduleTab('sunday')}>Domingo</Button>
-                    <Button variant="tab" role="tab" aria-selected={scheduleTab === 'thursday'} className={scheduleTab === 'thursday' ? 'active' : ''} onClick={() => setScheduleTab('thursday')}>Quinta-feira</Button>
-                    <Button variant="tab" role="tab" aria-selected={scheduleTab === 'special'} className={scheduleTab === 'special' ? 'active' : ''} onClick={() => setScheduleTab('special')}>Especiais</Button>
+                    <span className="section-kicker">Semana atual</span>
+                    <h4>Escalas da semana</h4>
                   </div>
                 </div>
                 <div className="content">
-                  {scheduleTab === 'special' ? (
-                    <div className="special-tab-panel">
-                      {specialSchedules && <SpecialSchedules usersRoles={loggedRoles} schedules={specialSchedules as SpecialSchedule[]} loading={isLoading} />}
-                    </div>
-                  ) : scheduleTab === 'thursday' ? (
-                    <div className="thursday-tab-panel"><ThursdaySchedule /></div>
-                  ) : isLoading ? (
-                    <LoadingScreen />
-                  ) : nextSundaySchedule ? (
-                    <div className="content-escala">
-                      <p style={{ fontWeight: 'bold', color: '#f59e0b' }}>
-                        <strong>Ministro: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.minister.length > 0 ? nextSundaySchedule.músicosIds.minister : nextSundaySchedule.músicos.minister} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Vocal: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.vocal.length > 0 ? nextSundaySchedule.músicosIds.vocal : nextSundaySchedule.músicos.vocal} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Teclas: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.teclas.length > 0 ? nextSundaySchedule.músicosIds.teclas : nextSundaySchedule.músicos.teclas} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Violão: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.violao.length > 0 ? nextSundaySchedule.músicosIds.violao : nextSundaySchedule.músicos.violao} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Batera: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.batera.length > 0 ? nextSundaySchedule.músicosIds.batera : nextSundaySchedule.músicos.batera} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Bass: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.bass.length > 0 ? nextSundaySchedule.músicosIds.bass : nextSundaySchedule.músicos.bass} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Guita: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.guita.length > 0 ? nextSundaySchedule.músicosIds.guita : nextSundaySchedule.músicos.guita} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Op. Som: </strong>
-                        <ScheduledPerson people={nextSundaySchedule.músicosIds.sound.length > 0 ? nextSundaySchedule.músicosIds.sound : nextSundaySchedule.músicos.sound} usersById={usersById} />
-                      </p>
-                      <p>
-                        <strong>Paleta de cores: </strong>
-                        <span style={{ fontStyle: 'italic' }}>{nextSundaySchedule.músicosIds.outfitColor || 'Não definido'}</span>
-                      </p>
-                    </div>
-                  ) : (
-                    <p>Não há escala disponível</p>
-                  )}
+                  <div className="special-tab-panel">
+                    {isLoading ? <LoadingScreen /> : <SpecialSchedules schedules={weeklySchedules as SpecialSchedule[]} />}
+                  </div>
                 </div>
               </div>
             </div>

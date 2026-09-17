@@ -24,10 +24,8 @@ import useAuthContext from '../../context/hooks/useAuthContext';
 import { roleOptions, UserRole } from '../../types/UserRole';
 import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaTag, FaUser, FaTimes } from 'react-icons/fa';
 import LoadingScreen from '../../components/loading/LoadingScreen';
-import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { toast } from 'sonner';
-import { createEmptyMusicos, Musicos, normalizeMusicos } from '../../services/ScheduleService';
 import {
   CloseButton,
   FieldLabel,
@@ -158,80 +156,6 @@ const MePage: React.FC = () => {
       .join(', ');
   }, [user?.roles, rolePriority]);
 
-  const [month,] = useState<string>(
-      (new Date().getMonth() + 1).toString().padStart(2, "0")
-    );
-    const [year] = useState<number>(new Date().getFullYear());
-    const [date] = useState("");
-    const [, setMúsicos] = useState<Musicos>({
-      ...createEmptyMusicos(),
-    });
-    const [, setSundays] = useState<Date[]>([]);
-  
-    const {
-      
-      getScheduleForMonth,
-      monthlySchedule,
-      
-      getSpecialSchedules,
-      
-    } = useSchedulesContext();
-  
-    // Buscar domingos do mês
-    useEffect(() => {
-      const sundaysList = getSundaysOfMonth(parseInt(month), year);
-      setSundays(sundaysList);
-    }, [month, year]);
-  
-    useEffect(() => {
-      getSpecialSchedules();
-    }, [getSpecialSchedules]);
-  
-    // Buscar escala do mês quando mudar mês ou ano
-    useEffect(() => {
-      const fetchSchedule = async () => {
-        setIsLoading(true);
-        try {
-          await getScheduleForMonth(`${month}-${year}`);
-        } catch (err) {
-          console.error("Erro ao carregar escala:", err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchSchedule();
-    }, [getScheduleForMonth, month, year]);
-  
-    // Preenche os músicos se já houver dados salvos para a data
-    useEffect(() => {
-      if (!date || !monthlySchedule) return;
-  
-      setIsLoading(true);
-  
-      const found = monthlySchedule.find(
-        (s) => s.date.slice(0, 10) === date.slice(0, 10)
-      );
-      if (found) setMúsicos(normalizeMusicos(found.músicos));
-      else setMúsicos(createEmptyMusicos());
-  
-      setIsLoading(false);
-    }, [date, monthlySchedule]);
-  
-    const getSundaysOfMonth = (month: number, year: number): Date[] => {
-      const date = new Date(year, month - 1, 1);
-      const sundays: Date[] = [];
-  
-      while (date.getMonth() === month - 1) {
-        if (date.getDay() === 0) {
-          sundays.push(new Date(date));
-        }
-        date.setDate(date.getDate() + 1);
-      }
-  
-      return sundays;
-    };
-  
     useEffect(() => {
       if (notification?.text) {
         setNotificationText(notification.text);

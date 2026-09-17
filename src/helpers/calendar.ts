@@ -1,6 +1,7 @@
 type CalendarEventInput = {
   id: string;
   date: Date;
+  startTime?: string | null;
   title: string;
   roles: string[];
   outfitColor: string;
@@ -11,6 +12,8 @@ const formatCalendarDate = (date: Date) => [
   String(date.getMonth() + 1).padStart(2, '0'),
   String(date.getDate()).padStart(2, '0'),
 ].join('');
+
+const formatCalendarDateTime = (date: Date, time: string) => `${formatCalendarDate(date)}T${time.replace(':', '')}00`;
 
 const escapeCalendarText = (value: string) => value
   .replace(/\\/g, '\\\\')
@@ -32,6 +35,7 @@ export const downloadCalendarEvent = (event: CalendarEventInput) => {
   const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
   const description = [
     `Função: ${event.roles.join(', ')}`,
+    `Horário: ${event.startTime || 'Não definido'}`,
     `Paleta: ${event.outfitColor || 'Não definida'}`,
   ].join('\n');
 
@@ -44,8 +48,10 @@ export const downloadCalendarEvent = (event: CalendarEventInput) => {
     'BEGIN:VEVENT',
     `UID:${escapeCalendarText(event.id)}@music-schedule`,
     `DTSTAMP:${now}`,
-    `DTSTART;VALUE=DATE:${formatCalendarDate(event.date)}`,
-    `DTEND;VALUE=DATE:${formatCalendarDate(endDate)}`,
+    event.startTime
+      ? `DTSTART:${formatCalendarDateTime(event.date, event.startTime)}`
+      : `DTSTART;VALUE=DATE:${formatCalendarDate(event.date)}`,
+    ...(event.startTime ? [] : [`DTEND;VALUE=DATE:${formatCalendarDate(endDate)}`]),
     `SUMMARY:${escapeCalendarText(`${event.title} — ${event.roles.join(', ')}`)}`,
     `DESCRIPTION:${escapeCalendarText(description)}`,
     `URL:${window.location.origin}/my-schedule`,
