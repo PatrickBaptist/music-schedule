@@ -294,6 +294,36 @@ export const ContainerHome = styled.div`
     .special-tab-panel {
       width: 100%;
 
+      @media (min-width: 769px) {
+        max-height: calc(100dvh - 235px);
+        min-height: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        padding-right: 8px;
+
+        &::-webkit-scrollbar {
+          width: 7px;
+        }
+
+        &::-webkit-scrollbar-track {
+          border-radius: 999px;
+          background: var(--color-scroll-track);
+        }
+
+        &::-webkit-scrollbar-thumb {
+          border-radius: 999px;
+          background: var(--color-primary);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--color-primary);
+          outline-offset: 4px;
+          border-radius: 10px;
+        }
+      }
+
       > div {
         margin-top: 0;
         padding-top: 0;

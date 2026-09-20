@@ -236,9 +236,31 @@ export const ProfileActions = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 18px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-border);
   gap: 12px;
   flex-wrap: wrap;
+
+  button {
+    min-width: 170px;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+`;
+
+export const LogoutButton = styled(SharedButton).attrs({ variant: "danger" })`
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.16);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.24);
+  }
 `;
 
 export const CompletionBody = styled.div`

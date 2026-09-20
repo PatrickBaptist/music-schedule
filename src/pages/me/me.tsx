@@ -18,11 +18,13 @@ import {
   ProfileAvatar,
   ProfileItem,
   ProfileList,
+  ProfileActions,
   ProfileTitle,
+  LogoutButton,
 } from './meStyle';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { roleOptions, UserRole } from '../../types/UserRole';
-import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaTag, FaUser, FaTimes } from 'react-icons/fa';
+import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaSignOutAlt, FaTag, FaUser, FaTimes } from 'react-icons/fa';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { toast } from 'sonner';
@@ -41,7 +43,7 @@ import { getPendingProfileFields } from '../../helpers/profileCompletion';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const MePage: React.FC = () => {
-  const { user, updateMyProfile } = useAuthContext();
+  const { user, logout, updateMyProfile } = useAuthContext();
   const [ isLoading, setIsLoading ] = useState(true);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
@@ -350,12 +352,16 @@ const MePage: React.FC = () => {
                 ))}
               </ProfileItem>
 
-              <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "18px" }}>
+              <ProfileActions>
                 <DarkButton type="button" onClick={() => setIsEditingProfile((current) => !current)}>
-                  <FaEdit style={{ marginRight: "6px" }} />
+                  <FaEdit aria-hidden="true" />
                   {isEditingProfile ? "Fechar edição" : "Editar meus dados"}
                 </DarkButton>
-              </div>
+                <LogoutButton type="button" onClick={logout}>
+                  <FaSignOutAlt aria-hidden="true" />
+                  Sair da conta
+                </LogoutButton>
+              </ProfileActions>
             </ProfileList>
           )}
         </PageWrapper>

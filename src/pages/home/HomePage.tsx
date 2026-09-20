@@ -180,7 +180,12 @@ const HomePage: React.FC = () => {
                   </div>
                 </div>
                 <div className="content">
-                  <div className="special-tab-panel">
+                  <div
+                    className="special-tab-panel"
+                    role="region"
+                    aria-label="Escalas da semana"
+                    tabIndex={0}
+                  >
                     {isLoading ? <LoadingScreen /> : <SpecialSchedules schedules={weeklySchedules as SpecialSchedule[]} />}
                   </div>
                 </div>
