@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button, { MotionButton } from "../buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
@@ -17,6 +17,7 @@ import {
   FaFileAlt,
   FaGripVertical,
   FaLock,
+  FaMusic,
   FaRegCommentDots,
   FaSpotify,
   FaTimes,
@@ -44,6 +45,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { normalizeWorshipMoment, WORSHIP_MOMENTS } from "../../constants/worshipMoments";
 
 type Video = {
   url: string;
@@ -51,45 +53,30 @@ type Video = {
 
 interface SpecialSchedulesProps {
   canDelete: string[];
+  selectedDate: string;
+  legacyDate?: string;
 }
 
 type GroupedMusic = Record<string, MusicLink[]>;
 
-const worshipMoments = [
-  "Momento de Louvor",
-  "Dízimos e Ofertas",
-  "Batismo",
-  "Ceia",
-  "Final do Culto",
-  "Culto de Quinta",
-];
-
-const momentBackgrounds: Record<string, string> = {
-  "Momento de Louvor":
-    "linear-gradient(135deg, rgba(30, 59, 114, 0.644), rgb(57, 113, 209))",
-
-  "Dízimos e Ofertas":
-    "linear-gradient(135deg, rgba(19, 78, 94, 0.555), rgba(113, 178, 128, 0.5))",
-
-  Batismo:
-    "linear-gradient(135deg, rgba(0, 78, 146, 0.685), rgb(0, 4, 40))",
-
-  Ceia:
-    "linear-gradient(135deg, rgba(66, 39, 90, 0.979), rgba(115, 75, 109, 0.178))",
-
-  "Final do Culto":
-    "linear-gradient(135deg, rgba(35, 37, 38, 0.616), rgb(65, 67, 69))",
-
-  "Culto de Quinta":
-    "linear-gradient(135deg, rgba(92, 67, 36, 0.979), rgba(158, 122, 64, 0.288))",
+const momentAccents: Record<string, string> = {
+  "Momento de Louvor": "#3b82f6",
+  "1º Momento": "#8b5cf6",
+  "2º Momento": "#0891b2",
+  "3º Momento": "#d97706",
+  "Participação": "#db2777",
+  "Dízimos e Ofertas": "#0f766e",
+  Batismo: "#2563eb",
+  Ceia: "#7c3aed",
+  "Final do Culto": "#4b5563",
 };
 
 const buildGroupedMusic = (links: MusicLink[]): GroupedMusic => {
   const grouped: GroupedMusic = {};
 
-  worshipMoments.forEach((moment) => {
+  WORSHIP_MOMENTS.forEach((moment) => {
     grouped[moment] = links
-      .filter((link) => link.worshipMoment === moment)
+      .filter((link) => normalizeWorshipMoment(link.worshipMoment) === moment)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
   });
 
@@ -97,9 +84,9 @@ const buildGroupedMusic = (links: MusicLink[]): GroupedMusic => {
 };
 
 const findContainer = (id: string, grouped: GroupedMusic): string | undefined => {
-  if (worshipMoments.includes(id)) return id;
+  if (WORSHIP_MOMENTS.includes(id as (typeof WORSHIP_MOMENTS)[number])) return id;
 
-  return worshipMoments.find((moment) =>
+  return WORSHIP_MOMENTS.find((moment) =>
     grouped[moment]?.some((item) => item.id === id)
   );
 };
@@ -150,7 +137,7 @@ const moveMusicItem = (
   };
 };
 
-const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
+const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDate, legacyDate }) => {
   const tons = [
     "C",
     "Cm",
@@ -180,6 +167,12 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } =
     useMusicLinksContext();
+  const visibleMusicLinks = useMemo(
+    () => musicLinks.filter((music) =>
+      music.scheduleDate === selectedDate || (!music.scheduleDate && selectedDate === legacyDate)
+    ),
+    [legacyDate, musicLinks, selectedDate]
+  );
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(false);
@@ -235,10 +228,10 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   }, [fetchMusicLinks]);
 
   useEffect(() => {
-    const nextGrouped = buildGroupedMusic(musicLinks);
+    const nextGrouped = buildGroupedMusic(visibleMusicLinks);
     groupedMusicRef.current = nextGrouped;
     setGroupedMusic(nextGrouped);
-  }, [musicLinks]);
+  }, [visibleMusicLinks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -253,10 +246,10 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     async (nextGrouped: GroupedMusic) => {
       const updates: { id: string; data: MusicLink }[] = [];
 
-      worshipMoments.forEach((moment) => {
+      WORSHIP_MOMENTS.forEach((moment) => {
         nextGrouped[moment]?.forEach((item, index) => {
           const newOrder = index + 1;
-          const original = musicLinks.find((music) => music.id === item.id);
+          const original = visibleMusicLinks.find((music) => music.id === item.id);
 
           if (!original || !item.id) return;
 
@@ -286,7 +279,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         );
         toast.success("Ordem atualizada!");
       } catch (err: unknown) {
-        setGroupedMusic(buildGroupedMusic(musicLinks));
+        setGroupedMusic(buildGroupedMusic(visibleMusicLinks));
 
         if (err instanceof Error) {
           toast.error("Sem premissão! " + err.message);
@@ -297,7 +290,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         setIsSavingOrder(false);
       }
     },
-    [musicLinks, updateMusicLink]
+    [updateMusicLink, visibleMusicLinks]
   );
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -325,7 +318,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
     const { over } = event;
     if (!over) {
-      const originalOrder = buildGroupedMusic(musicLinks);
+      const originalOrder = buildGroupedMusic(visibleMusicLinks);
       groupedMusicRef.current = originalOrder;
       setGroupedMusic(originalOrder);
       return;
@@ -354,7 +347,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     }
 
     setName(musicLink.name);
-    setWorshipMoment(musicLink.worshipMoment);
+    setWorshipMoment(normalizeWorshipMoment(musicLink.worshipMoment));
     setLink(musicLink.link || "");
     setLetter(musicLink.letter || "");
     setSpotify(musicLink.spotify || "");
@@ -384,10 +377,30 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     }
   };
 
+  const confirmDelete = (music: MusicLink) => {
+    if (!music.id) return;
+
+    toast(`Excluir “${music.name}”?`, {
+      description: "Esta ação não pode ser desfeita.",
+      action: {
+        label: "Excluir",
+        onClick: () => void handleDelete(music.id!),
+      },
+      cancel: {
+        label: "Cancelar",
+        onClick: () => undefined,
+      },
+    });
+  };
+
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards((prev) => ({ ...prev, [editIndex]: true }));
-      const updatedLink = {
+      const original = musicLinks.find((music) => music.id === editIndex);
+      if (!original) return;
+
+      const updatedLink: MusicLink = {
+        ...original,
         name,
         worshipMoment,
         link,
@@ -443,7 +456,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   return (
     <ListContainer>
-      {canReorder && musicLinks.length > 1 && (
+      {canReorder && visibleMusicLinks.length > 1 && (
         <div className="reorder-controls">
           <Button
             variant={isReorderMode ? "secondary" : "unstyled"}
@@ -470,14 +483,14 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         </div>
       )}
       <AnimatePresence>
-        {musicLinks.length > 0 ? (
+        {visibleMusicLinks.length > 0 ? (
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
-            {worshipMoments.map((moment) => {
+            {WORSHIP_MOMENTS.map((moment) => {
               const musicInMoment = groupedMusic[moment] || [];
 
               if (musicInMoment.length === 0) return null;
@@ -486,7 +499,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                 <DroppableMusicGroup
                   key={moment}
                   moment={moment}
-                  background={momentBackgrounds[moment]}
+                  accent={momentAccents[moment]}
+                  count={musicInMoment.length}
                 >
                   <SortableContext
                     items={musicInMoment.map((music) => music.id!)}
@@ -507,7 +521,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                         handleCardClick={handleCardClick}
                         openLinkVideo={openLinkVideo}
                         handleEditClick={handleEditClick}
-                        handleDelete={handleDelete}
+                        handleDelete={confirmDelete}
                       />
                     ))}
                   </SortableContext>
@@ -516,7 +530,11 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
             })}
           </DndContext>
         ) : (
-          <p>Nenhuma canção definida para esta semana</p>
+          <div className="empty-music-list">
+            <FaMusic aria-hidden="true" />
+            <strong>Nenhuma canção definida</strong>
+            <span>O repertório desta data ainda não foi montado.</span>
+          </div>
         )}
         {isEditing && (
           <motion.div
@@ -548,7 +566,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                     onKeyDown={handleKeyPress}
                   >
                     <option value="">Selecione o momento</option>
-                    {worshipMoments.map((moment) => (
+                    {WORSHIP_MOMENTS.map((moment) => (
                       <option key={moment} value={moment}>
                         {moment}
                       </option>
@@ -735,20 +753,28 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
 interface DroppableMusicGroupProps {
   moment: string;
-  background: string;
+  accent: string;
+  count: number;
   children: React.ReactNode;
 }
 
 const DroppableMusicGroup: React.FC<DroppableMusicGroupProps> = ({
   moment,
-  background,
+  accent,
+  count,
   children,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: moment });
 
   return (
-    <MusicGroup ref={setNodeRef} $bg={background} $isOver={isOver}>
-      <h4 style={{ color: "var(--color-text-strong2)", margin: "16px 0" }}>{moment}</h4>
+    <MusicGroup ref={setNodeRef} $accent={accent} $isOver={isOver}>
+      <div className="music-group-heading">
+        <span className="music-group-accent" aria-hidden="true" />
+        <h4>{moment}</h4>
+        <span className="music-count">
+          {count} {count === 1 ? "música" : "músicas"}
+        </span>
+      </div>
       {children}
     </MusicGroup>
   );
@@ -765,7 +791,7 @@ interface SortableMusicCardProps {
   handleCardClick: (description?: string, name?: string) => void;
   openLinkVideo: (video: Video) => void;
   handleEditClick: (id: string) => void;
-  handleDelete: (id: string) => void;
+  handleDelete: (music: MusicLink) => void;
 }
 
 const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
@@ -825,30 +851,13 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                 <span className="span-order">{orderDisplay}ª</span>
                 <div
                   className="span-music"
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "0 6px",
-                  }}
                 >
                   <span className="span-name">{musicLink.name}</span>
-                  {musicLink.description?.trim() && (
-                    <span>
-                      <FaRegCommentDots
-                        className="icon-description"
-                        onClick={() =>
-                          handleCardClick(
-                            musicLink.description!,
-                            musicLink.name
-                          )
-                        }
-                      />
-                    </span>
-                  )}
                 </div>
                 {musicLink.cifra && (
-                  <span className="span-cifra">{musicLink.cifra}</span>
+                  <span className="span-cifra" title="Tom da música">
+                    {musicLink.cifra}
+                  </span>
                 )}
 
                 <MotionButton variant="unstyled"
@@ -857,8 +866,8 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                   whileTap={{ scale: 0.95 }}
                   title={
                     openMenuId === musicLink.id
-                      ? "Ocultar botões"
-                      : "Mostrar botões"
+                      ? "Ocultar ações"
+                      : "Mostrar mais ações"
                   }
                   onClick={() => toggleButtons(musicLink.id!)}
                 >
@@ -868,6 +877,53 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                     <FaEllipsisV size={16} />
                   )}
                 </MotionButton>
+              </div>
+
+              {musicLink.description?.trim() && (
+                <Button
+                  variant="unstyled"
+                  className="description-preview"
+                  onClick={() =>
+                    handleCardClick(musicLink.description!, musicLink.name)
+                  }
+                >
+                  <FaRegCommentDots aria-hidden="true" />
+                  <span>{musicLink.description}</span>
+                  <strong>Ver mais</strong>
+                </Button>
+              )}
+
+              <div className="desktop-music-links" aria-label="Links da música">
+                {musicLink.link && (
+                  <Button
+                    variant="secondary"
+                    className="youtube-link"
+                    onClick={() => openLinkVideo({ url: musicLink.link || "" })}
+                    title="Assistir vídeo"
+                  >
+                    <FaYoutube aria-hidden="true" /> YouTube
+                  </Button>
+                )}
+                {musicLink.letter && (
+                  <Button
+                    variant="secondary"
+                    className="letter-link"
+                    onClick={() => musicLink.letter && window.open(musicLink.letter, "_blank")}
+                    title="Abrir letra"
+                  >
+                    <FaFileAlt aria-hidden="true" /> Letra
+                  </Button>
+                )}
+                {musicLink.spotify && (
+                  <Button
+                    variant="secondary"
+                    className="spotify-link"
+                    onClick={() => musicLink.spotify && window.open(musicLink.spotify, "_blank")}
+                    title="Abrir no Spotify"
+                  >
+                    <FaSpotify aria-hidden="true" /> Spotify
+                  </Button>
+                )}
               </div>
 
               <AnimatePresence>
@@ -881,7 +937,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                   >
                     {musicLink.link && (
                       <MotionButton variant="unstyled"
-                        className="btns youtube-btn"
+                        className="btns youtube-btn mobile-link-action"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() =>
@@ -890,6 +946,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                           })
                         }
                         title="Assistir vídeo"
+                        aria-label={`Assistir vídeo de ${musicLink.name}`}
                       >
                         <FaYoutube size={16} />
                       </MotionButton>
@@ -897,7 +954,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
 
                     {musicLink.letter && (
                       <MotionButton variant="unstyled"
-                        className="btns letter-btn"
+                        className="btns letter-btn mobile-link-action"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() =>
@@ -905,6 +962,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                           window.open(musicLink.letter, "_blank")
                         }
                         title="Abrir letra"
+                        aria-label={`Abrir letra de ${musicLink.name}`}
                       >
                         <FaFileAlt size={16} />
                       </MotionButton>
@@ -912,7 +970,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
 
                     {musicLink.spotify && (
                       <MotionButton variant="unstyled"
-                        className="btns spotify-btn"
+                        className="btns spotify-btn mobile-link-action"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() =>
@@ -920,6 +978,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                           window.open(musicLink.spotify, "_blank")
                         }
                         title="Abrir no Spotify"
+                        aria-label={`Abrir ${musicLink.name} no Spotify`}
                       >
                         <FaSpotify size={16} />
                       </MotionButton>
@@ -931,6 +990,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleEditClick(musicLink.id!)}
                       title="Editar"
+                      aria-label={`Editar ${musicLink.name}`}
                     >
                       <FaEdit size={16} />
                     </MotionButton>
@@ -939,8 +999,9 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                       <MotionButton variant="unstyled"
                         whileHover={{ scale: 1.1 }}
                         className="btns delete-icon"
-                        onClick={() => handleDelete(musicLink.id!)}
+                        onClick={() => handleDelete(musicLink)}
                         title="Deletar música"
+                        aria-label={`Excluir ${musicLink.name}`}
                       >
                         <FaTrashAlt size={16} />
                       </MotionButton>

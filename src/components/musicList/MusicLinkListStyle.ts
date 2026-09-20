@@ -10,6 +10,38 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   padding: 0 8px;
   box-sizing: border-box;
 
+  .empty-music-list {
+    width: min(100%, 800px);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 28px;
+    border: 1px dashed var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    text-align: center;
+
+    svg {
+      margin-bottom: 4px;
+      color: var(--color-primary);
+      font-size: 28px;
+    }
+
+    strong {
+      color: var(--color-text-strong);
+      font-size: 1rem;
+    }
+
+    span {
+      font-size: 0.9rem;
+    }
+  }
+
   .reorder-controls {
     width: 100%;
     max-width: 800px;
@@ -152,8 +184,11 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       box-sizing: border-box;
 
       .span-music {
+        width: 100%;
         min-width: 0;
+        display: flex;
         align-items: center;
+        padding: 0 6px;
       }
 
       @media (max-width: 600px) {
@@ -209,11 +244,81 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     .menu-buttons {
       width: 100%;
       display: flex;
+      justify-content: flex-end;
       gap: 12px;
       overflow: hidden;
 
       @media (max-width: 372px) {
         gap: 10px;
+      }
+    }
+
+    .description-preview {
+      width: 100%;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--color-surface-muted);
+      color: var(--color-text-muted);
+      font-size: 13px;
+      text-align: left;
+
+      svg {
+        color: var(--color-primary);
+      }
+
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      strong {
+        color: var(--color-primary);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      &:hover {
+        background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface-muted));
+      }
+    }
+
+    .desktop-music-links {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+
+      button {
+        min-height: 34px;
+        font-size: 13px;
+      }
+
+      .youtube-link svg {
+        color: #dc2626;
+      }
+
+      .letter-link svg {
+        color: var(--color-text-strong);
+      }
+
+      .spotify-link svg {
+        color: #16a34a;
+      }
+
+      @media (max-width: 600px) {
+        display: none;
+      }
+    }
+
+    @media (min-width: 601px) {
+      .mobile-link-action {
+        display: none;
       }
     }
 
@@ -427,21 +532,64 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   }
 `;
 
-export const MusicGroup = styled.div<{ $bg?: string; $isOver?: boolean }>`
+export const MusicGroup = styled.div<{ $accent?: string; $isOver?: boolean }>`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 8px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: ${({ $bg }) => $bg || "transparent"};
+  box-sizing: border-box;
+  padding: 10px 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 14px;
+  background: var(--color-surface-muted);
   outline: ${({ $isOver }) =>
     $isOver ? "2px dashed rgba(245, 158, 11, 0.8)" : "2px dashed transparent"};
   transition: outline-color 0.2s ease;
   min-height: ${({ $isOver }) => ($isOver ? "48px" : "auto")};
+
+  .music-group-heading {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 5px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    padding: 5px 4px 9px;
+  }
+
+  .music-group-accent {
+    width: 5px;
+    height: 28px;
+    border-radius: 999px;
+    background: ${({ $accent }) => $accent || "var(--color-primary)"};
+  }
+
+  h4 {
+    margin: 0;
+    color: var(--color-text-strong);
+    font-size: 17px;
+  }
+
+  .music-count {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    padding: 8px 8px 12px;
+
+    .music-group-heading {
+      gap: 8px;
+    }
+  }
 `;
 
 export const ContainerVd = styled.div`

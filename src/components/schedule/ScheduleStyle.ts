@@ -130,8 +130,9 @@ export const ScheduleContent = styled.div`
 export const CardsGrid = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-items: start;
+  gap: 18px;
   padding: 20px;
   box-sizing: border-box;
   justify-items: center;
@@ -237,73 +238,6 @@ export const GenerationPanel = styled.section`
         flex: 1;
       }
     }
-  }
-`;
-
-export const SeeScale = styled.div`
-  background-color: var(--color-surface);
-  border-radius: 10px;
-  box-shadow: 0 0 10px var(--color-shadow);
-  padding: 20px 25px;
-  width: 280px;
-  color: var(--color-text);
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-height: 700px) and (max-width: 768px) {
-    max-height: calc(100dvh - 190px);
-    overflow-y: auto;
-    padding: 14px 18px;
-  }
-
-  @media (max-height: 560px) and (max-width: 768px) {
-    max-height: calc(100dvh - 150px);
-  }
-
-  h3 {
-    font-size: 1.1rem;
-    margin-bottom: 12px;
-
-    @media (max-height: 700px) and (max-width: 768px) {
-      margin-bottom: 8px;
-    }
-  }
-
-  .schedule-meta {
-    margin: -6px 0 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--color-text-muted);
-    font-size: 0.82rem;
-  }
-
-  .content-escala p {
-    font-size: 16px;
-    margin: 10px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid var(--color-border-soft);
-    padding-bottom: 6px;
-
-    @media (max-height: 700px) and (max-width: 768px) {
-      font-size: 14px;
-      margin: 7px 0;
-      padding-bottom: 5px;
-    }
-  }
-
-  .content-escala p:last-child {
-    border-bottom: none;
-  }
-
-  .content-escala strong {
-    color: var(--color-text-strong);
-    min-width: 90px;
   }
 `;
 

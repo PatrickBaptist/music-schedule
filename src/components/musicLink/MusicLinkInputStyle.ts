@@ -18,6 +18,29 @@ export const InputContainer = styled.div`
   background: var(--color-surface);
   color: var(--color-text-strong);
 
+  .selected-date-summary {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border-soft);
+    border-radius: 10px;
+    box-sizing: border-box;
+    background: var(--color-surface-muted);
+
+    label {
+      color: var(--color-text-strong);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    span {
+      color: var(--color-text-muted);
+      font-size: 12px;
+    }
+  }
+
   input {
     width: 100%;
     min-height: 40px;

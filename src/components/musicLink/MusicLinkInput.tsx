@@ -12,12 +12,19 @@ import { FaPlus } from 'react-icons/fa';
 import { AllMusicLink } from '../../services/AllMusicHistory';
 import LoadingScreen from '../loading/LoadingScreen';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
+import { WORSHIP_MOMENTS } from '../../constants/worshipMoments';
 
 type MusicLinkInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  scheduleDate: string;
+  onScheduleDateChange: (date: string) => void;
 };
 
-const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
+const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
+  setIsModalOpen,
+  scheduleDate,
+  onScheduleDateChange,
+}) => {
 
   const tons = [
     'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -25,15 +32,6 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
     'A#', 'A#m', 'B', 'Bm'
   ];
 
-  const worshipMoments = [
-    "Momento de Louvor",
-    "Dízimos e Ofertas",
-    "Batismo",
-    "Ceia",
-    "Final do Culto",
-    "Culto de Quinta",
-  ];
-  
   const normalizeString = (str: string) => {
     return str
       .normalize("NFD")
@@ -69,6 +67,11 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
 
   const handleAddLink = async () => {
 
+    if (!scheduleDate) {
+      toast.error("Selecione a data do culto!");
+      return;
+    }
+
     if (!worshipMoment.trim()) {
       toast.error("O momento do louvor é obrigatório!");
       return;
@@ -97,7 +100,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
       spotify: spotify.trim() || "",
       cifra: cifra.trim() || "",
       description: description.trim() || "",
-      ministeredBy: isMinister ? user?.nickname : ministerName
+      ministeredBy: isMinister ? user?.nickname : ministerName,
+      scheduleDate
     });
 
     setIsModalOpen(false);
@@ -179,7 +183,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
         spotify: selectedMusic.spotify || "",
         cifra: selectedMusic.cifra || "",
         description: selectedMusic.description || "",
-        ministeredBy: selectedMusic.minister || ""
+        ministeredBy: selectedMusic.minister || "",
+        scheduleDate
       });
 
       toast.success(`"${selectedMusic.name}" adicionada com sucesso!`, { id: toastId });
@@ -198,6 +203,16 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
 
   return (
     <InputContainer>
+      <div className="selected-date-summary">
+        <label htmlFor="add-music-schedule-date">Data do repertório</label>
+        <input
+          id="add-music-schedule-date"
+          type="date"
+          value={scheduleDate}
+          onChange={(event) => onScheduleDateChange(event.target.value)}
+        />
+        <span>A música será exibida no repertório desta data.</span>
+      </div>
       <input
         type="text"
         value={name}
@@ -244,7 +259,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
           onKeyDown={handleKeyPress}
           >
           <option value="">Selecione o momento</option>
-          {worshipMoments.map((moment) => (
+          {WORSHIP_MOMENTS.map((moment) => (
             <option key={moment} value={moment}>
               {moment}
             </option>
@@ -368,7 +383,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) => {
                 style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
               >
                 <option value="">Selecione o momento</option>
-                {worshipMoments.map((moment) => (
+                {WORSHIP_MOMENTS.map((moment) => (
                   <option key={moment} value={moment}>
                     {moment}
                   </option>

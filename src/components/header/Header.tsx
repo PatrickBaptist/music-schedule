@@ -14,18 +14,17 @@ import {
 } from './HeaderStyle';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthContext from '../../context/hooks/useAuthContext';
-import Logout from '../../assets/imgs/logout.png'
 import { motion } from "framer-motion";
 import { UserRole } from '../../types/UserRole';
 import { FaDesktop, FaMoon, FaSun } from 'react-icons/fa';
 import useThemePreference from '../../context/hooks/useThemePreference';
 import { getPendingProfileFields } from '../../helpers/profileCompletion';
-import Button, { MotionButton } from '../buttons/Buttons';
+import Button from '../buttons/Buttons';
 import useMyScheduleContext from '../../context/hooks/useMyScheduleContext';
 
 const Header: React.FC = () => {
 
-  const { user, logout } = useAuthContext();
+  const { user } = useAuthContext();
   const { mode, setMode } = useThemePreference();
   const location = useLocation();
   const navigate = useNavigate();
@@ -49,7 +48,7 @@ const Header: React.FC = () => {
     { name: "Escala", path: "/schedule" },
     { name: "Canções", path: "/listMusic", blocked: isGuest },
     { name: "Usuários", path: "/users", blocked: isGuest },
-    { name: "Minha Escala", path: "/my-schedule" },
+    { name: "Agenda", path: "/my-schedule" },
   ];
 
   return (
@@ -145,30 +144,6 @@ const Header: React.FC = () => {
             </span>
           </span>
         )}
-        <MotionButton
-          variant="unstyled"
-          onClick={logout}
-          title='Sair'
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          whileHover={{
-            scale: [1, 1.2, 1, 1.2, 1],
-            rotate: [0, -10, 0, 10, 0],
-          }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            repeatType: "loop",
-          }}
-        >
-          <img src={Logout} alt="Logout" style={{ width: 28, height: 28 }} />
-        </MotionButton>
       </HeaderActions>
     </HeaderContainer>
   );

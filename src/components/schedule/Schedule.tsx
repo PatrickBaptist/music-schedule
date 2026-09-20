@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaClock, FaMagic, FaThLarge } from 'react-icons/fa';
+import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaMagic, FaThLarge } from 'react-icons/fa';
 import { toast } from 'sonner';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import useSchedulesContext from '../../context/hooks/useScheduleContext';
 import useUsersContext from '../../context/hooks/useUsersContext';
-import type { MusicoDetalhe, SpecialSchedule } from '../../services/ScheduleService';
+import type { SpecialSchedule } from '../../services/ScheduleService';
 import type { User } from '../../services/UsersService';
 import { UserRole } from '../../types/UserRole';
 import Button, { MotionButton } from '../buttons/Buttons';
@@ -14,25 +14,8 @@ import EspecialScheduleInput from '../especialScheduleInput/EspecialScheduleInpu
 import LoadingScreen from '../loading/LoadingScreen';
 import PageWrapper from '../pageWrapper/pageWrapper';
 import ScheduleCalendar from '../scheduleCalendar/ScheduleCalendar';
-import ScheduledPerson, { PersonRef } from '../scheduledPerson/ScheduledPerson';
-import { AddFormOverlay, CardsGrid, GenerationPanel, MonthNavigation, ScheduleContainer, ScheduleContent, SeeScale, ViewToggle } from './ScheduleStyle';
-
-type RoleKey = 'minister' | 'vocal' | 'teclas' | 'violao' | 'batera' | 'bass' | 'guita' | 'sound';
-const roles: Array<{ key: RoleKey; label: string }> = [
-  { key: 'minister', label: 'Ministro' }, { key: 'vocal', label: 'Vocal' },
-  { key: 'teclas', label: 'Teclas' }, { key: 'violao', label: 'Violão' },
-  { key: 'batera', label: 'Bateria' }, { key: 'bass', label: 'Baixo' },
-  { key: 'guita', label: 'Guitarra' }, { key: 'sound', label: 'Op. Som' },
-];
-
-const getPeople = (schedule: SpecialSchedule, role: RoleKey): PersonRef[] => {
-  const ids = schedule.músicosIds?.[role] || schedule.musicosIds?.[role] || [];
-  if (ids.length) return ids;
-  const details = schedule.músicos?.[role] || schedule.musicos?.[role] || [];
-  if (details.length) return details as MusicoDetalhe[];
-  if (role === 'vocal') return [schedule.vocal1, schedule.vocal2].filter(Boolean) as string[];
-  return schedule[role] ? [schedule[role] as string] : [];
-};
+import SpecialScheduleCard from '../specialSchedule/SpecialScheduleCard';
+import { AddFormOverlay, CardsGrid, GenerationPanel, MonthNavigation, ScheduleContainer, ScheduleContent, ViewToggle } from './ScheduleStyle';
 
 const Schedule = () => {
   const { specialSchedules, getSpecialSchedules, generateSelectedSchedules, deleteSpecialSchedules } = useSchedulesContext();
@@ -132,7 +115,7 @@ const Schedule = () => {
       </MonthNavigation>
 
       {canManage && <div className="add-schedule">
-        <h4>Gerar equipes</h4><MotionButton variant="unstyled" className="btns generate-btn" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}><FaMagic size={12} /></MotionButton>
+        <h4>Gerar automaticamente</h4><MotionButton variant="unstyled" className="btns generate-btn" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}><FaMagic size={12} /></MotionButton>
       </div>}
 
       <ViewToggle role="group" aria-label="Escolher visualização">
@@ -151,11 +134,11 @@ const Schedule = () => {
       {loading ? <LoadingScreen /> : viewMode === 'calendar' ? (
         <ScheduleCalendar schedules={monthSchedules} month={month} year={year} usersById={usersById} selectionMode={canManage && isSelecting} selectedScheduleIds={selectedIds} onToggleSchedule={toggleSelected} selectedNewDates={selectedDates} onToggleNewDate={toggleSelectedDate} canDelete={canManage} onDeleteSchedule={confirmDelete} canEdit={canManage} onEditSchedule={(schedule) => { setNewScheduleDate(''); setEditingSchedule(schedule); setIsModalOpen(true); }} onCreateSchedule={canManage ? (date) => { setEditingSchedule(null); setNewScheduleDate(date); setIsModalOpen(true); } : undefined} />
       ) : monthSchedules.length ? (
-        <CardsGrid>{monthSchedules.map((schedule) => <SeeScale key={schedule.id}>
-          <h3>{schedule.evento}</h3>
-          <p className="schedule-meta">{new Date(`${schedule.data.slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR')} · <FaClock /> {schedule.startTime || 'Horário não definido'}</p>
-          <div className="content-escala">{roles.map(({ key, label }) => <p key={key}><strong>{label}:</strong><ScheduledPerson people={getPeople(schedule, key)} usersById={usersById} /></p>)}</div>
-        </SeeScale>)}</CardsGrid>
+        <CardsGrid>
+          {monthSchedules.map((schedule) => (
+            <SpecialScheduleCard key={schedule.id} schedule={schedule} usersById={usersById} />
+          ))}
+        </CardsGrid>
       ) : <p>Nenhuma escala cadastrada neste mês.</p>}
     </ScheduleContent></PageWrapper></ScheduleContainer>
   );
