@@ -132,7 +132,7 @@ const Schedule = () => {
       </MonthNavigation>
 
       {canManage && <div className="add-schedule">
-        <h4>Gerar equipes</h4><MotionButton variant="unstyled" className="btns generate-btn" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}><FaMagic size={12} /></MotionButton>
+        <h4>Gerar automaticamente</h4><MotionButton variant="unstyled" className="btns generate-btn" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}><FaMagic size={12} /></MotionButton>
       </div>}
 
       <ViewToggle role="group" aria-label="Escolher visualização">

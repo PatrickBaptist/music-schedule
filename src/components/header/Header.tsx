@@ -49,7 +49,7 @@ const Header: React.FC = () => {
     { name: "Escala", path: "/schedule" },
     { name: "Canções", path: "/listMusic", blocked: isGuest },
     { name: "Usuários", path: "/users", blocked: isGuest },
-    { name: "Minha Escala", path: "/my-schedule" },
+    { name: "Agenda", path: "/my-schedule" },
   ];
 
   return (

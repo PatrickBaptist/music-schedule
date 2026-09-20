@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MusicLinkInput from '../../components/musicLink/MusicLinkInput';
 import MusicLinkList from '../../components/musicList/MusicLinkList';
@@ -11,11 +11,26 @@ import SpecialSchedules from '../../components/specialSchedule/specialSchedule';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { SpecialSchedule } from '../../services/ScheduleService';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
-import { FaPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import { MotionButton } from '../../components/buttons/Buttons';
+import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
+
+const toLocalISODate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getNextSunday = () => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + ((7 - date.getDay()) % 7));
+  return toLocalISODate(date);
+};
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,6 +38,10 @@ const HomePage: React.FC = () => {
   const { warning, getWarning } = useNotificationContext();
   const [isLoading, setIsLoading] = useState(true);
   const { user: loggedUser } = useAuthContext();
+  const { musicLinks } = useMusicLinksContext();
+  const fallbackDate = useMemo(getNextSunday, []);
+  const [selectedMusicDate, setSelectedMusicDate] = useState(fallbackDate);
+  const hasSelectedMusicDate = useRef(false);
 
   const isGuest = loggedUser?.roles?.includes(UserRole.Guest);
 
@@ -44,6 +63,36 @@ const HomePage: React.FC = () => {
       return scheduleDate >= monday && scheduleDate <= sunday;
     });
   }, [specialSchedules]);
+  const nearestRepertoireDate = useMemo(() => {
+    const today = toLocalISODate(new Date());
+    const futureDates = musicLinks
+      .map((music) => music.scheduleDate?.slice(0, 10))
+      .filter((date): date is string => Boolean(date && date >= today))
+      .sort();
+
+    return futureDates[0] || fallbackDate;
+  }, [fallbackDate, musicLinks]);
+  const selectedRepertoireLabel = useMemo(() => {
+    if (!selectedMusicDate) return 'Data não selecionada';
+
+    return new Date(`${selectedMusicDate}T12:00:00`).toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  }, [selectedMusicDate]);
+  const changeSelectedMusicDate = (date: string) => {
+    hasSelectedMusicDate.current = true;
+    setSelectedMusicDate(date);
+  };
+
+  useEffect(() => {
+    if (!hasSelectedMusicDate.current) {
+      setSelectedMusicDate(nearestRepertoireDate);
+    }
+  }, [nearestRepertoireDate]);
+
   useBodyScrollLock(isModalOpen);
 
   useEffect(() => {
@@ -71,7 +120,7 @@ const HomePage: React.FC = () => {
             <div className="coluna-1">
               {canAddMusic && (
                 <div className="content-louvores">
-                  <h4>Adicionar louvor</h4>
+                  <h4>Adicionar repertório</h4>
                   <MotionButton variant="unstyled"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
@@ -91,12 +140,35 @@ const HomePage: React.FC = () => {
                     exit={{ opacity: 0, y: 18, scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 180, damping: 18 }}
                   >
-                    <MusicLinkInput setIsModalOpen={setIsModalOpen} />
+                    <MusicLinkInput
+                      setIsModalOpen={setIsModalOpen}
+                      scheduleDate={selectedMusicDate}
+                      onScheduleDateChange={changeSelectedMusicDate}
+                    />
                   </AddFormOverlay>,
                   document.body
                 )}
 
-              <MusicLinkList canDelete={loggedRoles} />
+              <div className="repertoire-date-bar">
+                <div className="repertoire-date-copy">
+                  <span>Repertório exibido</span>
+                  <h3>{selectedRepertoireLabel}</h3>
+                </div>
+                <label className="date-picker-trigger" htmlFor="music-schedule-date">
+                  <FaCalendarAlt aria-hidden="true" />
+                  <span>Trocar data</span>
+                  <input
+                    id="music-schedule-date"
+                    type="date"
+                    value={selectedMusicDate}
+                    aria-label="Escolher outra data do repertório"
+                    onClick={(event) => event.currentTarget.showPicker?.()}
+                    onChange={(event) => changeSelectedMusicDate(event.target.value)}
+                  />
+                </label>
+              </div>
+
+              <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
             </div>
 
             <div className="coluna-2">

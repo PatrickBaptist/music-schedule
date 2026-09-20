@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button, { MotionButton } from "../buttons/Buttons";
 import Loading from "../../assets/Loading.gif";
@@ -44,6 +44,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { normalizeWorshipMoment, WORSHIP_MOMENTS } from "../../constants/worshipMoments";
 
 type Video = {
   url: string;
@@ -51,22 +52,27 @@ type Video = {
 
 interface SpecialSchedulesProps {
   canDelete: string[];
+  selectedDate: string;
+  legacyDate?: string;
 }
 
 type GroupedMusic = Record<string, MusicLink[]>;
 
-const worshipMoments = [
-  "Momento de Louvor",
-  "Dízimos e Ofertas",
-  "Batismo",
-  "Ceia",
-  "Final do Culto",
-  "Culto de Quinta",
-];
-
 const momentBackgrounds: Record<string, string> = {
   "Momento de Louvor":
     "linear-gradient(135deg, rgba(30, 59, 114, 0.644), rgb(57, 113, 209))",
+
+  "1º Momento":
+    "linear-gradient(135deg, rgba(88, 28, 135, 0.82), rgba(126, 34, 206, 0.7))",
+
+  "2º Momento":
+    "linear-gradient(135deg, rgba(14, 116, 144, 0.82), rgba(8, 145, 178, 0.68))",
+
+  "3º Momento":
+    "linear-gradient(135deg, rgba(180, 83, 9, 0.82), rgba(217, 119, 6, 0.68))",
+
+  "Participação":
+    "linear-gradient(135deg, rgba(157, 23, 77, 0.82), rgba(190, 24, 93, 0.66))",
 
   "Dízimos e Ofertas":
     "linear-gradient(135deg, rgba(19, 78, 94, 0.555), rgba(113, 178, 128, 0.5))",
@@ -80,16 +86,14 @@ const momentBackgrounds: Record<string, string> = {
   "Final do Culto":
     "linear-gradient(135deg, rgba(35, 37, 38, 0.616), rgb(65, 67, 69))",
 
-  "Culto de Quinta":
-    "linear-gradient(135deg, rgba(92, 67, 36, 0.979), rgba(158, 122, 64, 0.288))",
 };
 
 const buildGroupedMusic = (links: MusicLink[]): GroupedMusic => {
   const grouped: GroupedMusic = {};
 
-  worshipMoments.forEach((moment) => {
+  WORSHIP_MOMENTS.forEach((moment) => {
     grouped[moment] = links
-      .filter((link) => link.worshipMoment === moment)
+      .filter((link) => normalizeWorshipMoment(link.worshipMoment) === moment)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
   });
 
@@ -97,9 +101,9 @@ const buildGroupedMusic = (links: MusicLink[]): GroupedMusic => {
 };
 
 const findContainer = (id: string, grouped: GroupedMusic): string | undefined => {
-  if (worshipMoments.includes(id)) return id;
+  if (WORSHIP_MOMENTS.includes(id as (typeof WORSHIP_MOMENTS)[number])) return id;
 
-  return worshipMoments.find((moment) =>
+  return WORSHIP_MOMENTS.find((moment) =>
     grouped[moment]?.some((item) => item.id === id)
   );
 };
@@ -150,7 +154,7 @@ const moveMusicItem = (
   };
 };
 
-const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
+const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDate, legacyDate }) => {
   const tons = [
     "C",
     "Cm",
@@ -180,6 +184,12 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } =
     useMusicLinksContext();
+  const visibleMusicLinks = useMemo(
+    () => musicLinks.filter((music) =>
+      music.scheduleDate === selectedDate || (!music.scheduleDate && selectedDate === legacyDate)
+    ),
+    [legacyDate, musicLinks, selectedDate]
+  );
   const [openVideo, setOpenVideo] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(false);
@@ -235,10 +245,10 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   }, [fetchMusicLinks]);
 
   useEffect(() => {
-    const nextGrouped = buildGroupedMusic(musicLinks);
+    const nextGrouped = buildGroupedMusic(visibleMusicLinks);
     groupedMusicRef.current = nextGrouped;
     setGroupedMusic(nextGrouped);
-  }, [musicLinks]);
+  }, [visibleMusicLinks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -253,10 +263,10 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     async (nextGrouped: GroupedMusic) => {
       const updates: { id: string; data: MusicLink }[] = [];
 
-      worshipMoments.forEach((moment) => {
+      WORSHIP_MOMENTS.forEach((moment) => {
         nextGrouped[moment]?.forEach((item, index) => {
           const newOrder = index + 1;
-          const original = musicLinks.find((music) => music.id === item.id);
+          const original = visibleMusicLinks.find((music) => music.id === item.id);
 
           if (!original || !item.id) return;
 
@@ -286,7 +296,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         );
         toast.success("Ordem atualizada!");
       } catch (err: unknown) {
-        setGroupedMusic(buildGroupedMusic(musicLinks));
+        setGroupedMusic(buildGroupedMusic(visibleMusicLinks));
 
         if (err instanceof Error) {
           toast.error("Sem premissão! " + err.message);
@@ -297,7 +307,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         setIsSavingOrder(false);
       }
     },
-    [musicLinks, updateMusicLink]
+    [updateMusicLink, visibleMusicLinks]
   );
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -325,7 +335,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
     const { over } = event;
     if (!over) {
-      const originalOrder = buildGroupedMusic(musicLinks);
+      const originalOrder = buildGroupedMusic(visibleMusicLinks);
       groupedMusicRef.current = originalOrder;
       setGroupedMusic(originalOrder);
       return;
@@ -354,7 +364,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
     }
 
     setName(musicLink.name);
-    setWorshipMoment(musicLink.worshipMoment);
+    setWorshipMoment(normalizeWorshipMoment(musicLink.worshipMoment));
     setLink(musicLink.link || "");
     setLetter(musicLink.letter || "");
     setSpotify(musicLink.spotify || "");
@@ -387,7 +397,11 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards((prev) => ({ ...prev, [editIndex]: true }));
-      const updatedLink = {
+      const original = musicLinks.find((music) => music.id === editIndex);
+      if (!original) return;
+
+      const updatedLink: MusicLink = {
+        ...original,
         name,
         worshipMoment,
         link,
@@ -443,7 +457,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
 
   return (
     <ListContainer>
-      {canReorder && musicLinks.length > 1 && (
+      {canReorder && visibleMusicLinks.length > 1 && (
         <div className="reorder-controls">
           <Button
             variant={isReorderMode ? "secondary" : "unstyled"}
@@ -470,14 +484,14 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
         </div>
       )}
       <AnimatePresence>
-        {musicLinks.length > 0 ? (
+        {visibleMusicLinks.length > 0 ? (
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
-            {worshipMoments.map((moment) => {
+            {WORSHIP_MOMENTS.map((moment) => {
               const musicInMoment = groupedMusic[moment] || [];
 
               if (musicInMoment.length === 0) return null;
@@ -516,7 +530,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
             })}
           </DndContext>
         ) : (
-          <p>Nenhuma canção definida para esta semana</p>
+          <p>Nenhuma canção definida para esta data.</p>
         )}
         {isEditing && (
           <motion.div
@@ -548,7 +562,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete }) => {
                     onKeyDown={handleKeyPress}
                   >
                     <option value="">Selecione o momento</option>
-                    {worshipMoments.map((moment) => (
+                    {WORSHIP_MOMENTS.map((moment) => (
                       <option key={moment} value={moment}>
                         {moment}
                       </option>

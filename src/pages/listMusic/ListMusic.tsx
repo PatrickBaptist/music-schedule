@@ -19,20 +19,12 @@ import { MdPlaylistAdd } from "react-icons/md";
 import { UserRole } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import useBodyScrollLock from "../../context/hooks/useBodyScrollLock";
+import { WORSHIP_MOMENTS } from "../../constants/worshipMoments";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
   'F', 'Fm', 'F#', 'F#m', 'G', 'Gm', 'G#', 'G#m', 'A', 'Am',
   'A#', 'A#m', 'B', 'Bm'
-];
-
-const worshipMoments = [
-  "Momento de Louvor",
-  "Dízimos e Ofertas",
-  "Batismo",
-  "Ceia",
-  "Final do Culto",
-  "Culto de Quinta",
 ];
 
 const ListMusic: React.FC = () => {
@@ -49,6 +41,14 @@ const ListMusic: React.FC = () => {
   const [selectedMusic, setSelectedMusic] = useState<AllMusicLink | null>(null);
   const [worshipMomentModalOpen, setWorshipMomentModalOpen] = useState(false);
   const [selectedWorshipMoment, setSelectedWorshipMoment] = useState("");
+  const [selectedScheduleDate, setSelectedScheduleDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + ((7 - date.getDay()) % 7));
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
   const { user: loggedUser } = useAuthContext();
 
   const loggedRoles = loggedUser?.roles || [];
@@ -132,12 +132,12 @@ const ListMusic: React.FC = () => {
   };
 
   const confirmAddWithMoment = async () => {
-    if (!selectedMusic || !selectedWorshipMoment.trim()) {
-      toast.error("Selecione o momento do louvor antes de continuar!");
+    if (!selectedMusic || !selectedWorshipMoment.trim() || !selectedScheduleDate) {
+      toast.error("Selecione a data e o momento do louvor antes de continuar!");
       return;
     }
 
-    const toastId = toast.loading("Adicionando à lista de domingo...");
+    const toastId = toast.loading("Adicionando ao repertório...");
 
     try {
       await addMusicLink({
@@ -149,10 +149,11 @@ const ListMusic: React.FC = () => {
         letter: selectedMusic.letter || "",
         spotify: selectedMusic.spotify || "",
         description: selectedMusic.description || "",
-        ministeredBy: selectedMusic.minister
+        ministeredBy: selectedMusic.minister,
+        scheduleDate: selectedScheduleDate
       });
 
-      toast.success("Música adicionada ao domingo com sucesso!", { id: toastId });
+      toast.success("Música adicionada ao repertório da data escolhida!", { id: toastId });
       setWorshipMomentModalOpen(false);
       setSelectedWorshipMoment("");
       setSelectedMusic(null);
@@ -516,15 +517,27 @@ const ListMusic: React.FC = () => {
                 transition={{ type: "spring", stiffness: 180, damping: 18 }}
               >
                 <InputContainer style={{ backgroundColor: 'var(--color-surface)' }}>
-                  <h3>Selecione o momento do louvor</h3>
+                  <h3>Adicionar ao repertório</h3>
                   <SelectContainer>
+                    <label htmlFor="library-schedule-date">Data do repertório</label>
+                    <input
+                      id="library-schedule-date"
+                      type="date"
+                      value={selectedScheduleDate}
+                      onChange={(event) => setSelectedScheduleDate(event.target.value)}
+                      style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
+                    />
+                  </SelectContainer>
+                  <SelectContainer>
+                    <label htmlFor="library-worship-moment">Momento do louvor</label>
                     <select
+                      id="library-worship-moment"
                       value={selectedWorshipMoment}
                       onChange={(e) => setSelectedWorshipMoment(e.target.value)}
                       style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', border: '1px solid var(--color-border)' }}
                     >
                       <option value="">Selecione o momento</option>
-                      {worshipMoments.map((moment) => (
+                      {WORSHIP_MOMENTS.map((moment) => (
                         <option key={moment} value={moment}>
                           {moment}
                         </option>

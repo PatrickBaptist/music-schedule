@@ -1,6 +1,9 @@
 import { createContext, ReactNode, useCallback, useMemo, useState } from 'react';
 import useAuthContext from '../context/hooks/useAuthContext';
 import useSchedulesContext from '../context/hooks/useScheduleContext';
+import useMusicLinksContext from '../context/hooks/useMusicLinksContext';
+import type { MusicLink } from './MusicLinksService';
+import { getWorshipMomentPosition } from '../constants/worshipMoments';
 import { MusicoDetalhe, SpecialSchedule } from './ScheduleService';
 
 type RoleKey = 'minister' | 'vocal' | 'teclas' | 'violao' | 'batera' | 'bass' | 'guita' | 'sound';
@@ -14,6 +17,7 @@ export type PersonalAssignment = {
   type: 'Escala';
   roles: string[];
   outfitColor: string;
+  musicLinks: MusicLink[];
 };
 
 type ContextProps = {
@@ -49,11 +53,19 @@ const parseDate = (value: string) => {
   const [year, month, day] = value.slice(0, 10).split('-').map(Number);
   return new Date(year, month - 1, day);
 };
-const fingerprint = (assignments: PersonalAssignment[]) => JSON.stringify(assignments.map(({ id, date, startTime, roles, outfitColor }) => ({ id, date: date.toISOString(), startTime, roles, outfitColor })));
+const fingerprint = (assignments: PersonalAssignment[]) => JSON.stringify(assignments.map(({ id, date, startTime, roles, outfitColor, musicLinks }) => ({
+  id,
+  date: date.toISOString(),
+  startTime,
+  roles,
+  outfitColor,
+  musicLinks: musicLinks.map((music) => ({ id: music.id, order: music.order, worshipMoment: music.worshipMoment })),
+})));
 
 export const MyScheduleProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuthContext();
   const { specialSchedules } = useSchedulesContext();
+  const { musicLinks } = useMusicLinksContext();
   const [seenFingerprint, setSeenFingerprint] = useState('');
   const assignments = useMemo(() => {
     if (!user) return [];
@@ -62,6 +74,7 @@ export const MyScheduleProvider = ({ children }: { children: ReactNode }) => {
       const roles = getRoles(schedule, user);
       const date = parseDate(schedule.data);
       if (!roles.length || Number.isNaN(date.getTime()) || date < today) return null;
+      const scheduleDate = schedule.data.slice(0, 10);
       return {
         id: schedule.id,
         date,
@@ -70,10 +83,16 @@ export const MyScheduleProvider = ({ children }: { children: ReactNode }) => {
         type: 'Escala',
         roles,
         outfitColor: schedule.outfitColor || schedule.músicosIds?.outfitColor || schedule.musicosIds?.outfitColor || '',
+        musicLinks: musicLinks
+          .filter((music) => music.scheduleDate?.slice(0, 10) === scheduleDate)
+          .sort((a, b) =>
+            getWorshipMomentPosition(a.worshipMoment) - getWorshipMomentPosition(b.worshipMoment)
+            || (a.order || 0) - (b.order || 0)
+          ),
       };
     }).filter((item): item is PersonalAssignment => Boolean(item))
       .sort((a, b) => a.date.getTime() - b.date.getTime() || (a.startTime || '99:99').localeCompare(b.startTime || '99:99'));
-  }, [specialSchedules, user]);
+  }, [musicLinks, specialSchedules, user]);
 
   const currentFingerprint = useMemo(() => fingerprint(assignments), [assignments]);
   const storageKey = user?.id ? `my-schedule-seen:${user.id}` : '';

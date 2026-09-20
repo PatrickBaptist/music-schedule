@@ -130,6 +130,87 @@ export const RoleChip = styled.span`
   font-weight: 750;
 `;
 
+export const RepertoireSection = styled.section`
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+
+  > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-text-strong);
+    }
+
+    svg {
+      color: var(--color-primary);
+    }
+
+    > span {
+      color: var(--color-text-muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+  }
+
+  > p {
+    margin: 12px 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .repertoire-group {
+    margin-top: 14px;
+
+    > span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--color-text-muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    ol {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0;
+      padding-left: 24px;
+    }
+
+    li {
+      padding-left: 3px;
+      color: var(--color-primary);
+
+      strong {
+        color: var(--color-text-strong);
+        font-size: 0.92rem;
+      }
+
+      small {
+        display: inline-flex;
+        margin-left: 8px;
+        padding: 2px 6px;
+        border-radius: 5px;
+        background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+        color: var(--color-primary);
+        font-weight: 800;
+      }
+    }
+  }
+`;
+
 export const CalendarButton = styled(Button)`
   && {
     width: 100%;

@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
     { name: "Escala", path: "/schedule", icon: ScheduleIcon },
     { name: "Canções", path: "/listMusic", icon: MusicIcon, blocked: isGuest },
     { name: "Usuários", path: "/users", icon: Users, blocked: isGuest },
-    { name: "Minha Escala", path: "/my-schedule", icon: UserIcon },
+    { name: "Agenda", path: "/my-schedule", icon: UserIcon },
   ];
 
   return (

@@ -167,6 +167,85 @@ export const ContainerHome = styled.div`
       text-transform: uppercase;
     }
 
+    .repertoire-date-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 8px 0 16px;
+      padding: 14px 16px;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border-soft);
+      border-radius: 12px;
+      background: var(--color-surface-muted);
+
+      @media (max-width: 560px) {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+
+    .repertoire-date-copy {
+      min-width: 0;
+
+      span {
+        color: var(--color-text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      h3 {
+        margin: 3px 0 0;
+        color: var(--color-text-strong);
+        font-size: clamp(17px, 2.4vw, 22px);
+        line-height: 1.25;
+        text-transform: capitalize;
+      }
+    }
+
+    .date-picker-trigger {
+      position: relative;
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-shrink: 0;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      border-radius: 9px;
+      background: var(--color-surface);
+      color: var(--color-text-strong);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+
+      &:hover,
+      &:focus-within {
+        border-color: var(--color-primary);
+        background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+      }
+
+      input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      @media (max-width: 560px) {
+        width: 100%;
+      }
+    }
+
     .schedule-tabs {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));

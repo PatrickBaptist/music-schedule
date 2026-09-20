@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { FaCalendarAlt, FaCalendarPlus, FaClock, FaPalette } from 'react-icons/fa';
+import { FaCalendarAlt, FaCalendarPlus, FaClock, FaMusic, FaPalette } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import PageWrapper from '../../components/pageWrapper/pageWrapper';
@@ -16,6 +16,7 @@ import {
   MyScheduleContainer,
   RoleChip,
   RoleList,
+  RepertoireSection,
   ScheduleLink,
   TypeLabel,
 } from './MySchedulePageStyle';
@@ -86,6 +87,32 @@ const MySchedulePage = () => {
                   <FaPalette aria-hidden="true" />
                   <span><strong>Paleta:</strong> {assignment.outfitColor || 'Não definida'}</span>
                 </InfoLine>
+
+                <RepertoireSection>
+                  <header>
+                    <div><FaMusic aria-hidden="true" /><strong>Repertório</strong></div>
+                    {!!assignment.musicLinks.length && <span>{assignment.musicLinks.length} {assignment.musicLinks.length === 1 ? 'música' : 'músicas'}</span>}
+                  </header>
+                  {assignment.musicLinks.length ? (
+                    Array.from(new Set(assignment.musicLinks.map((music) => music.worshipMoment))).map((moment) => (
+                      <div className="repertoire-group" key={moment}>
+                        <span>{moment}</span>
+                        <ol>
+                          {assignment.musicLinks
+                            .filter((music) => music.worshipMoment === moment)
+                            .map((music) => (
+                              <li key={music.id}>
+                                <strong>{music.name}</strong>
+                                {music.cifra && <small>{music.cifra}</small>}
+                              </li>
+                            ))}
+                        </ol>
+                      </div>
+                    ))
+                  ) : (
+                    <p>O repertório desta escala ainda não foi definido.</p>
+                  )}
+                </RepertoireSection>
 
                 <CalendarButton type="button" variant="secondary" onClick={() => downloadCalendarEvent(assignment)}>
                   <FaCalendarPlus aria-hidden="true" />

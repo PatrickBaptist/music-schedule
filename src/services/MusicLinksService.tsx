@@ -18,6 +18,8 @@ export interface MusicLink {
   cifra: string | null;
   description: string | null;
   ministeredBy?: string | null;
+  /** Data do culto/evento no formato YYYY-MM-DD. */
+  scheduleDate?: string | null;
   order: number;
 }
 
