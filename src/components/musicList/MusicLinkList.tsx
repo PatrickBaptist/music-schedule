@@ -456,31 +456,30 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
 
   return (
     <ListContainer>
-      {canReorder && visibleMusicLinks.length > 1 && (
-        <div className="reorder-controls">
-          <Button
-            variant={isReorderMode ? "secondary" : "unstyled"}
-            className={`reorder-mode-btn${isReorderMode ? " is-active" : ""}`}
-            onClick={() => setIsReorderMode((current) => !current)}
-            disabled={isSavingOrder}
-            aria-pressed={isReorderMode}
-          >
-            {isReorderMode ? (
-              <>
-                <FaLock size={14} /> Concluir ajuste
-              </>
-            ) : (
-              <>
-                <FaGripVertical size={14} /> Ajustar ordem
-              </>
-            )}
-          </Button>
-          {isReorderMode && (
-            <span className="reorder-hint">
-              Segure o ícone ao lado da música e arraste.
-            </span>
+      {visibleMusicLinks.length > 0 && (
+        <div className="music-list-toolbar">
+          <div className="music-list-title">
+            <strong>{visibleMusicLinks.length} {visibleMusicLinks.length === 1 ? 'música no repertório' : 'músicas no repertório'}</strong>
+          </div>
+          {canReorder && visibleMusicLinks.length > 1 && (
+            <Button
+              variant={isReorderMode ? "secondary" : "unstyled"}
+              className={`reorder-mode-btn${isReorderMode ? " is-active" : ""}`}
+              onClick={() => setIsReorderMode((current) => !current)}
+              disabled={isSavingOrder}
+              aria-pressed={isReorderMode}
+            >
+              {isReorderMode ? (
+                <><FaLock size={14} /> Concluir ajuste</>
+              ) : (
+                <><FaGripVertical size={14} /> Ajustar ordem</>
+              )}
+            </Button>
           )}
         </div>
+      )}
+      {isReorderMode && (
+        <span className="reorder-hint">Segure o ícone ao lado da música e arraste.</span>
       )}
       <AnimatePresence>
         {visibleMusicLinks.length > 0 ? (
