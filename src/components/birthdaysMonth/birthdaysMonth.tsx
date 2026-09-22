@@ -83,7 +83,7 @@ const BirthdaysThisMonth: React.FC = () => {
     return (
       <BirthdayEmptyState>
         <FaBirthdayCake aria-hidden="true" />
-        <div><strong>Aniversariantes do mês</strong><span>Nenhum aniversário cadastrado neste mês.</span></div>
+        <div><strong>Aniversariantes do mês</strong><span>Nenhum aniversariante neste mês.</span></div>
       </BirthdayEmptyState>
     );
   }
