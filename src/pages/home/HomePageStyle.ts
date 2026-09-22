@@ -19,6 +19,200 @@ export const ContainerHome = styled.div`
     overflow: visible;
     box-sizing: border-box;
 
+    .home-summary-card {
+      width: 100%;
+      max-width: 1320px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      margin: 0 auto 24px;
+      padding: 18px 20px;
+      border: 1px solid var(--color-border-soft);
+      border-left: 4px solid var(--color-primary);
+      border-radius: 12px;
+      background: var(--color-surface);
+      box-shadow: 0 4px 14px var(--color-shadow);
+    }
+
+    .home-summary-date {
+      width: 60px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border-radius: 10px;
+      background: var(--color-surface-muted);
+      color: var(--color-primary);
+      line-height: 1;
+
+      strong {
+        color: var(--color-text-strong);
+        font-size: 1.65rem;
+      }
+
+      span {
+        margin-top: 5px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      svg {
+        font-size: 1.35rem;
+      }
+    }
+
+    .home-summary-main {
+      min-width: 0;
+
+      h1 {
+        margin: 5px 0 7px;
+        font-size: clamp(1.15rem, 2vw, 1.45rem);
+        line-height: 1.2;
+      }
+
+      > p {
+        margin: 6px 0 0;
+        color: var(--color-text-muted);
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+    }
+
+    .home-summary-eyebrow {
+      color: var(--color-primary);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+
+      em {
+        margin-left: 8px;
+        color: var(--color-text-muted);
+        font-style: normal;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+    }
+
+    .home-summary-schedule,
+    .home-summary-details {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px 16px;
+      color: var(--color-text-muted);
+      font-size: 0.82rem;
+
+      > span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      svg { color: var(--color-primary); }
+    }
+
+    .home-summary-details {
+      margin-top: 9px;
+      color: var(--color-text-strong);
+      font-weight: 700;
+    }
+
+    .home-summary-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    .home-summary-link {
+      width: 152px;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      color: var(--color-text-strong);
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 750;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+
+      &.primary {
+        border-color: var(--color-primary);
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+      }
+
+      &.secondary { background: transparent; }
+
+      &:hover { border-color: var(--color-primary); }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
+      }
+
+      .home-summary-arrow { margin-left: auto; }
+    }
+
+    .home-music-list-anchor {
+      width: 100%;
+      scroll-margin-top: 16px;
+    }
+
+    @media (max-width: 820px) {
+      .home-summary-card {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .home-summary-actions {
+        grid-column: 1 / -1;
+        flex-direction: row;
+      }
+
+      .home-summary-link {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .home-summary-card {
+        align-items: start;
+        gap: 14px;
+        padding: 16px;
+      }
+
+      .home-summary-date {
+        width: 52px;
+        height: 58px;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .home-summary-card {
+        grid-template-columns: 1fr;
+      }
+
+      .home-summary-date {
+        display: none;
+      }
+
+      .home-summary-actions {
+        grid-column: auto;
+        flex-direction: column;
+      }
+    }
+
     /* Layout para desktop */
     .desktop-layout {
       width: 100%;
@@ -249,7 +443,7 @@ export const ContainerHome = styled.div`
       gap: 8px;
       min-width: 0;
 
-      @media (max-width: 560px) {
+      @media (max-width: 1135px) {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
 

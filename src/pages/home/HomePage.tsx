@@ -11,8 +11,10 @@ import SpecialSchedules from '../../components/specialSchedule/specialSchedule';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { SpecialSchedule } from '../../services/ScheduleService';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
-import { FaCalendarAlt, FaMusic, FaPlus } from 'react-icons/fa';
+import { FaArrowRight, FaCalendarAlt, FaClock, FaMusic, FaPlus, FaUserCheck } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import useAuthContext from '../../context/hooks/useAuthContext';
+import useMyScheduleContext from '../../context/hooks/useMyScheduleContext';
 import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import Button from '../../components/buttons/Buttons';
@@ -32,12 +34,29 @@ const getNextSunday = () => {
   return toLocalISODate(date);
 };
 
+const formatSummaryDate = (date: Date) => date.toLocaleDateString('pt-BR', {
+  weekday: 'long',
+  day: '2-digit',
+  month: 'long',
+});
+
+const getSummaryRelativeDate = (date: Date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000);
+
+  if (diff === 0) return 'É hoje';
+  if (diff === 1) return 'É amanhã';
+  return `Faltam ${diff} dias`;
+};
+
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { specialSchedules, getSpecialSchedules } = useSchedulesContext();
   const { warning, getWarning } = useNotificationContext();
   const [isLoading, setIsLoading] = useState(true);
   const { user: loggedUser } = useAuthContext();
+  const { assignments } = useMyScheduleContext();
   const { musicLinks } = useMusicLinksContext();
   const fallbackDate = useMemo(getNextSunday, []);
   const [selectedMusicDate, setSelectedMusicDate] = useState(fallbackDate);
@@ -48,6 +67,7 @@ const HomePage: React.FC = () => {
   const loggedRoles = loggedUser?.roles || [];
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin, UserRole.Vocal];
   const canAddMusic = loggedRoles.some((role) => allowedRoles.includes(role as UserRole));
+  const nextAssignment = assignments[0];
   const weeklySchedules = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -128,6 +148,75 @@ const HomePage: React.FC = () => {
       <ContainerHome>
         <PageWrapper>
           {warning?.text && <Aviso message={'⚠️ ' + warning.text} duration={20000} />}
+
+          <section className="home-summary-card" aria-labelledby="home-summary-title">
+            <div className="home-summary-date" aria-hidden="true">
+              {nextAssignment ? (
+                <>
+                  <strong>{nextAssignment.date.toLocaleDateString('pt-BR', { day: '2-digit' })}</strong>
+                  <span>{nextAssignment.date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</span>
+                </>
+              ) : (
+                <FaCalendarAlt />
+              )}
+            </div>
+
+            <div className="home-summary-main">
+              <span className="home-summary-eyebrow">
+                Próximo compromisso
+                {nextAssignment && <em>{getSummaryRelativeDate(nextAssignment.date)}</em>}
+              </span>
+              {isLoading ? (
+                <>
+                  <h1 id="home-summary-title">Carregando sua agenda...</h1>
+                </>
+              ) : nextAssignment ? (
+                <>
+                  <h1 id="home-summary-title">{nextAssignment.title}</h1>
+                  <div className="home-summary-schedule">
+                    <span><FaCalendarAlt aria-hidden="true" />{formatSummaryDate(nextAssignment.date)}</span>
+                    <span><FaClock aria-hidden="true" />{nextAssignment.startTime || 'Horário a definir'}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h1 id="home-summary-title">Nenhuma escala próxima</h1>
+                  <p>Quando você entrar em uma equipe, o compromisso aparecerá aqui.</p>
+                </>
+              )}
+
+              {nextAssignment && (
+                <div className="home-summary-details" aria-label="Resumo da próxima escala">
+                  <span>
+                    <FaUserCheck aria-hidden="true" />
+                    {nextAssignment.roles.join(', ')}
+                  </span>
+                  <span>
+                    <FaMusic aria-hidden="true" />
+                    {nextAssignment.musicLinks.length} {nextAssignment.musicLinks.length === 1 ? 'música' : 'músicas'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <nav className="home-summary-actions" aria-label="Atalhos do compromisso">
+              <Link className="home-summary-link primary" to="/my-schedule">
+                <FaUserCheck aria-hidden="true" />
+                Minha escala
+                <FaArrowRight className="home-summary-arrow" aria-hidden="true" />
+              </Link>
+              {!isGuest && (
+                <button
+                  type="button"
+                  className="home-summary-link secondary"
+                  onClick={() => document.getElementById('home-music-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                >
+                  <FaMusic aria-hidden="true" />
+                  Ver músicas
+                </button>
+              )}
+            </nav>
+          </section>
 
           <div className="desktop-layout">
             <div className="coluna-1">
@@ -219,7 +308,9 @@ const HomePage: React.FC = () => {
                 )}
               </section>
 
-              <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
+              <div id="home-music-list" className="home-music-list-anchor">
+                <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
+              </div>
             </div>
 
             <div className="coluna-2">
