@@ -2,6 +2,17 @@ import { motion } from "framer-motion";
 import styled from "styled-components";
 import SharedButton from "../../components/buttons/Buttons";
 
+export const ProfilePageContainer = styled.main`
+  width: 100%;
+  min-height: 100%;
+  padding: 28px 16px 48px;
+  box-sizing: border-box;
+
+  @media (max-width: 670px) {
+    padding: 18px 12px 32px;
+  }
+`;
+
 export const ProfileTitle = styled(motion.h1)`
   font-size: 2.2rem;
   margin-bottom: 25px;

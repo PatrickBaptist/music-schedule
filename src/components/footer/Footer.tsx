@@ -1,13 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { ContainerFooter, FooterBadge, FooterItem, NavFooter } from "./FooterStyle";
-import Home from "../../assets/imgs/home.png";
-import ScheduleIcon from "../../assets/imgs/agenda.png";
-import MusicIcon from "../../assets/imgs/musicas.png";
-import Users from "../../assets/imgs/usuarios.png";
-import UserIcon from "../../assets/imgs/perfil.png";
 import { motion } from "framer-motion";
 import useAuthContext from "../../context/hooks/useAuthContext";
-import { FaBan } from "react-icons/fa";
+import { FaBan, FaCalendarAlt, FaClipboardList, FaHome, FaMusic, FaUsers } from "react-icons/fa";
 import { UserRole } from "../../types/UserRole";
 import useMyScheduleContext from "../../context/hooks/useMyScheduleContext";
 
@@ -19,11 +14,11 @@ const Footer: React.FC = () => {
   const isGuest = user?.roles?.includes(UserRole.Guest);
 
   const menuItems = [
-    { name: "Início", path: "/", icon: Home },
-    { name: "Escala", path: "/schedule", icon: ScheduleIcon },
-    { name: "Canções", path: "/listMusic", icon: MusicIcon, blocked: isGuest },
-    { name: "Usuários", path: "/users", icon: Users, blocked: isGuest },
-    { name: "Agenda", path: "/my-schedule", icon: UserIcon },
+    { name: "Início", path: "/", icon: FaHome },
+    { name: "Escala", path: "/schedule", icon: FaClipboardList },
+    { name: "Canções", path: "/listMusic", icon: FaMusic, blocked: isGuest },
+    { name: "Usuários", path: "/users", icon: FaUsers, blocked: isGuest },
+    { name: "Agenda", path: "/my-schedule", icon: FaCalendarAlt },
   ];
 
   return (
@@ -31,60 +26,36 @@ const Footer: React.FC = () => {
       <NavFooter>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const Icon = item.icon;
           return (
             <FooterItem key={item.name} $active={isActive}>
               {item.blocked ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    opacity: 0.5,
-                    cursor: "not-allowed",
-                    position: "relative",
-                  }}
-                >
-                  <img
-                    src={item.icon}
-                    alt={item.name}
-                    style={{
-                      width: 30,
-                      height: 30,
-                      marginBottom: 2,
-                      filter: "grayscale(100%)",
-                    }}
-                  />
-                  <FaBan
-                    size={12}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: -4,
-                      color: "red",
-                    }}
-                  />
-
-                  <span style={{ color: "#aaa" }}>{item.name}</span>
+                <div className="blocked-item" aria-disabled="true">
+                  <span className="footer-icon">
+                    <Icon aria-hidden="true" />
+                    <FaBan className="blocked-icon" aria-hidden="true" />
+                  </span>
+                  <span>{item.name}</span>
                 </div>
               ) : (
                 <Link to={item.path}>
-                  <motion.img
-                    src={item.icon}
-                    alt={item.name}
+                  <motion.span
+                    className="footer-icon"
                     animate={{
-                      y: isActive ? -4 : 0,
-                      scale: 1,
+                      y: isActive ? -3 : 0,
+                      scale: isActive ? 1.05 : 1,
                     }}
                     transition={{
                       type: "spring",
                       stiffness: 300,
                       damping: 20,
                     }}
-                    style={{ width: 30, height: 30, marginBottom: 2 }}
-                  />
-                  {item.path === "/my-schedule" && hasUnseenAssignments && (
-                    <FooterBadge title="Você tem uma escala nova" aria-label="Você tem uma escala nova" />
-                  )}
+                  >
+                    <Icon aria-hidden="true" />
+                    {item.path === "/my-schedule" && hasUnseenAssignments && (
+                      <FooterBadge title="Você tem uma escala nova" aria-label="Você tem uma escala nova" />
+                    )}
+                  </motion.span>
                   <span>{item.name}</span>
                 </Link>
               )}

@@ -11,11 +11,11 @@ import SpecialSchedules from '../../components/specialSchedule/specialSchedule';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { SpecialSchedule } from '../../services/ScheduleService';
 import BirthdaysThisMonth from '../../components/birthdaysMonth/birthdaysMonth';
-import { FaCalendarAlt, FaPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaMusic, FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
-import { MotionButton } from '../../components/buttons/Buttons';
+import Button from '../../components/buttons/Buttons';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 
 const toLocalISODate = (date: Date) => {
@@ -72,6 +72,19 @@ const HomePage: React.FC = () => {
 
     return futureDates[0] || fallbackDate;
   }, [fallbackDate, musicLinks]);
+  const availableRepertoireDates = useMemo(() => {
+    const today = toLocalISODate(new Date());
+    const dates = new Map<string, number>();
+
+    musicLinks.forEach((music) => {
+      const date = music.scheduleDate?.slice(0, 10);
+      if (!date || date < today) return;
+      dates.set(date, (dates.get(date) || 0) + 1);
+    });
+
+    return Array.from(dates, ([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [musicLinks]);
   const selectedRepertoireLabel = useMemo(() => {
     if (!selectedMusicDate) return 'Data não selecionada';
 
@@ -118,20 +131,6 @@ const HomePage: React.FC = () => {
 
           <div className="desktop-layout">
             <div className="coluna-1">
-              {canAddMusic && (
-                <div className="content-louvores">
-                  <h4>Adicionar repertório</h4>
-                  <MotionButton variant="unstyled"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btns add-btn"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <FaPlus size={12} />
-                  </MotionButton>
-                </div>
-              )}
-
               {isModalOpen &&
                 createPortal(
                   <AddFormOverlay
@@ -154,19 +153,71 @@ const HomePage: React.FC = () => {
                   <span>Repertório exibido</span>
                   <h3>{selectedRepertoireLabel}</h3>
                 </div>
-                <label className="date-picker-trigger" htmlFor="music-schedule-date">
-                  <FaCalendarAlt aria-hidden="true" />
-                  <span>Trocar data</span>
-                  <input
-                    id="music-schedule-date"
-                    type="date"
-                    value={selectedMusicDate}
-                    aria-label="Escolher outra data do repertório"
-                    onClick={(event) => event.currentTarget.showPicker?.()}
-                    onChange={(event) => changeSelectedMusicDate(event.target.value)}
-                  />
-                </label>
+                <div className="repertoire-date-actions">
+                  <label className="date-picker-trigger" htmlFor="music-schedule-date">
+                    <FaCalendarAlt aria-hidden="true" />
+                    <span>Trocar data</span>
+                    <input
+                      id="music-schedule-date"
+                      type="date"
+                      value={selectedMusicDate}
+                      aria-label="Escolher outra data do repertório"
+                      onClick={(event) => event.currentTarget.showPicker?.()}
+                      onChange={(event) => changeSelectedMusicDate(event.target.value)}
+                    />
+                  </label>
+                  {canAddMusic && (
+                    <Button
+                      variant="primary"
+                      size="md"
+                      className="add-music-button"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      <FaPlus aria-hidden="true" />
+                      <span>Adicionar música</span>
+                    </Button>
+                  )}
+                </div>
               </div>
+
+              <section className="available-repertoires" aria-labelledby="available-repertoires-title">
+                <div className="available-repertoires-heading">
+                  <div>
+                    <FaMusic aria-hidden="true" />
+                    <strong id="available-repertoires-title">Repertórios</strong>
+                  </div>
+                  <span>Escolha uma data para abrir</span>
+                </div>
+                {availableRepertoireDates.length ? (
+                  <div className="repertoire-date-options">
+                    {availableRepertoireDates.map(({ date, count }) => {
+                      const parsedDate = new Date(`${date}T12:00:00`);
+                      const weekday = parsedDate.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+                      const shortDate = parsedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                      const isSelected = date === selectedMusicDate;
+
+                      return (
+                        <button
+                          type="button"
+                          key={date}
+                          className={isSelected ? 'active' : ''}
+                          aria-pressed={isSelected}
+                          onClick={() => changeSelectedMusicDate(date)}
+                        >
+                          <span className="repertoire-option-date">
+                            <strong>{weekday}</strong>
+                            <small>{shortDate}</small>
+                          </span>
+                          <span className="repertoire-option-count">{count}</span>
+                          <span className="sr-only">{count === 1 ? 'música' : 'músicas'}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p>Nenhum repertório futuro possui músicas.</p>
+                )}
+              </section>
 
               <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
             </div>

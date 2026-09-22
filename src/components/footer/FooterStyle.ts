@@ -15,7 +15,9 @@ export const ContainerFooter = styled.footer`
 
 export const NavFooter = styled.nav`
   display: flex;
+  align-items: flex-start;
   justify-content: space-around;
+  gap: 2px;
   margin-bottom: 5px;
 
   @media (min-width: 671px) {
@@ -24,11 +26,16 @@ export const NavFooter = styled.nav`
 `;
 
 export const FooterItem = styled.div<{ $active?: boolean }>`
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  a {
+
+  a,
+  .blocked-item {
     position: relative;
+    width: 100%;
     text-decoration: none;
     color: ${(props) =>
       props.$active ? "var(--color-primary)" : "var(--color-text-muted)"};
@@ -37,18 +44,59 @@ export const FooterItem = styled.div<{ $active?: boolean }>`
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 2px;
   }
-  img {
-    width: 20px;
-    height: 20px;
-    margin-bottom: 2px;
+
+  .footer-icon {
+    position: relative;
+    width: 38px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: ${(props) => props.$active
+      ? "color-mix(in srgb, var(--color-primary) 14%, transparent)"
+      : "transparent"};
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    > svg {
+      width: 21px;
+      height: 21px;
+    }
+  }
+
+  .blocked-item {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .blocked-icon {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 10px !important;
+    height: 10px !important;
+    color: #dc2626;
+  }
+
+  @media (max-width: 370px) {
+    a,
+    .blocked-item {
+      font-size: 11px;
+    }
+
+    .footer-icon {
+      width: 34px;
+    }
   }
 `;
 
 export const FooterBadge = styled.span`
   position: absolute;
-  top: -4px;
-  right: 4px;
+  top: 1px;
+  right: 2px;
   width: 11px;
   height: 11px;
   border: 2px solid var(--color-page-bg);

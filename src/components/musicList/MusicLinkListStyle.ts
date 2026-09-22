@@ -42,18 +42,32 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     }
   }
 
-  .reorder-controls {
+  .music-list-toolbar {
     width: 100%;
     max-width: 800px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-bottom: 12px;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 2px 0 12px;
+    padding: 0 4px;
+    box-sizing: border-box;
 
-    @media (max-width: 600px) {
-      align-items: flex-end;
+    @media (max-width: 360px) {
+      align-items: stretch;
       flex-direction: column;
+    }
+  }
+
+  .music-list-title {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    color: var(--color-text-muted);
+
+    strong {
+      font-size: 13px;
+      line-height: 1.2;
     }
   }
 
@@ -74,6 +88,11 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   }
 
   .reorder-hint {
+    width: 100%;
+    max-width: 800px;
+    margin: -4px 0 10px;
+    padding: 0 4px;
+    box-sizing: border-box;
     color: var(--color-text-muted);
     font-size: 13px;
   }

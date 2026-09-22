@@ -12,7 +12,7 @@ import AllMusicLinkInput from "../../components/allMusicLink/AllMusicLinkInput";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import { useScroll } from "../../context/hooks/useScroll";
-import { FaEdit, FaPlus, FaSpotify, FaTrash, FaYoutube } from "react-icons/fa";
+import { FaEdit, FaEllipsisV, FaFileAlt, FaPlus, FaSpotify, FaTimes, FaTrash, FaYoutube } from "react-icons/fa";
 import { AllMusicLink } from "../../services/AllMusicHistory";
 import { InputContainer } from "../../components/allMusicLink/AllMusicLinkInputStyle";
 import { MdPlaylistAdd } from "react-icons/md";
@@ -70,6 +70,7 @@ const ListMusic: React.FC = () => {
   const [ editIndex, setEditIndex ] = useState<string | null>(null);
   const [ loadingCards, setLoadingCards ] = useState<{ [key: string]: boolean }>({});
   const [filteredMusicLinks, setFilteredMusicLinks] = useState<AllMusicLink[]>([]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const normalizeString = (str: string) => {
     return str
@@ -258,28 +259,19 @@ const ListMusic: React.FC = () => {
       <Main>
         <PageWrapper>
           <ListContainer>
-            <div style={{ width: "90%", maxWidth: "600px", display: "flex", alignItems: "center", marginBottom: "40px" }}>
+            <div className="library-toolbar">
               <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
                 placeholder="Pesquisar música..."
               />
-            </div>
-
-            {canAddMusic && (
-              <div className='content-louvores'>
-                <h4>Adicionar louvor</h4>
-                <MotionButton variant="unstyled"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="btns add-btn"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <FaPlus size={12} />
-                </MotionButton>
-              </div>
+              {canAddMusic && (
+                <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+                  <FaPlus aria-hidden="true" /> Adicionar música
+                </Button>
               )}
+            </div>
 
             {isModalOpen &&
               createPortal(
@@ -385,74 +377,73 @@ const ListMusic: React.FC = () => {
                         <p style={{ color: '#fff' }}>Aguarde..</p>
                       ) : (
                         <>
-                          <div className="music-info">
-                            <div className="span-cifra">{music.cifra || "-"}</div>
-                            <div className="music-text">
-                              <div className="span-music">{music.name}</div>
-                              <span className="divider-music">-</span>
-                              <div className="span-minister">Ministro: {music.minister}</div>
+                          <div className="music-card-header">
+                            <div className="music-card-copy">
+                              <strong>{music.name}</strong>
+                              <span>Ministro: {music.minister || 'Não definido'}</span>
                             </div>
+                            {music.cifra && <span className="span-cifra" title="Tom da música">{music.cifra}</span>}
+                            <MotionButton
+                              variant="unstyled"
+                              whileTap={{ scale: 0.95 }}
+                              className="toggle-btn"
+                              onClick={() => setOpenMenuId((current) => current === music.id ? null : music.id!)}
+                              title={openMenuId === music.id ? 'Ocultar ações' : 'Mostrar mais ações'}
+                              aria-label={openMenuId === music.id ? `Ocultar ações de ${music.name}` : `Mostrar ações de ${music.name}`}
+                            >
+                              {openMenuId === music.id ? <FaTimes /> : <FaEllipsisV />}
+                            </MotionButton>
                           </div>
 
-                          <div className="music-buttons">
+                          {music.description?.trim() && (
+                            <div className="description-preview">{music.description}</div>
+                          )}
+
+                          <div className="desktop-music-links" aria-label="Links da música">
                             {music.link && (
-                              <MotionButton variant="unstyled"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="btns youtube-btn"
+                              <Button variant="secondary"
                                 onClick={() => handleOpenVideo(music.link!)}
                                 title="Assistir vídeo"
                               >
-                                <FaYoutube size={14} />
-                              </MotionButton>
+                                <FaYoutube aria-hidden="true" /> YouTube
+                              </Button>
                             )}
-
+                            {music.letter && (
+                              <Button variant="secondary" onClick={() => window.open(music.letter!, '_blank')} title="Abrir letra">
+                                <FaFileAlt aria-hidden="true" /> Letra
+                              </Button>
+                            )}
                             {music.spotify && (
-                              <MotionButton variant="unstyled"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="btns spotify-btn"
-                                onClick={() =>
-                                  music.spotify &&
-                                  window.open(music.spotify, "_blank")
-                                }
-                                title="Abrir no Spotify"
-                              >
-                                <FaSpotify size={16} />
-                              </MotionButton>
-                            )}
-
-                            <MotionButton variant="unstyled"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              className="btns edit-btn"
-                              onClick={() => handleUpdate(music.id)}
-                            >
-                              <FaEdit size={14} />
-                            </MotionButton>
-
-                            {canDeleteMusic && (
-                              <MotionButton variant="unstyled"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="btns delete-btn"
-                                onClick={() => handleDelete(music.id, music.name)}
-                              >
-                                <FaTrash size={14} />
-                              </MotionButton>
-                            )}
-
-                            {canAddMusic && (
-                              <MotionButton variant="unstyled"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="btns add-btn"
-                                onClick={() => handleAddToSunday(music.id)}
-                              >
-                                <MdPlaylistAdd size={14} />
-                              </MotionButton>
+                              <Button variant="secondary" onClick={() => window.open(music.spotify!, '_blank')} title="Abrir no Spotify">
+                                <FaSpotify aria-hidden="true" /> Spotify
+                              </Button>
                             )}
                           </div>
+
+                          <AnimatePresence>
+                            {openMenuId === music.id && (
+                              <motion.div className="music-buttons" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                                {music.link && <MotionButton variant="unstyled" className="btns youtube-btn mobile-link-action" onClick={() => handleOpenVideo(music.link!)} title="Assistir vídeo"><FaYoutube /></MotionButton>}
+                                {music.letter && <MotionButton variant="unstyled" className="btns letter-btn mobile-link-action" onClick={() => window.open(music.letter!, '_blank')} title="Abrir letra"><FaFileAlt /></MotionButton>}
+                                {music.spotify && <MotionButton variant="unstyled" className="btns spotify-btn mobile-link-action" onClick={() => window.open(music.spotify!, '_blank')} title="Abrir no Spotify"><FaSpotify /></MotionButton>}
+                                <MotionButton variant="unstyled" className="btns edit-btn" onClick={() => handleUpdate(music.id)} title="Editar música" aria-label={`Editar ${music.name}`}>
+                                  <FaEdit />
+                                </MotionButton>
+
+                                {canDeleteMusic && (
+                                  <MotionButton variant="unstyled" className="btns delete-btn" onClick={() => handleDelete(music.id, music.name)} title="Excluir música" aria-label={`Excluir ${music.name}`}>
+                                    <FaTrash />
+                                  </MotionButton>
+                                )}
+
+                                {canAddMusic && (
+                                  <MotionButton variant="unstyled" className="btns add-btn" onClick={() => handleAddToSunday(music.id)} title="Adicionar ao repertório" aria-label={`Adicionar ${music.name} ao repertório`}>
+                                    <MdPlaylistAdd />
+                                  </MotionButton>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </>
                       )}
                     </motion.div>

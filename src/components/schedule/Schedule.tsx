@@ -9,7 +9,7 @@ import useUsersContext from '../../context/hooks/useUsersContext';
 import type { SpecialSchedule } from '../../services/ScheduleService';
 import type { User } from '../../services/UsersService';
 import { UserRole } from '../../types/UserRole';
-import Button, { MotionButton } from '../buttons/Buttons';
+import Button from '../buttons/Buttons';
 import EspecialScheduleInput from '../especialScheduleInput/EspecialScheduleInput';
 import LoadingScreen from '../loading/LoadingScreen';
 import PageWrapper from '../pageWrapper/pageWrapper';
@@ -115,7 +115,9 @@ const Schedule = () => {
       </MonthNavigation>
 
       {canManage && <div className="add-schedule">
-        <h4>Gerar automaticamente</h4><MotionButton variant="unstyled" className="btns generate-btn" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}><FaMagic size={12} /></MotionButton>
+        <Button variant="primary" onClick={() => { setViewMode('calendar'); setIsSelecting(true); setSelectedIds([]); setSelectedDates([]); }}>
+          <FaMagic aria-hidden="true" /> Gerar automaticamente
+        </Button>
       </div>}
 
       <ViewToggle role="group" aria-label="Escolher visualização">

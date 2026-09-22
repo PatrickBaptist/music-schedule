@@ -19,6 +19,7 @@ import {
   ProfileItem,
   ProfileList,
   ProfileActions,
+  ProfilePageContainer,
   ProfileTitle,
   LogoutButton,
 } from './meStyle';
@@ -277,7 +278,7 @@ const MePage: React.FC = () => {
   };
 
   return (
-    <div style={{ marginTop: '150px' }}>
+    <ProfilePageContainer>
       {isLoading ? (
         <LoadingScreen />
       ) : (
@@ -638,7 +639,7 @@ const MePage: React.FC = () => {
           </div>
         </ContainerForm>
       )}
-    </div>
+    </ProfilePageContainer>
   );
 };
 

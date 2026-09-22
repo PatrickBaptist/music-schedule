@@ -24,39 +24,34 @@ export const ListContainer = styled.ul`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 50px 0;
-  
-  .content-louvores {
-      width: 100%;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: left;
-      box-sizing: border-box;
-      padding-left: 12px;
-      margin: 20px 0;
+  padding: 36px 0;
 
-      h4 {
-        margin-right: 10px;
-      }
+  .library-toolbar {
+    width: min(calc(100% - 32px), 800px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
 
-      .btn-write{
-        width: 10px;
-        border: none;
-        background-color: none;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-
-        &:hover {
-          transform: rotate(10deg);
-        }
-      }
-
-      img {
-        width: 15px;
-      }
-
+    input {
+      flex: 1;
+      min-width: 0;
     }
+
+    button {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 560px) {
+      align-items: stretch;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
 
   .container {
     width: 100%;
@@ -65,24 +60,61 @@ export const ListContainer = styled.ul`
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
-    padding: 0 50px;
+    padding: 0 16px;
   }
 
   .container-card-music {
     width: 100%;
     max-width: 800px;
     background-color: var(--color-surface);
-    border-radius: 12px;
-    padding: 12px 20px;
-    margin-bottom: 12px;
-    box-shadow: 2px 2px 6px var(--color-shadow);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--color-shadow);
     display: flex;
     flex-direction: column;
     gap: 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-    &:hover {
-      transform: translateY(-1px);
-      transition: all 0.4s ease-in-out;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: rgba(245, 158, 11, 0.45);
+        box-shadow: 0 5px 14px var(--color-shadow);
+      }
+    }
+
+    @media (max-width: 600px) {
+      padding: 12px;
+      border-radius: 9px;
+    }
+  }
+
+  .music-card-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .music-card-copy {
+    min-width: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+
+    strong {
+      color: var(--color-text-strong);
+      font-size: 17px;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    span {
+      color: var(--color-text-muted);
+      font-size: 13px;
     }
   }
 
@@ -103,8 +135,8 @@ export const ListContainer = styled.ul`
     -webkit-user-select: none;
     touch-action: manipulation;
     vertical-align: baseline;
-    width: 45px;
-    height: 15px;
+    width: 38px;
+    min-height: 34px;
     transition: all 0.3s ease;
   }
 
@@ -124,6 +156,11 @@ export const ListContainer = styled.ul`
 
     .spotify-btn:hover {
       background-color: #1aa34a;
+    }
+
+    .letter-btn {
+      background-color: #333;
+      color: white;
     }
 
     .edit-btn {
@@ -153,44 +190,66 @@ export const ListContainer = styled.ul`
       background-color: #1aa34a;
     }
 
-  .music-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
   .span-cifra {
-    font-weight: bold;
-    font-size: 18px;
-    color: var(--color-text-strong);
-    width: 60px;
     flex-shrink: 0;
+    font-weight: bold;
+    font-size: 15px;
+    color: var(--color-text-strong);
+    min-width: max-content;
+    padding: 4px 7px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.12);
+    text-align: center;
+    white-space: nowrap;
   }
 
-  .music-text {
-    display: flex;
-    gap: 10px;
+  .toggle-btn {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    color: var(--color-text-strong);
 
-    @media (max-width: 500px) {
-      flex-direction: column;
+    &:hover {
+      background: var(--color-surface-muted);
     }
   }
 
-  .divider-music {
-    @media (max-width: 500px) {
+  .description-preview {
+    width: 100%;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .desktop-music-links {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+
+    button {
+      min-height: 34px;
+      font-size: 13px;
+    }
+
+    button:first-child svg {
+      color: #dc2626;
+    }
+
+    @media (max-width: 600px) {
       display: none;
     }
-  }
-
-  .span-music {
-    font-weight: bold;
-    font-size: 16px;
-    color: var(--color-text-strong);
-  }
-
-  .span-minister {
-    font-size: 14px;
-    color: var(--color-text-muted);
   }
 
   .music-buttons {
@@ -200,6 +259,13 @@ export const ListContainer = styled.ul`
     justify-content: flex-end;
     gap: 10px;
     flex-wrap: wrap;
+    overflow: hidden;
+  }
+
+  @media (min-width: 601px) {
+    .mobile-link-action {
+      display: none;
+    }
   }
 
   .modal {

@@ -5,6 +5,11 @@ type CalendarEventInput = {
   title: string;
   roles: string[];
   outfitColor: string;
+  musicLinks?: Array<{
+    name: string;
+    worshipMoment: string;
+    cifra?: string | null;
+  }>;
 };
 
 const formatCalendarDate = (date: Date) => [
@@ -28,6 +33,24 @@ const getSafeFileName = (value: string) => value
   .replace(/^-|-$/g, '')
   .toLocaleLowerCase();
 
+const getRepertoireLines = (musicLinks: CalendarEventInput['musicLinks']) => {
+  if (!musicLinks?.length) return ['Repertório: Ainda não definido'];
+
+  const lines = ['Repertório:'];
+  let currentMoment = '';
+
+  musicLinks.forEach((music) => {
+    if (music.worshipMoment !== currentMoment) {
+      currentMoment = music.worshipMoment;
+      lines.push(`${currentMoment}:`);
+    }
+
+    lines.push(`- ${music.name}${music.cifra ? ` (Tom: ${music.cifra})` : ''}`);
+  });
+
+  return lines;
+};
+
 export const downloadCalendarEvent = (event: CalendarEventInput) => {
   const endDate = new Date(event.date);
   endDate.setDate(endDate.getDate() + 1);
@@ -37,6 +60,8 @@ export const downloadCalendarEvent = (event: CalendarEventInput) => {
     `Função: ${event.roles.join(', ')}`,
     `Horário: ${event.startTime || 'Não definido'}`,
     `Paleta: ${event.outfitColor || 'Não definida'}`,
+    '',
+    ...getRepertoireLines(event.musicLinks),
   ].join('\n');
 
   const calendar = [

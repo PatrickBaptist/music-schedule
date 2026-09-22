@@ -241,9 +241,159 @@ export const ContainerHome = styled.div`
         cursor: pointer;
       }
 
+    }
+
+    .repertoire-date-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+
       @media (max-width: 560px) {
-        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        > * {
+          width: 100%;
+        }
       }
+    }
+
+    .add-music-button {
+      min-width: 0;
+      flex-shrink: 0;
+      line-height: 1.2;
+      text-align: center;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .available-repertoires {
+      width: 100%;
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border-soft);
+      border-radius: 12px;
+      background: var(--color-surface);
+
+      > p {
+        margin: 12px 0 0;
+        color: var(--color-text-muted);
+        font-size: 13px;
+      }
+    }
+
+    .available-repertoires-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+
+      > div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--color-text-strong);
+      }
+
+      svg {
+        color: var(--color-primary);
+      }
+
+      > span {
+        color: var(--color-text-muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 520px) {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+    .repertoire-date-options {
+      display: flex;
+      gap: 8px;
+      padding-bottom: 3px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+
+      button {
+        min-width: 104px;
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 9px;
+        padding: 8px 10px;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        background: var(--color-surface-muted);
+        color: var(--color-text-strong);
+        cursor: pointer;
+        transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+          border-color: var(--color-primary);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--color-primary);
+          outline-offset: 2px;
+        }
+
+        &.active {
+          border-color: var(--color-primary);
+          background: color-mix(in srgb, var(--color-primary) 14%, var(--color-surface));
+          box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 14%, transparent);
+        }
+      }
+    }
+
+    .repertoire-option-date {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      line-height: 1.15;
+      text-transform: capitalize;
+
+      strong {
+        font-size: 14px;
+      }
+
+      small {
+        margin-top: 3px;
+        color: var(--color-text-muted);
+        font-size: 12px;
+      }
+    }
+
+    .repertoire-option-count {
+      min-width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .schedule-tabs {
@@ -341,37 +491,6 @@ export const ContainerHome = styled.div`
       font-weight: 600;
     }
 
-    .content-louvores {
-      width: 100%;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: left;
-      box-sizing: border-box;
-      padding-left: 12px;
-      margin-top: 8px;
-
-      h4 {
-        margin-right: 10px;
-      }
-
-      .btn-write{
-        width: 10px;
-        border: none;
-        background-color: none;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-
-        &:hover {
-          transform: rotate(10deg);
-        }
-      }
-
-      img {
-        width: 15px;
-      }
-    }
-
     .modal {
       width: 100vw;
       height: 100dvh;
@@ -424,36 +543,6 @@ export const ContainerHome = styled.div`
       }
     }
 
-  .btns {
-    align-items: center;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: inline-flex;
-    font-size: 11px;
-    font-weight: 500;
-    justify-content: center;
-    padding: 10px;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: baseline;
-    width: 40px;
-    height: 10px;
-    transition: all 0.3s ease;
-  }
-
-  .add-btn {
-    background-color: #1db954;
-    color: white;
-  }
-
-  .add-btn:hover {
-    background-color: #1aa34a;
-  }
 `
 
 export const AddFormOverlay = styled(motion.div)`
