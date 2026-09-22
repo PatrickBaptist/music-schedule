@@ -15,7 +15,7 @@ import { FaCalendarAlt, FaMusic, FaPlus } from 'react-icons/fa';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
-import { MotionButton } from '../../components/buttons/Buttons';
+import Button from '../../components/buttons/Buttons';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 
 const toLocalISODate = (date: Date) => {
@@ -167,15 +167,15 @@ const HomePage: React.FC = () => {
                     />
                   </label>
                   {canAddMusic && (
-                    <MotionButton
-                      variant="unstyled"
-                      whileTap={{ scale: 0.97 }}
+                    <Button
+                      variant="primary"
+                      size="md"
                       className="add-music-button"
                       onClick={() => setIsModalOpen(true)}
                     >
                       <FaPlus aria-hidden="true" />
                       <span>Adicionar música</span>
-                    </MotionButton>
+                    </Button>
                   )}
                 </div>
               </div>

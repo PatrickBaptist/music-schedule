@@ -261,34 +261,11 @@ export const ContainerHome = styled.div`
 
     .add-music-button {
       min-width: 0;
-      min-height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
       flex-shrink: 0;
-      padding: 8px 13px;
-      border: 1px solid color-mix(in srgb, #1db954 72%, var(--color-border));
-      border-radius: 9px;
-      background: #1db954;
-      color: #fff;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 800;
       line-height: 1.2;
       text-align: center;
       white-space: normal;
       overflow-wrap: anywhere;
-      transition: background-color 0.2s ease, transform 0.2s ease;
-
-      &:hover {
-        background: #1aa34a;
-      }
-
-      &:focus-visible {
-        outline: 2px solid #1db954;
-        outline-offset: 2px;
-      }
     }
 
     .available-repertoires {

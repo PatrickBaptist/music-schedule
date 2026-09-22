@@ -32,12 +32,11 @@ export const ScheduleContent = styled.div`
   }
 
   .add-schedule {
-    width: 100%;
+    width: min(calc(100% - 40px), 1080px);
     display: flex;
     align-items: center;
-    justify-content: start;
-    margin-left: 40px;
-    gap: 6px;
+    justify-content: flex-start;
+    margin: 0 auto;
   }
 
   .modal {
@@ -109,15 +108,6 @@ export const ScheduleContent = styled.div`
 
   .add-btn:hover {
     background-color: #1aa34a;
-  }
-
-  .generate-btn {
-    background-color: #2563eb;
-    color: white;
-  }
-
-  .generate-btn:hover {
-    background-color: #1d4ed8;
   }
 
   .btns:disabled {
