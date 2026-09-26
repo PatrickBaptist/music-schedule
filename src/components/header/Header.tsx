@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Logo from '../../assets/imgs/logo.png'
 import {
   ContainerLogo,
@@ -21,6 +21,7 @@ import useThemePreference from '../../context/hooks/useThemePreference';
 import { getPendingProfileFields } from '../../helpers/profileCompletion';
 import Button from '../buttons/Buttons';
 import useMyScheduleContext from '../../context/hooks/useMyScheduleContext';
+import useUsersContext from '../../context/hooks/useUsersContext';
 
 const Header: React.FC = () => {
 
@@ -29,8 +30,15 @@ const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { hasUnseenAssignments } = useMyScheduleContext();
+  const { users, fetchUsers } = useUsersContext();
   
   const isGuest = user?.roles?.includes(UserRole.Guest);
+  const canManageUsers = user?.roles?.some((role) =>
+    role === UserRole.Admin || role === UserRole.Leader
+  );
+  const pendingUsersCount = canManageUsers
+    ? users.filter((registeredUser) => registeredUser.status === "pending").length
+    : 0;
   const pendingProfileFields = useMemo(() => getPendingProfileFields(user), [user]);
   const shouldShowBadge = !isGuest && pendingProfileFields.length > 0;
   const profileLabel = useMemo(() => {
@@ -42,6 +50,14 @@ const Header: React.FC = () => {
       .map((part) => part[0]?.toUpperCase())
       .join("") || "U";
   }, [user?.email, user?.name, user?.nickname]);
+
+  useEffect(() => {
+    if (!canManageUsers) return;
+
+    void fetchUsers();
+    const interval = window.setInterval(() => void fetchUsers(), 30000);
+    return () => window.clearInterval(interval);
+  }, [canManageUsers, fetchUsers]);
 
   const menuItems = [
     { name: "Início", path: "/" },
@@ -71,6 +87,12 @@ const Header: React.FC = () => {
                   <span>{item.name}</span>
                   {item.path === "/my-schedule" && hasUnseenAssignments && (
                     <NavBadge title="Você tem uma escala nova" aria-label="Você tem uma escala nova" />
+                  )}
+                  {item.path === "/users" && pendingUsersCount > 0 && (
+                    <NavBadge
+                      title={`${pendingUsersCount} ${pendingUsersCount === 1 ? "cadastro pendente" : "cadastros pendentes"}`}
+                      aria-label={`${pendingUsersCount} ${pendingUsersCount === 1 ? "cadastro pendente" : "cadastros pendentes"}`}
+                    />
                   )}
                   {isActive && (
                     <motion.div

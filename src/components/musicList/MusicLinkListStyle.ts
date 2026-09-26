@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SharedButton from '../buttons/Buttons';
 
 export const ListContainer = styled.ul<{ bg?: string }>`
   width: 100%;
@@ -608,61 +607,6 @@ export const MusicGroup = styled.div<{ $accent?: string; $isOver?: boolean }>`
     .music-group-heading {
       gap: 8px;
     }
-  }
-`;
-
-export const ContainerVd = styled.div`
-  width: 100vw;
-  height: 100dvh;
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-modal);
-  background-color: rgba(0, 0, 0, 0.8);
-`;
-
-export const ContentVd = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .loading-screen {
-    width: 560px;
-    height: 315px;
-    background-color: #000000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-`;
-
-export const CloseButton = styled(SharedButton).attrs({ variant: "unstyled" })`
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  top: 15%;
-  right: 15%;
-  background: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  color: #000;
-  padding: 5px;
-  border-radius: 50%;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background: #f1f1f1;
-  }
-
-  .btn-close {
-    width: 45px;
-    height: 45px;
   }
 `;
 

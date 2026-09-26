@@ -3,8 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import useAllMusicHistoryContext from "../../context/hooks/useAllMusicHistoryContext";
 import Button, { MotionButton } from "../../components/buttons/Buttons";
-import Loading from "../../assets/Loading.gif";
-import { AddFormOverlay, Container, ContainerVd, ContentVd, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
+import { AddFormOverlay, Container, Input, ListContainer, Main, SelectContainer } from "./ListMusicStyle";
 import { FirestoreTimestamp } from "../../helpers/helpers";
 import { toast } from "sonner";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
@@ -20,6 +19,7 @@ import { UserRole } from "../../types/UserRole";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import useBodyScrollLock from "../../context/hooks/useBodyScrollLock";
 import { WORSHIP_MOMENTS } from "../../constants/worshipMoments";
+import useVideoPlayerContext from "../../context/hooks/useVideoPlayerContext";
 
 const tons = [
   'C', 'Cm', 'C#', 'C#m', 'D', 'Dm', 'D#', 'D#m', 'E', 'Em',
@@ -29,9 +29,7 @@ const tons = [
 
 const ListMusic: React.FC = () => {
   const { musicLinks, loading, getAllMusicLinks, currentPage, hasNextPage, hasPrevPage, updateMusicLink, removeMusicLink } = useAllMusicHistoryContext();
-  const [openVideo, setOpenVideo] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState<string | null>(null);
-  const [loadingVideo, setLoadingVideo] = useState(false);
+  const { openVideo } = useVideoPlayerContext();
   const [ isLoading, setIsLoading ] = useState(false);
   const [limit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,7 +82,7 @@ const ListMusic: React.FC = () => {
     setFilteredMusicLinks(musicLinks);
   }, [musicLinks]);
 
-  useBodyScrollLock(isModalOpen || isEditing || worshipMomentModalOpen || openVideo);
+  useBodyScrollLock(isModalOpen || isEditing || worshipMomentModalOpen);
 
   useEffect(() => {
     const fetchMusic = async () => {
@@ -106,18 +104,6 @@ const ListMusic: React.FC = () => {
     const normalized = normalizeString(term);
     setSearchTerm(term);
     getAllMusicLinks({ page: 1, limit, search: normalized });
-  };
-
-  const handleOpenVideo = (url: string) => {
-    setCurrentVideo(url);
-    setLoadingVideo(true);
-    setOpenVideo(true);
-  };
-
-  const handleCloseVideo = () => {
-    setOpenVideo(false);
-    setCurrentVideo(null);
-    setLoadingVideo(false);
   };
 
   const handleAddToSunday = async (id: string) => {
@@ -402,7 +388,7 @@ const ListMusic: React.FC = () => {
                           <div className="desktop-music-links" aria-label="Links da música">
                             {music.link && (
                               <Button variant="secondary"
-                                onClick={() => handleOpenVideo(music.link!)}
+                                onClick={() => openVideo(music.link!, music.name)}
                                 title="Assistir vídeo"
                               >
                                 <FaYoutube aria-hidden="true" /> YouTube
@@ -423,7 +409,7 @@ const ListMusic: React.FC = () => {
                           <AnimatePresence>
                             {openMenuId === music.id && (
                               <motion.div className="music-buttons" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                                {music.link && <MotionButton variant="unstyled" className="btns youtube-btn mobile-link-action" onClick={() => handleOpenVideo(music.link!)} title="Assistir vídeo"><FaYoutube /></MotionButton>}
+                                {music.link && <MotionButton variant="unstyled" className="btns youtube-btn mobile-link-action" onClick={() => openVideo(music.link!, music.name)} title="Assistir vídeo"><FaYoutube /></MotionButton>}
                                 {music.letter && <MotionButton variant="unstyled" className="btns letter-btn mobile-link-action" onClick={() => window.open(music.letter!, '_blank')} title="Abrir letra"><FaFileAlt /></MotionButton>}
                                 {music.spotify && <MotionButton variant="unstyled" className="btns spotify-btn mobile-link-action" onClick={() => window.open(music.spotify!, '_blank')} title="Abrir no Spotify"><FaSpotify /></MotionButton>}
                                 <MotionButton variant="unstyled" className="btns edit-btn" onClick={() => handleUpdate(music.id)} title="Editar música" aria-label={`Editar ${music.name}`}>
@@ -477,28 +463,6 @@ const ListMusic: React.FC = () => {
           </div>
           </ListContainer>
 
-          {openVideo && currentVideo && (
-            <ContainerVd onClick={handleCloseVideo}>
-              <ContentVd>
-                {loadingVideo && (
-                  <div className="loading-screen">
-                    <img src={Loading} alt="Loading" style={{ width: "150px" }} />
-                  </div>
-                )}
-                <iframe
-                  width="560"
-                  height="315"
-                  src={currentVideo}
-                  title="YouTube video player"
-                  style={{ border: "none", display: loadingVideo ? "none" : "block" }}
-                  onLoad={() => setLoadingVideo(false)}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                  />
-              </ContentVd>
-            </ContainerVd>
-          )}
           {worshipMomentModalOpen &&
             createPortal(
               <AddFormOverlay

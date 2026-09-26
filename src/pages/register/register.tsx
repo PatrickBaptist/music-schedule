@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -11,6 +11,9 @@ import {
   Input,
   Label,
   LoginPrompt,
+  SuccessDialog,
+  SuccessIcon,
+  SuccessOverlay,
   RoleItem,
   RolesContainer,
   RolesLabel,
@@ -22,6 +25,8 @@ import useAuthContext from "../../context/hooks/useAuthContext";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
+import { FaCheck } from "react-icons/fa";
+import useBodyScrollLock from "../../context/hooks/useBodyScrollLock";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,8 +40,16 @@ const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [roles, setRoles] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationMessage, setRegistrationMessage] = useState("");
+  const loginButtonRef = useRef<HTMLButtonElement>(null);
 
   const { registerUser, loginWithGoogle } = useAuthContext();
+  useBodyScrollLock(Boolean(registrationMessage));
+
+  useEffect(() => {
+    if (registrationMessage) loginButtonRef.current?.focus();
+  }, [registrationMessage]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +64,8 @@ const RegisterPage: React.FC = () => {
       return;
     }
 
-    const toastId = toast.loading("Aguarde...");
+    const toastId = toast.loading("Enviando cadastro...");
+    setIsSubmitting(true);
     try {
       const payload = {
         name,
@@ -63,12 +77,14 @@ const RegisterPage: React.FC = () => {
         roles,
       };
 
-      await registerUser(payload);
-      toast.success("Cadastro realizado com sucesso!", { id: toastId });
-      navigate("/login");
+      const result = await registerUser(payload);
+      toast.dismiss(toastId);
+      setRegistrationMessage(result.message || "Seu cadastro foi recebido com sucesso.");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido ao cadastrar";
       toast.error(message, { id: toastId });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -171,13 +187,40 @@ const RegisterPage: React.FC = () => {
               ))}
           </RolesContainer>
 
-          <Button type="submit">Cadastrar</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Enviando..." : "Cadastrar"}
+          </Button>
 
           <LoginPrompt>
             Ja possui conta?
             <Link to="/login">Entre</Link>
           </LoginPrompt>
         </FormWrapper>
+
+        {registrationMessage && (
+          <SuccessOverlay>
+            <SuccessDialog
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="registration-success-title"
+              aria-describedby="registration-success-description"
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 220, damping: 22 }}
+            >
+              <SuccessIcon aria-hidden="true">
+                <FaCheck />
+              </SuccessIcon>
+              <span>Cadastro enviado</span>
+              <h2 id="registration-success-title">Agora é só aguardar a liberação</h2>
+              <p id="registration-success-description">{registrationMessage}</p>
+              <p>Quando sua conta for liberada, você poderá entrar normalmente com seu e-mail e sua senha.</p>
+              <Button ref={loginButtonRef} type="button" onClick={() => navigate("/login")}>
+                Ir para o login
+              </Button>
+            </SuccessDialog>
+          </SuccessOverlay>
+        )}
       </ContainerRegiter>
     </PageWrapper>
   );

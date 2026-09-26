@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button, { MotionButton } from "../buttons/Buttons";
-import Loading from "../../assets/Loading.gif";
 import {
-  ContainerVd,
-  ContentVd,
   ListContainer,
   MusicGroup,
   SelectContainer,
@@ -46,9 +43,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { normalizeWorshipMoment, WORSHIP_MOMENTS } from "../../constants/worshipMoments";
+import useVideoPlayerContext from "../../context/hooks/useVideoPlayerContext";
 
 type Video = {
   url: string;
+  title?: string;
 };
 
 interface SpecialSchedulesProps {
@@ -167,15 +166,13 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
 
   const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } =
     useMusicLinksContext();
+  const { openVideo } = useVideoPlayerContext();
   const visibleMusicLinks = useMemo(
     () => musicLinks.filter((music) =>
       music.scheduleDate === selectedDate || (!music.scheduleDate && selectedDate === legacyDate)
     ),
     [legacyDate, musicLinks, selectedDate]
   );
-  const [openVideo, setOpenVideo] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
-  const [loading, setLoading] = useState(false);
   const [loadingCards, setLoadingCards] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -327,15 +324,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
     await persistOrderChanges(groupedMusicRef.current);
   };
 
-  const handleVideoClick = () => {
-    setOpenVideo(false);
-    setLoading(false);
-  };
-
   const openLinkVideo = (videoUrl: Video) => {
-    setCurrentVideo(videoUrl);
-    setLoading(true);
-    setOpenVideo(true);
+    openVideo(videoUrl.url, videoUrl.title);
   };
 
   const handleEditClick = (id: string) => {
@@ -715,36 +705,6 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
           </motion.div>
         )}
 
-        {openVideo && currentVideo && (
-          <ContainerVd onClick={handleVideoClick}>
-            <ContentVd>
-              {loading && (
-                <div className="loading-screen">
-                  <img
-                    src={Loading}
-                    alt="Loading"
-                    style={{ width: "150px" }}
-                  />
-                </div>
-              )}
-
-              <iframe
-                width="560"
-                height="315"
-                src={currentVideo.url}
-                title="YouTube video player"
-                style={{
-                  border: "none",
-                  display: loading ? "none" : "block",
-                }}
-                onLoad={() => setLoading(false)}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              />
-            </ContentVd>
-          </ContainerVd>
-        )}
       </AnimatePresence>
     </ListContainer>
   );
@@ -897,7 +857,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                   <Button
                     variant="secondary"
                     className="youtube-link"
-                    onClick={() => openLinkVideo({ url: musicLink.link || "" })}
+                    onClick={() => openLinkVideo({ url: musicLink.link || "", title: musicLink.name })}
                     title="Assistir vídeo"
                   >
                     <FaYoutube aria-hidden="true" /> YouTube
@@ -942,6 +902,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                         onClick={() =>
                           openLinkVideo({
                             url: musicLink.link || "",
+                            title: musicLink.name,
                           })
                         }
                         title="Assistir vídeo"
