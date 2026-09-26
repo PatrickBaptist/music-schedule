@@ -367,7 +367,7 @@ export const ContainerHome = styled.div`
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      margin: 8px 0 16px;
+      margin: 0 0 16px;
       padding: 14px 16px;
       box-sizing: border-box;
       border: 1px solid var(--color-border-soft);
@@ -464,7 +464,7 @@ export const ContainerHome = styled.div`
 
     .available-repertoires {
       width: 100%;
-      margin: 0 0 16px;
+      margin: 8px 0 12px;
       padding: 14px 16px;
       box-sizing: border-box;
       border: 1px solid var(--color-border-soft);
