@@ -16,6 +16,7 @@ import WakeUpScreen from './components/WakeUpSistem/wakeUpLoader';
 import { ServerProvider } from './services/wakeUpService';
 import { ThemePreferenceProvider } from './context/themeContext';
 import { MyScheduleProvider } from './services/MyScheduleService';
+import { VideoPlayerProvider } from './context/videoPlayerContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -33,7 +34,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         <NotificationProvider>
                           <LayoutWrapper>
                             <ScrollProvider>
-                              <App />
+                              <VideoPlayerProvider>
+                                <App />
+                              </VideoPlayerProvider>
                             </ScrollProvider>
                           </LayoutWrapper>
                         </NotificationProvider>
