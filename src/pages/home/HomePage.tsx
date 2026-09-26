@@ -237,38 +237,6 @@ const HomePage: React.FC = () => {
                   document.body
                 )}
 
-              <div className="repertoire-date-bar">
-                <div className="repertoire-date-copy">
-                  <span>Repertório exibido</span>
-                  <h3>{selectedRepertoireLabel}</h3>
-                </div>
-                <div className="repertoire-date-actions">
-                  <label className="date-picker-trigger" htmlFor="music-schedule-date">
-                    <FaCalendarAlt aria-hidden="true" />
-                    <span>Trocar data</span>
-                    <input
-                      id="music-schedule-date"
-                      type="date"
-                      value={selectedMusicDate}
-                      aria-label="Escolher outra data do repertório"
-                      onClick={(event) => event.currentTarget.showPicker?.()}
-                      onChange={(event) => changeSelectedMusicDate(event.target.value)}
-                    />
-                  </label>
-                  {canAddMusic && (
-                    <Button
-                      variant="primary"
-                      size="md"
-                      className="add-music-button"
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      <FaPlus aria-hidden="true" />
-                      <span>Adicionar música</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-
               <section className="available-repertoires" aria-labelledby="available-repertoires-title">
                 <div className="available-repertoires-heading">
                   <div>
@@ -307,6 +275,38 @@ const HomePage: React.FC = () => {
                   <p>Nenhum repertório futuro possui músicas.</p>
                 )}
               </section>
+
+              <div className="repertoire-date-bar">
+                <div className="repertoire-date-copy">
+                  <span>Repertório exibido</span>
+                  <h3>{selectedRepertoireLabel}</h3>
+                </div>
+                <div className="repertoire-date-actions">
+                  <label className="date-picker-trigger" htmlFor="music-schedule-date">
+                    <FaCalendarAlt aria-hidden="true" />
+                    <span>Trocar data</span>
+                    <input
+                      id="music-schedule-date"
+                      type="date"
+                      value={selectedMusicDate}
+                      aria-label="Escolher outra data do repertório"
+                      onClick={(event) => event.currentTarget.showPicker?.()}
+                      onChange={(event) => changeSelectedMusicDate(event.target.value)}
+                    />
+                  </label>
+                  {canAddMusic && (
+                    <Button
+                      variant="primary"
+                      size="md"
+                      className="add-music-button"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      <FaPlus aria-hidden="true" />
+                      <span>Adicionar música</span>
+                    </Button>
+                  )}
+                </div>
+              </div>
 
               <div id="home-music-list" className="home-music-list-anchor">
                 <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
