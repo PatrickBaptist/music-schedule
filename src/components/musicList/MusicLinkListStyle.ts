@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SharedButton from '../buttons/Buttons';
 
 export const ListContainer = styled.ul<{ bg?: string }>`
   width: 100%;
