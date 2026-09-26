@@ -1,4 +1,5 @@
 import ReactInputMask from "react-input-mask";
+import { motion } from "framer-motion";
 import styled from "styled-components";
 import SharedButton from "../../components/buttons/Buttons";
 
@@ -195,5 +196,69 @@ export const RoleItem = styled.div`
     font-size: 14px;
     cursor: pointer;
   }
+`;
+
+export const SuccessOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(8, 15, 27, 0.72);
+  backdrop-filter: blur(5px);
+`;
+
+export const SuccessDialog = styled(motion.section)`
+  width: min(100%, 460px);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 18px;
+  background: var(--color-surface);
+  color: var(--color-text-strong);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  text-align: center;
+
+  > span {
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(22px, 5vw, 28px);
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  ${Button} {
+    margin-top: 8px;
+  }
+`;
+
+export const SuccessIcon = styled.div`
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, #22c55e 16%, var(--color-surface));
+  color: #16a34a;
+  font-size: 24px;
 `;
 

@@ -5,13 +5,21 @@ import useAuthContext from "../../context/hooks/useAuthContext";
 import { FaBan, FaCalendarAlt, FaClipboardList, FaHome, FaMusic, FaUsers } from "react-icons/fa";
 import { UserRole } from "../../types/UserRole";
 import useMyScheduleContext from "../../context/hooks/useMyScheduleContext";
+import useUsersContext from "../../context/hooks/useUsersContext";
 
 const Footer: React.FC = () => {
   const location = useLocation();
 
   const { user } = useAuthContext();
   const { hasUnseenAssignments } = useMyScheduleContext();
+  const { users } = useUsersContext();
   const isGuest = user?.roles?.includes(UserRole.Guest);
+  const canManageUsers = user?.roles?.some((role) =>
+    role === UserRole.Admin || role === UserRole.Leader
+  );
+  const pendingUsersCount = canManageUsers
+    ? users.filter((registeredUser) => registeredUser.status === "pending").length
+    : 0;
 
   const menuItems = [
     { name: "Início", path: "/", icon: FaHome },
@@ -54,6 +62,12 @@ const Footer: React.FC = () => {
                     <Icon aria-hidden="true" />
                     {item.path === "/my-schedule" && hasUnseenAssignments && (
                       <FooterBadge title="Você tem uma escala nova" aria-label="Você tem uma escala nova" />
+                    )}
+                    {item.path === "/users" && pendingUsersCount > 0 && (
+                      <FooterBadge
+                        title={`${pendingUsersCount} ${pendingUsersCount === 1 ? "cadastro pendente" : "cadastros pendentes"}`}
+                        aria-label={`${pendingUsersCount} ${pendingUsersCount === 1 ? "cadastro pendente" : "cadastros pendentes"}`}
+                      />
                     )}
                   </motion.span>
                   <span>{item.name}</span>
