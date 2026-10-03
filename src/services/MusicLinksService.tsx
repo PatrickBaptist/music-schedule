@@ -26,9 +26,7 @@ export interface MusicLink {
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
   fetchMusicLinks: () => Promise<(() => void) | void>;
-  addMusicLink: (
-    musicLink: Omit<MusicLink, "order"> & { id?: string }
-  ) => Promise<void>;
+  addMusicLink: (musicLink: Omit<MusicLink, "id" | "order">) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
   updateMusicLink: (id: string, updated: MusicLink) => Promise<void>;
 }
@@ -86,13 +84,19 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
   }, [fetchMusicLinks]);
 
   const addMusicLink = async (
-    musicLink: Omit<MusicLink, "order"> & { id?: string }
+    musicLink: Omit<MusicLink, "id" | "order">
   ) => {
     try {
+      // Cada inclusão no repertório precisa de um ID próprio. O ID da música
+      // na biblioteca não pode ser reutilizado, pois uma música pode estar em
+      // repertórios de várias datas.
+      const payload = { ...musicLink } as Omit<MusicLink, "order">;
+      delete payload.id;
+
       const res = await fetch(`${API_URL}/musicList`, {
         method: "POST",
         headers: getHeaders(),
-        body: JSON.stringify(musicLink),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("Erro ao adicionar música");
