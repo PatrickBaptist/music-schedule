@@ -237,76 +237,78 @@ const HomePage: React.FC = () => {
                   document.body
                 )}
 
-              <section className="available-repertoires" aria-labelledby="available-repertoires-title">
-                <div className="available-repertoires-heading">
-                  <div>
-                    <FaMusic aria-hidden="true" />
-                    <strong id="available-repertoires-title">Repertórios</strong>
+              <section className="repertoire-selector-card" aria-labelledby="available-repertoires-title">
+                <div className="available-repertoires">
+                  <div className="available-repertoires-heading">
+                    <div>
+                      <FaMusic aria-hidden="true" />
+                      <strong id="available-repertoires-title">Repertórios</strong>
+                    </div>
+                    <span>Escolha uma data para abrir</span>
                   </div>
-                  <span>Escolha uma data para abrir</span>
-                </div>
-                {availableRepertoireDates.length ? (
-                  <div className="repertoire-date-options">
-                    {availableRepertoireDates.map(({ date, count }) => {
-                      const parsedDate = new Date(`${date}T12:00:00`);
-                      const weekday = parsedDate.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
-                      const shortDate = parsedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-                      const isSelected = date === selectedMusicDate;
+                  {availableRepertoireDates.length ? (
+                    <div className="repertoire-date-options">
+                      {availableRepertoireDates.map(({ date, count }) => {
+                        const parsedDate = new Date(`${date}T12:00:00`);
+                        const weekday = parsedDate.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+                        const shortDate = parsedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                        const isSelected = date === selectedMusicDate;
 
-                      return (
-                        <button
-                          type="button"
-                          key={date}
-                          className={isSelected ? 'active' : ''}
-                          aria-pressed={isSelected}
-                          onClick={() => changeSelectedMusicDate(date)}
-                        >
-                          <span className="repertoire-option-date">
-                            <strong>{weekday}</strong>
-                            <small>{shortDate}</small>
-                          </span>
-                          <span className="repertoire-option-count">{count}</span>
-                          <span className="sr-only">{count === 1 ? 'música' : 'músicas'}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p>Nenhum repertório futuro possui músicas.</p>
-                )}
-              </section>
-
-              <div className="repertoire-date-bar">
-                <div className="repertoire-date-copy">
-                  <span>Repertório exibido</span>
-                  <h3>{selectedRepertoireLabel}</h3>
-                </div>
-                <div className="repertoire-date-actions">
-                  <label className="date-picker-trigger" htmlFor="music-schedule-date">
-                    <FaCalendarAlt aria-hidden="true" />
-                    <span>Trocar data</span>
-                    <input
-                      id="music-schedule-date"
-                      type="date"
-                      value={selectedMusicDate}
-                      aria-label="Escolher outra data do repertório"
-                      onClick={(event) => event.currentTarget.showPicker?.()}
-                      onChange={(event) => changeSelectedMusicDate(event.target.value)}
-                    />
-                  </label>
-                  {canAddMusic && (
-                    <Button
-                      variant="primary"
-                      size="md"
-                      className="add-music-button"
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      <FaPlus aria-hidden="true" />
-                      <span>Adicionar música</span>
-                    </Button>
+                        return (
+                          <button
+                            type="button"
+                            key={date}
+                            className={isSelected ? 'active' : ''}
+                            aria-pressed={isSelected}
+                            onClick={() => changeSelectedMusicDate(date)}
+                          >
+                            <span className="repertoire-option-date">
+                              <strong>{weekday}</strong>
+                              <small>{shortDate}</small>
+                            </span>
+                            <span className="repertoire-option-count">{count}</span>
+                            <span className="sr-only">{count === 1 ? 'música' : 'músicas'}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p>Nenhum repertório futuro possui músicas.</p>
                   )}
                 </div>
-              </div>
+
+                <div className="repertoire-date-bar">
+                  <div className="repertoire-date-copy">
+                    <span>Repertório exibido</span>
+                    <h3>{selectedRepertoireLabel}</h3>
+                  </div>
+                  <div className="repertoire-date-actions">
+                    <label className="date-picker-trigger" htmlFor="music-schedule-date">
+                      <FaCalendarAlt aria-hidden="true" />
+                      <span>Trocar data</span>
+                      <input
+                        id="music-schedule-date"
+                        type="date"
+                        value={selectedMusicDate}
+                        aria-label="Escolher outra data do repertório"
+                        onClick={(event) => event.currentTarget.showPicker?.()}
+                        onChange={(event) => changeSelectedMusicDate(event.target.value)}
+                      />
+                    </label>
+                    {canAddMusic && (
+                      <Button
+                        variant="primary"
+                        size="md"
+                        className="add-music-button"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        <FaPlus aria-hidden="true" />
+                        <span>Adicionar música</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </section>
 
               <div id="home-music-list" className="home-music-list-anchor">
                 <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />

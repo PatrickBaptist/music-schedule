@@ -361,17 +361,28 @@ export const ContainerHome = styled.div`
       text-transform: uppercase;
     }
 
+    .repertoire-selector-card {
+      width: 100%;
+      margin: 8px 0 16px;
+      overflow: hidden;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border-soft);
+      border-radius: 12px;
+      background: var(--color-surface);
+    }
+
     .repertoire-date-bar {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      margin: 0 0 16px;
+      margin: 0;
       padding: 14px 16px;
       box-sizing: border-box;
-      border: 1px solid var(--color-border-soft);
-      border-radius: 12px;
+      border: 0;
+      border-top: 1px solid var(--color-border-soft);
+      border-radius: 0;
       background: var(--color-surface-muted);
 
       @media (max-width: 560px) {
@@ -464,12 +475,12 @@ export const ContainerHome = styled.div`
 
     .available-repertoires {
       width: 100%;
-      margin: 8px 0 12px;
+      margin: 0;
       padding: 14px 16px;
       box-sizing: border-box;
-      border: 1px solid var(--color-border-soft);
-      border-radius: 12px;
-      background: var(--color-surface);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
 
       > p {
         margin: 12px 0 0;
