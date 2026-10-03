@@ -128,7 +128,6 @@ const ListMusic: React.FC = () => {
 
     try {
       await addMusicLink({
-        id: selectedMusic.id,
         name: selectedMusic.name,
         link: selectedMusic.link || "",
         worshipMoment: selectedWorshipMoment.trim(),

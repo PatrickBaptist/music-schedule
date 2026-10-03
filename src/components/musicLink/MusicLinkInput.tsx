@@ -175,7 +175,6 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
 
     try {
       await addMusicLink({
-        id: selectedMusic.id,
         name: selectedMusic.name.trim(),
         worshipMoment: worshipMoment.trim(),
         link: selectedMusic.link || "",
