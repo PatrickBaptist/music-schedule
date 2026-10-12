@@ -1,22 +1,16 @@
 import styled from 'styled-components';
+import { formCardSurface, formControlStyles } from '../formCard/formCardStyles';
 
 export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
   margin-bottom: 0;
   position: relative;
-  width: 100%;
-  max-width: 620px;
+  ${formCardSurface}
   max-height: 100%;
   overflow-y: auto;
-  box-sizing: border-box;
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-  background: var(--color-surface);
-  color: var(--color-text-strong);
 
   .selected-date-summary {
     width: 100%;
@@ -41,19 +35,8 @@ export const InputContainer = styled.div`
     }
   }
 
-  input {
-    width: 100%;
-    min-height: 40px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
-    outline:  none;
-    padding: 6px;
-    font-size: 16px;
-
-    &:focus {
-      border-color: #2EBEF2;
-      box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
-    }
+  input, textarea, select {
+    ${formControlStyles}
   }
 
   button {

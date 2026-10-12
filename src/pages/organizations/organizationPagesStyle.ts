@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import SharedButton from "../../components/buttons/Buttons";
+import { formCardSurface, formControlStyles } from "../../components/formCard/formCardStyles";
 
 export const Page = styled.main`
   min-height: 100%;
@@ -12,26 +13,37 @@ export const Page = styled.main`
 `;
 
 export const Card = styled.section`
-  width: min(100%, 560px);
-  padding: 32px;
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
-  background: var(--color-surface);
-  box-shadow: 0 18px 50px var(--color-shadow);
+  ${formCardSurface}
 
-  h1 {
-    margin: 0 0 8px;
-    font-size: clamp(1.5rem, 5vw, 2rem);
+  h1 { margin: 0 0 8px; font-size: 1.5rem; line-height: 1.3; }
+  h2 { margin: 24px 0 14px; font-size: 1.1rem; }
+  p { color: var(--color-text-muted); line-height: 1.5; overflow-wrap: anywhere; }
+  form { display: flex; flex-direction: column; gap: 16px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+  input:not([type="checkbox"]), select, textarea { ${formControlStyles} }
+  fieldset {
+    margin: 0; padding: 12px; min-width: 0;
+    border: 1px solid var(--color-border); border-radius: 10px;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    legend { padding: 0 6px; font-size: 13px; font-weight: 600; }
+    label { flex-direction: row; align-items: center; gap: 8px; min-width: 0; padding: 6px; }
+    input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--color-primary); }
   }
+  @media (max-width: 380px) { fieldset { grid-template-columns: 1fr; } }
+`;
 
-  p {
-    color: var(--color-text-muted);
-    line-height: 1.5;
-  }
+export const CardActions = styled.div`
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-border-soft);
+  > button { margin-top: 0; }
+`;
 
-  @media (max-width: 520px) {
-    padding: 24px 18px;
-  }
+export const InvitationItem = styled.div`
+  padding: 14px; margin-top: 10px;
+  border: 1px solid var(--color-border-soft); border-radius: 10px;
+  background: var(--color-surface-muted);
+  strong { display: block; overflow-wrap: anywhere; }
+  p { margin: 6px 0 10px; font-size: 13px; }
 `;
 
 export const OrganizationList = styled.div`
@@ -87,6 +99,7 @@ export const OrganizationInfo = styled.span`
 
   strong {
     color: var(--color-text-strong);
+    overflow-wrap: anywhere;
   }
 
   small {
@@ -95,31 +108,12 @@ export const OrganizationInfo = styled.span`
   }
 `;
 
-export const PrimaryButton = styled(SharedButton).attrs({ variant: "unstyled" })`
-  width: 100%;
-  margin-top: 20px;
-  padding: 12px 16px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-weight: 700;
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: wait;
-  }
+export const PrimaryButton = styled(SharedButton).attrs({ variant: "primary" })`
+  width: 100%; min-height: 40px; margin-top: 8px;
 `;
 
-export const SecondaryButton = styled(SharedButton).attrs({ variant: "unstyled" })`
-  margin-top: 14px;
-  padding: 8px 0;
-  border: 0;
-  background: transparent;
-  color: var(--color-primary);
-  font-weight: 600;
-  cursor: pointer;
+export const SecondaryButton = styled(SharedButton).attrs({ variant: "secondary" })`
+  min-height: 40px; margin-top: 10px;
 `;
 
 export const ErrorMessage = styled.p`

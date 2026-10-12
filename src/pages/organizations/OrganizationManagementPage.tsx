@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import useOrganizationContext from "../../context/hooks/useOrganizationContext";
 import { roleOptions } from "../../types/UserRole";
-import { Card, Page, ErrorMessage, PrimaryButton, SecondaryButton } from "./organizationPagesStyle";
+import { Card, Page, ErrorMessage, PrimaryButton, SecondaryButton, InvitationItem, CardActions } from "./organizationPagesStyle";
 
 type Invitation = { id: string; email: string; status: string; managementRole: string; expiresAt: string };
 
 export default function OrganizationManagementPage() {
   const { token } = useAuthContext();
+  const navigate = useNavigate();
   const { activeOrganization } = useOrganizationContext();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [email, setEmail] = useState("");
@@ -58,27 +59,27 @@ export default function OrganizationManagementPage() {
 
   return <Page><Card>
     <h1>Convites</h1><p>{activeOrganization?.name}</p>
-    <form onSubmit={event => void create(event)} style={{ display: "grid", gap: 12 }}>
-      <label>E-mail da pessoa<input type="email" required value={email} onChange={e => setEmail(e.target.value)} style={{ width: "100%", padding: 10 }} /></label>
-      <label>Permissão<select value={managementRole} disabled={isLeader} onChange={e => setManagementRole(e.target.value)} style={{ width: "100%", padding: 10 }}>
+    <form onSubmit={event => void create(event)}>
+      <label>E-mail da pessoa<input type="email" required value={email} onChange={e => setEmail(e.target.value)} /></label>
+      <label>Permissão<select value={managementRole} disabled={isLeader} onChange={e => setManagementRole(e.target.value)}>
         <option value="member">Membro</option><option value="leader">Líder</option><option value="organization_admin">Administrador da organização</option>
       </select></label>
-      <label>Validade<select value={validityDays} onChange={e => setValidityDays(Number(e.target.value))} style={{ width: "100%", padding: 10 }}>
+      <label>Validade<select value={validityDays} onChange={e => setValidityDays(Number(e.target.value))}>
         <option value={1}>1 dia</option><option value={7}>7 dias</option><option value={14}>14 dias</option>
       </select></label>
-      <fieldset><legend>Funções musicais</legend>{roleOptions.filter(role => !["admin", "leader", "guest"].includes(role.value)).map(role => <label key={role.value} style={{ display: "block", padding: 4 }}>
+      <fieldset><legend>Funções musicais</legend>{roleOptions.filter(role => !["admin", "leader", "guest"].includes(role.value)).map(role => <label key={role.value}>
         <input type="checkbox" checked={musicalRoles.includes(role.value)} onChange={e => setMusicalRoles(current => e.target.checked ? [...current, role.value] : current.filter(value => value !== role.value))} /> {role.label}
       </label>)}</fieldset>
       <PrimaryButton disabled={busy} type="submit">{busy ? "Aguarde..." : "Criar convite"}</PrimaryButton>
     </form>
-    {invitationLink && <section><p>Compartilhe este link apenas com a pessoa convidada. Ele só aparece agora.</p><input aria-label="Link do convite" readOnly value={invitationLink} onFocus={e => e.target.select()} style={{ width: "100%", padding: 10 }} /><SecondaryButton onClick={() => void navigator.clipboard.writeText(invitationLink).catch(() => setError("Selecione e copie o link."))}>Copiar link</SecondaryButton></section>}
+    {invitationLink && <section><p>Compartilhe este link apenas com a pessoa convidada. Ele só aparece agora.</p><input aria-label="Link do convite" readOnly value={invitationLink} onFocus={e => e.target.select()} /><SecondaryButton onClick={() => void navigator.clipboard.writeText(invitationLink).catch(() => setError("Selecione e copie o link."))}>Copiar link</SecondaryButton></section>}
     {error && <ErrorMessage>{error}</ErrorMessage>}
     <h2>Convites criados</h2>
     {!invitations.length && <p>Nenhum convite criado.</p>}
-    {invitations.map(invitation => <div key={invitation.id} style={{ borderBottom: "1px solid var(--color-border)", padding: "12px 0" }}>
+    {invitations.map(invitation => <InvitationItem key={invitation.id}>
       <strong>{invitation.email}</strong><p>{({ pending: "Pendente", accepted: "Aceito", revoked: "Cancelado", expired: "Expirado" } as Record<string, string>)[invitation.status] || invitation.status} · válido até {new Date(invitation.expiresAt).toLocaleDateString("pt-BR")}</p>
       {invitation.status === "pending" && (!isLeader || invitation.managementRole === "member") && <SecondaryButton disabled={busy} onClick={() => void revoke(invitation.id)}>Cancelar convite</SecondaryButton>}
-    </div>)}
-    <p><Link to="/organizations">Escolher organização</Link></p>
+    </InvitationItem>)}
+    <CardActions><SecondaryButton type="button" onClick={() => navigate("/profile")}>Voltar ao perfil</SecondaryButton><SecondaryButton type="button" onClick={() => navigate("/organizations")}>Trocar organização</SecondaryButton></CardActions>
   </Card></Page>;
 }

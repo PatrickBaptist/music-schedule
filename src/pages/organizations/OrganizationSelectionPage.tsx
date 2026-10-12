@@ -110,10 +110,10 @@ const OrganizationSelectionPage: React.FC = () => {
           })}
         </OrganizationList>
 
-        <h2 style={{ marginTop: 28 }}>Criar organização</h2>
+        <h2>Criar organização</h2>
         <form onSubmit={event => void handleCreate(event)}>
-          <label>Nome<input required maxLength={120} value={name} onChange={e => setName(e.target.value)} style={{ width: "100%", padding: 10 }} /></label>
-          <label>Tipo<select value={type} onChange={e => setType(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }}><option value="igreja">Igreja</option><option value="banda">Banda</option><option value="grupo">Grupo</option></select></label>
+          <label>Nome<input required maxLength={120} value={name} onChange={e => setName(e.target.value)} /></label>
+          <label>Tipo<select value={type} onChange={e => setType(e.target.value)}><option value="igreja">Igreja</option><option value="banda">Banda</option><option value="grupo">Grupo</option></select></label>
           {createError && <ErrorMessage>{createError}</ErrorMessage>}
           <PrimaryButton type="submit" disabled={creating}>{creating ? "Criando..." : "Criar organização"}</PrimaryButton>
         </form>

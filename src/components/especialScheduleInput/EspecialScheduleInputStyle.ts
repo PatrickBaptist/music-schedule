@@ -1,26 +1,27 @@
 import styled from 'styled-components';
+import { formCardSurface, formControlStyles } from '../formCard/formCardStyles';
 
 export const ContainerForm = styled.div`
+  ${formCardSurface}
   width: 100%;
   max-width: 620px;
-  max-height: calc(100dvh - 32px);
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  padding: 24px;
   margin: 0;
   background: var(--color-surface);
   color: var(--color-text);
-  border-radius: 20px;
+  border-radius: 18px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
   overflow: hidden;
 
   @media (max-width: 768px) {
     width: 100%;
     max-width: 620px;
-    max-height: calc(100dvh - 188px);
-    padding: 18px;
+    max-height: 100%;
+    padding: 16px;
   }
 
    /* Layout para mobile (default) */
@@ -32,6 +33,7 @@ export const ContainerForm = styled.div`
   }
 
   .form-column {
+    min-height: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -105,7 +107,7 @@ export const DarkForm = styled.form`
   display: flex;
   flex-direction: column;
   flex: 1;
-  max-height: 550px;
+  max-height: 100%;
   gap: 16px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -126,35 +128,11 @@ export const FormGroup = styled.div`
 `;
 
 export const DarkInput = styled.input`
-  width: 100%;
-  min-height: 40px;
-  font-size: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-  outline: none;
-
-  &:focus {
-    border-color: #2EBEF2;
-    box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
-  }
+  ${formControlStyles}
 `;
 
 export const DarkSelect = styled.select`
-  width: 100%;
-  min-height: 40px;
-  font-size: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-  outline: none;
-
-  &:focus {
-    border-color: #2EBEF2;
-    box-shadow: 0 0 5px rgba(0, 62, 234, 0.5);
-  }
+  ${formControlStyles}
 `;
 
 export const DarkLabel = styled.label`

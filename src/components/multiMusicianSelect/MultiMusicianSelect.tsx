@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Button from "../buttons/Buttons";
+import { useRef } from "react";
 
 export type MusicianOption = {
   value: string;
@@ -131,21 +132,24 @@ const MultiMusicianSelect = ({
   onChange,
   exclusiveValues = [],
 }: MultiMusicianSelectProps) => {
+  const pickerRef = useRef<HTMLDetailsElement>(null);
   const uniqueOptions = Array.from(new Map(options.map((option) => [option.value, option])).values());
   const labelsByValue = new Map(uniqueOptions.map((option) => [option.value, option.label]));
 
   const toggle = (value: string) => {
+    let nextSelected: string[];
     if (selected.includes(value)) {
-      onChange(selected.filter((item) => item !== value));
-      return;
+      nextSelected = selected.filter((item) => item !== value);
+    } else if (exclusiveValues.includes(value)) {
+      nextSelected = [value];
+    } else {
+      nextSelected = [...selected.filter((item) => !exclusiveValues.includes(item)), value];
     }
-
-    if (exclusiveValues.includes(value)) {
-      onChange([value]);
-      return;
+    onChange(nextSelected);
+    if (pickerRef.current?.open) {
+      pickerRef.current.open = false;
+      pickerRef.current.querySelector("summary")?.focus();
     }
-
-    onChange([...selected.filter((item) => !exclusiveValues.includes(item)), value]);
   };
 
   return (
@@ -166,7 +170,7 @@ const MultiMusicianSelect = ({
           ))}
         </Chips>
       )}
-      <Picker>
+      <Picker ref={pickerRef}>
         <summary>
           {selected.length === 0
             ? "Adicionar pessoa"
