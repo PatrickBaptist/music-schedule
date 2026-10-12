@@ -4,9 +4,9 @@ import SharedButton from '../buttons/Buttons';
 export const HeaderContainer = styled.div`
   width: 100%;
   height: 70px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   padding: 0 40px;
   box-sizing: border-box;
   border-bottom: 1px solid var(--color-border);
@@ -16,11 +16,16 @@ export const HeaderContainer = styled.div`
   @media(max-width: 759px) {
     padding: 0 10px;
   }
+
+  @media(max-width: 670px) {
+    grid-template-columns: 1fr auto;
+  }
 `;
 
 export const HeaderActions = styled.div`
   display: flex;
   align-items: center;
+  justify-self: end;
   gap: 15px;
 
   @media(max-width: 520px) {
@@ -118,6 +123,7 @@ export const ThemeSwitcher = styled.div`
 export const ContainerLogo = styled.div`
   display: flex;
   align-items: center;
+  justify-self: start;
   gap: 20px;
 
   .logo {
