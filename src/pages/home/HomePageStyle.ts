@@ -19,6 +19,44 @@ export const ContainerHome = styled.div`
     overflow: visible;
     box-sizing: border-box;
 
+    .home-organization {
+      width: 100%;
+      max-width: 1320px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 7px;
+      margin: 0 auto 12px;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+
+      .home-organization-name {
+        min-width: 0;
+        padding-left: 9px;
+        border-left: 3px solid var(--color-primary);
+        color: var(--color-text-strong);
+        font-size: 0.875rem;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      > span:not(.home-organization-name), a {
+        flex-shrink: 0;
+      }
+
+      a {
+        color: var(--color-primary);
+        text-decoration: none;
+        border-radius: 3px;
+
+        &:hover { text-decoration: underline; }
+        &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+      }
+    }
+
     .home-summary-card {
       width: 100%;
       max-width: 1320px;
@@ -371,49 +409,9 @@ export const ContainerHome = styled.div`
       background: var(--color-surface);
     }
 
-    .repertoire-date-bar {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin: 0;
-      padding: 14px 16px;
-      box-sizing: border-box;
-      border: 0;
-      border-top: 1px solid var(--color-border-soft);
-      border-radius: 0;
-      background: var(--color-surface-muted);
-
-      @media (max-width: 560px) {
-        align-items: stretch;
-        flex-direction: column;
-      }
-    }
-
-    .repertoire-date-copy {
-      min-width: 0;
-
-      span {
-        color: var(--color-text-muted);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-      }
-
-      h3 {
-        margin: 3px 0 0;
-        color: var(--color-text-strong);
-        font-size: clamp(17px, 2.4vw, 22px);
-        line-height: 1.25;
-        text-transform: capitalize;
-      }
-    }
-
     .date-picker-trigger {
       position: relative;
-      min-height: 40px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -453,19 +451,27 @@ export const ContainerHome = styled.div`
       align-items: center;
       gap: 8px;
       min-width: 0;
+      max-width: 100%;
+      margin-left: auto;
 
-      @media (max-width: 1135px) {
+      @media (max-width: 560px) {
+        width: 100%;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
 
         > * {
           width: 100%;
         }
+
+        > :only-child {
+          grid-column: 1 / -1;
+        }
       }
     }
 
     .add-music-button {
       min-width: 0;
+      min-height: 44px;
       flex-shrink: 0;
       line-height: 1.2;
       text-align: center;
@@ -494,29 +500,26 @@ export const ContainerHome = styled.div`
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 0;
 
-      > div {
+      .available-repertoires-title {
         display: flex;
         align-items: center;
         gap: 8px;
         color: var(--color-text-strong);
       }
 
-      svg {
+      .available-repertoires-title svg {
         color: var(--color-primary);
       }
 
-      > span {
-        color: var(--color-text-muted);
-        font-size: 12px;
-      }
+    }
 
-      @media (max-width: 520px) {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 4px;
-      }
+    .available-repertoires > .repertoire-selector-hint {
+      margin: 8px 0 12px;
+      color: var(--color-text-muted);
+      font-size: 12px;
     }
 
     .repertoire-date-options {

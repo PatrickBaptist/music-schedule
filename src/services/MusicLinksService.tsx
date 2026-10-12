@@ -4,9 +4,12 @@ import React, {
   ReactNode,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
+import useOrganizationContext from "../context/hooks/useOrganizationContext";
+import useAuthContext from "../context/hooks/useAuthContext";
 
 export interface MusicLink {
   id?: string;
@@ -25,7 +28,7 @@ export interface MusicLink {
 
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
-  fetchMusicLinks: () => Promise<(() => void) | void>;
+  fetchMusicLinks: () => Promise<void>;
   addMusicLink: (musicLink: Omit<MusicLink, "id" | "order">) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
   updateMusicLink: (id: string, updated: MusicLink) => Promise<void>;
@@ -39,6 +42,9 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [musicLinks, setMusicLinks] = useState<MusicLink[]>([]);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
+  const { activeOrganizationId } = useOrganizationContext();
+  const { isFirebaseAuthReady } = useAuthContext();
 
   const getHeaders = () => {
     const token = localStorage.getItem("token");
@@ -52,8 +58,19 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
 
   // Fetch em tempo real
   const fetchMusicLinks = useCallback(async () => {
+    unsubscribeRef.current?.();
+    unsubscribeRef.current = null;
+    setMusicLinks([]);
+
+    if (!activeOrganizationId || !isFirebaseAuthReady || !auth.currentUser) {
+      return;
+    }
+
     try {
-      const q = query(collection(db, "musicLinks"), orderBy("order", "asc"));
+      const q = query(
+        collection(db, "organizations", activeOrganizationId, "musicLinks"),
+        orderBy("order", "asc")
+      );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map((doc) => ({
@@ -62,26 +79,34 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
         })) as MusicLink[];
 
         setMusicLinks(data);
+      }, (error) => {
+        setMusicLinks([]);
+        console.error("Erro ao escutar as músicas da organização:", error);
       });
 
-      return unsubscribe;
+      unsubscribeRef.current = unsubscribe;
     } catch (err) {
       console.error("Erro ao conectar ao Firestore:", err);
       throw err;
     }
-  }, []);
+  }, [activeOrganizationId, isFirebaseAuthReady]);
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
-
-    (async () => {
-      unsubscribe = await fetchMusicLinks();
-    })();
+    void fetchMusicLinks();
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = null;
     };
   }, [fetchMusicLinks]);
+
+  const getOrganizationEndpoint = (path = "") => {
+    if (!activeOrganizationId) {
+      throw new Error("Escolha uma organização antes de alterar as músicas.");
+    }
+
+    return `${API_URL}/organizations/${encodeURIComponent(activeOrganizationId)}/musicList${path}`;
+  };
 
   const addMusicLink = async (
     musicLink: Omit<MusicLink, "id" | "order">
@@ -93,7 +118,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
       const payload = { ...musicLink } as Omit<MusicLink, "order">;
       delete payload.id;
 
-      const res = await fetch(`${API_URL}/musicList`, {
+      const res = await fetch(getOrganizationEndpoint(), {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(payload),
@@ -109,7 +134,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
 
   const removeMusicLink = async (id: string) => {
     try {
-      const res = await fetch(`${API_URL}/musicList/${id}`, {
+      const res = await fetch(getOrganizationEndpoint(`/${encodeURIComponent(id)}`), {
         method: "DELETE",
         headers: getHeaders(),
       });
@@ -123,7 +148,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
 
   const updateMusicLink = async (id: string, updated: MusicLink) => {
     try {
-      const res = await fetch(`${API_URL}/musicList/${id}`, {
+      const res = await fetch(getOrganizationEndpoint(`/${encodeURIComponent(id)}`), {
         method: "PUT",
         headers: getHeaders(),
         body: JSON.stringify(updated),

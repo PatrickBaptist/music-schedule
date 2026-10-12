@@ -17,46 +17,49 @@ import { ServerProvider } from './services/wakeUpService';
 import { ThemePreferenceProvider } from './context/themeContext';
 import { MyScheduleProvider } from './services/MyScheduleService';
 import { VideoPlayerProvider } from './context/videoPlayerContext';
+import { OrganizationProvider } from './context/organizationContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemePreferenceProvider>
         <GlobalStyle />
-        <UsersProvider>
           <ServerProvider>
             <WakeUpScreen>
               <AuthProvider>
-                <AllMusicLinksProvider>
-                  <MusicLinksProvider>
-                    <SchedulesProvider>
-                      <MyScheduleProvider>
-                        <NotificationProvider>
-                          <LayoutWrapper>
-                            <ScrollProvider>
-                              <VideoPlayerProvider>
-                                <App />
-                              </VideoPlayerProvider>
-                            </ScrollProvider>
-                          </LayoutWrapper>
-                        </NotificationProvider>
-                      </MyScheduleProvider>
-                    </SchedulesProvider>
-                  </MusicLinksProvider>
-                  <Toaster 
-                    richColors
-                    position='top-right'
-                    toastOptions={{
-                      actionButtonStyle: {
-                        backgroundColor: 'red'
-                      }
-                    }}
-                  />
-                </AllMusicLinksProvider>
+                <OrganizationProvider>
+                  <UsersProvider>
+                  <AllMusicLinksProvider>
+                    <MusicLinksProvider>
+                      <SchedulesProvider>
+                        <MyScheduleProvider>
+                          <NotificationProvider>
+                            <LayoutWrapper>
+                              <ScrollProvider>
+                                <VideoPlayerProvider>
+                                  <App />
+                                </VideoPlayerProvider>
+                              </ScrollProvider>
+                            </LayoutWrapper>
+                          </NotificationProvider>
+                        </MyScheduleProvider>
+                      </SchedulesProvider>
+                    </MusicLinksProvider>
+                    <Toaster
+                      richColors
+                      position='top-right'
+                      toastOptions={{
+                        actionButtonStyle: {
+                          backgroundColor: 'red'
+                        }
+                      }}
+                    />
+                  </AllMusicLinksProvider>
+                </UsersProvider>
+                </OrganizationProvider>
               </AuthProvider>
             </WakeUpScreen>
           </ServerProvider>
-        </UsersProvider>
       </ThemePreferenceProvider>
     </BrowserRouter>
   </React.StrictMode>

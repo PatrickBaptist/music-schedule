@@ -25,7 +25,7 @@ import {
 } from './meStyle';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { roleOptions, UserRole } from '../../types/UserRole';
-import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaSignOutAlt, FaTag, FaUser, FaTimes } from 'react-icons/fa';
+import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaSignOutAlt, FaTag, FaUser, FaTimes, FaUserPlus } from 'react-icons/fa';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { toast } from 'sonner';
@@ -83,6 +83,7 @@ const MePage: React.FC = () => {
   const canAddwarning = loggedRoles.some(role => allowedRoles.includes(role as UserRole));
 
   const isGuest = user?.roles?.includes(UserRole.Guest);
+  const canManageInvitations = loggedRoles.some(role => role === UserRole.Admin || role === UserRole.Leader);
 
   const profileInitials = useMemo(() => {
     const sourceName = user?.nickname || user?.name || user?.email || "";
@@ -354,6 +355,12 @@ const MePage: React.FC = () => {
               </ProfileItem>
 
               <ProfileActions>
+                {canManageInvitations && (
+                  <DarkButton type="button" onClick={() => navigate('/organization-settings')}>
+                    <FaUserPlus aria-hidden="true" />
+                    Gerenciar convites
+                  </DarkButton>
+                )}
                 <DarkButton type="button" onClick={() => setIsEditingProfile((current) => !current)}>
                   <FaEdit aria-hidden="true" />
                   {isEditingProfile ? "Fechar edição" : "Editar meus dados"}

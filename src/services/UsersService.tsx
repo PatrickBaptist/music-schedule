@@ -1,11 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState, ReactNode } from "react";
-import {
-  doc,
-  serverTimestamp,
-  Timestamp,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import type { Timestamp } from "firebase/firestore";
+import useOrganizationContext from "../context/hooks/useOrganizationContext";
 
 export interface User {
   id: string;
@@ -57,7 +52,8 @@ const stripSensitiveFields = <T extends Record<string, unknown>>(user: T) => {
 
 export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
-  const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
+  const { activeOrganizationId, refreshOrganizations } = useOrganizationContext();
+  const API_URL = `${import.meta.env.VITE_API_URL_PRODUTION}/organizations/${activeOrganizationId}`;
 
   const getHeaders = () => {
     const token = localStorage.getItem("token");
@@ -81,6 +77,7 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const fetchUsers = useCallback(async () => {
+    if (!activeOrganizationId) { setUsers([]); return; }
     try {
       const backendUsers = await fetchBackendUsers();
       setUsers(backendUsers);
@@ -117,6 +114,7 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     if (!res.ok) {
       throw new Error("Erro ao atualizar usuario");
     }
+    await refreshOrganizations();
   };
 
   const deleteUser = async (id: string) => {
@@ -130,12 +128,10 @@ export const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
-  const setUserOnlineStatus = useCallback(async (id: string) => {
-    const userRef = doc(db, "users", id);
-    await updateDoc(userRef, {
-      lastSeen: serverTimestamp(),
-    });
-  }, []);
+  const setUserOnlineStatus = useCallback(async (_id: string) => {
+    if (!activeOrganizationId) return;
+    await fetch(`${API_URL}/users/me/presence`, { method: "POST", headers: getHeaders() });
+  }, [API_URL, activeOrganizationId]);
 
   return (
     <UsersService.Provider value={{ users, fetchUsers, getUserById, updateUser, deleteUser, setUserOnlineStatus }}>

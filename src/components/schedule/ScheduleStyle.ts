@@ -233,9 +233,9 @@ export const GenerationPanel = styled.section`
 
 export const AddFormOverlay = styled(motion.div)`
   position: fixed;
-  top: 70px;
+  top: var(--app-header-height);
   right: 0;
-  bottom: 0;
+  bottom: var(--app-footer-height);
   left: 0;
   z-index: 9998;
   background: rgba(8, 15, 24, 0.92);
@@ -247,8 +247,7 @@ export const AddFormOverlay = styled(motion.div)`
   overflow: hidden;
   overscroll-behavior: contain;
 
-  @media (max-width: 720px) {
-    bottom: 90px;
+  @media (max-width: 670px) {
     padding: 12px;
   }
 `;

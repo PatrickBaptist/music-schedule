@@ -27,7 +27,7 @@ const FixedHeader = styled.header`
   position: fixed;
   top: 0;
   z-index: 9999;
-  height: 70px;
+  height: var(--app-header-height);
 `;
 
 const FixedFooter = styled.footer`
@@ -37,15 +37,15 @@ const FixedFooter = styled.footer`
   z-index: 9999;
   height: 90px;
 
-  @media (min-width: 670px) {
+  @media (min-width: 671px) {
     display: none;
   }
 `;
 
 const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
   position: fixed;
-  top: ${({ $hideLayout }) => $hideLayout ? '0' : '70px'};
-  bottom: ${({ $hideLayout }) => $hideLayout ? '0' : '90px'};
+  top: ${({ $hideLayout }) => $hideLayout ? '0' : 'var(--app-header-height)'};
+  bottom: ${({ $hideLayout }) => $hideLayout ? '0' : 'var(--app-footer-height)'};
   left: 0;
   width: 100%;
   overflow-y: auto;
@@ -64,7 +64,7 @@ const ContainerRoutes = styled.div<{ $hideLayout: boolean }>`
     border-radius: 1em;
   }
 
-  @media (min-width: 670px) {
+  @media (min-width: 671px) {
     bottom: 0;
   }
 `;
@@ -99,7 +99,8 @@ const App: React.FC = () => {
     scrollToTop();
   }, [location.pathname, scrollToTop]);
 
-  const hideLayout = ["/login", "/register"].includes(location.pathname);
+  const hideLayout = ["/login", "/register", "/organizations"].includes(location.pathname)
+    || location.pathname.startsWith("/invite/");
 
   return (
     <AppContainer $hideLayout={hideLayout}>

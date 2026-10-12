@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useMemo, useState } from 'react';
 import useAuthContext from '../context/hooks/useAuthContext';
+import useOrganizationContext from '../context/hooks/useOrganizationContext';
 import useSchedulesContext from '../context/hooks/useScheduleContext';
 import useMusicLinksContext from '../context/hooks/useMusicLinksContext';
 import type { MusicLink } from './MusicLinksService';
@@ -64,6 +65,7 @@ const fingerprint = (assignments: PersonalAssignment[]) => JSON.stringify(assign
 
 export const MyScheduleProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuthContext();
+  const { activeOrganizationId } = useOrganizationContext();
   const { specialSchedules } = useSchedulesContext();
   const { musicLinks } = useMusicLinksContext();
   const [seenFingerprint, setSeenFingerprint] = useState('');
@@ -95,7 +97,7 @@ export const MyScheduleProvider = ({ children }: { children: ReactNode }) => {
   }, [musicLinks, specialSchedules, user]);
 
   const currentFingerprint = useMemo(() => fingerprint(assignments), [assignments]);
-  const storageKey = user?.id ? `my-schedule-seen:${user.id}` : '';
+  const storageKey = user?.id && activeOrganizationId ? `my-schedule-seen:${activeOrganizationId}:${user.id}` : '';
   const savedFingerprint = seenFingerprint || (storageKey ? localStorage.getItem(storageKey) || '' : '');
   const markAssignmentsAsSeen = useCallback(() => {
     if (!storageKey) return;

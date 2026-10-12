@@ -1,3 +1,4 @@
+import useOrganizationContext from "../context/hooks/useOrganizationContext";
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 
 export interface Notification {
@@ -28,7 +29,8 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     };
   };
 
-  const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
+  const { activeOrganizationId } = useOrganizationContext();
+  const API_URL = `${import.meta.env.VITE_API_URL_PRODUTION}/organizations/${activeOrganizationId}`;
 
   const getNotification = useCallback(async () => {
     try {
@@ -48,7 +50,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   }, [API_URL]);
 
   useEffect(() => {
-    getNotification();
+    if (activeOrganizationId) void getNotification().catch(() => undefined);
   }, [getNotification]);
 
   const postNotification = async (text: string) => {
@@ -83,7 +85,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   }, [API_URL]);
 
   useEffect(() => {
-    getWarning();
+    if (activeOrganizationId) void getWarning().catch(() => undefined);
   }, [getWarning]);
 
   const postWarning = async (text: string) => {

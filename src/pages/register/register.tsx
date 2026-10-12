@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Button,
@@ -14,22 +14,21 @@ import {
   SuccessDialog,
   SuccessIcon,
   SuccessOverlay,
-  RoleItem,
-  RolesContainer,
-  RolesLabel,
   StyledInputMask,
   Title,
 } from "./registerStyle";
-import { roleOptions, UserRole } from "../../types/UserRole";
+
 import useAuthContext from "../../context/hooks/useAuthContext";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
-import { motion } from "framer-motion";
+
 import { FcGoogle } from "react-icons/fc";
 import { FaCheck } from "react-icons/fa";
 import useBodyScrollLock from "../../context/hooks/useBodyScrollLock";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as { from?: string } | null)?.from || "/";
 
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
@@ -39,7 +38,7 @@ const RegisterPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
-  const [roles, setRoles] = useState<string[]>([]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registrationMessage, setRegistrationMessage] = useState("");
   const loginButtonRef = useRef<HTMLButtonElement>(null);
@@ -59,10 +58,7 @@ const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (roles.length === 0) {
-      toast.error("Escolha ao menos uma funcao para o cadastro.");
-      return;
-    }
+
 
     const toastId = toast.loading("Enviando cadastro...");
     setIsSubmitting(true);
@@ -74,7 +70,7 @@ const RegisterPage: React.FC = () => {
         password,
         birthDate,
         phone,
-        roles,
+
       };
 
       const result = await registerUser(payload);
@@ -93,7 +89,7 @@ const RegisterPage: React.FC = () => {
     try {
       const result = await loginWithGoogle();
       toast.success(result.message, { id: toastId });
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message, { id: toastId });
@@ -153,39 +149,9 @@ const RegisterPage: React.FC = () => {
             required
           />
 
-          <FieldContainer>
-            <RolesLabel htmlFor="roles">Selecione suas funcoes no ministerio de louvor</RolesLabel>
-          </FieldContainer>
-          <RolesContainer>
-            {roleOptions
-              .filter((role) => role.value !== UserRole.Guest && role.value !== UserRole.Leader)
-              .map((role) => (
-                <RoleItem key={role.value}>
-                  <motion.input
-                    type="checkbox"
-                    id={role.value}
-                    value={role.value}
-                    checked={roles.includes(role.value)}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (e.target.checked) {
-                        setRoles([...roles, value]);
-                      } else {
-                        setRoles(roles.filter((r) => r !== value));
-                      }
-                    }}
-                    whileTap={{ scale: 1.2 }}
-                    whileHover={{ scale: 1.05 }}
-                    animate={{
-                      backgroundColor: roles.includes(role.value) ? "#3fb950" : "#fff",
-                      borderColor: roles.includes(role.value) ? "#3fb950" : "#ccc",
-                    }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  />
-                  <label htmlFor={role.value}>{role.label}</label>
-                </RoleItem>
-              ))}
-          </RolesContainer>
+          <p>Suas funções serão definidas dentro de cada organização.</p>
+
+
 
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Enviando..." : "Cadastrar"}
@@ -193,7 +159,7 @@ const RegisterPage: React.FC = () => {
 
           <LoginPrompt>
             Ja possui conta?
-            <Link to="/login">Entre</Link>
+            <Link to="/login" state={{ from: redirectTo }}>Entre</Link>
           </LoginPrompt>
         </FormWrapper>
 
@@ -212,10 +178,14 @@ const RegisterPage: React.FC = () => {
                 <FaCheck />
               </SuccessIcon>
               <span>Cadastro enviado</span>
-              <h2 id="registration-success-title">Agora é só aguardar a liberação</h2>
+              <h2 id="registration-success-title">Sua conta está pronta</h2>
               <p id="registration-success-description">{registrationMessage}</p>
-              <p>Quando sua conta for liberada, você poderá entrar normalmente com seu e-mail e sua senha.</p>
-              <Button ref={loginButtonRef} type="button" onClick={() => navigate("/login")}>
+              <p>Entre com seu e-mail e sua senha para aceitar o convite ou criar sua organização.</p>
+              <Button
+                ref={loginButtonRef}
+                type="button"
+                onClick={() => navigate("/login", { state: { from: redirectTo } })}
+              >
                 Ir para o login
               </Button>
             </SuccessDialog>

@@ -19,6 +19,7 @@ import { UserRole } from '../../types/UserRole';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import Button from '../../components/buttons/Buttons';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
+import useOrganizationContext from '../../context/hooks/useOrganizationContext';
 
 const toLocalISODate = (date: Date) => {
   const year = date.getFullYear();
@@ -58,6 +59,7 @@ const HomePage: React.FC = () => {
   const { user: loggedUser } = useAuthContext();
   const { assignments } = useMyScheduleContext();
   const { musicLinks } = useMusicLinksContext();
+  const { activeOrganization } = useOrganizationContext();
   const fallbackDate = useMemo(getNextSunday, []);
   const [selectedMusicDate, setSelectedMusicDate] = useState(fallbackDate);
   const hasSelectedMusicDate = useRef(false);
@@ -105,16 +107,6 @@ const HomePage: React.FC = () => {
     return Array.from(dates, ([date, count]) => ({ date, count }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }, [musicLinks]);
-  const selectedRepertoireLabel = useMemo(() => {
-    if (!selectedMusicDate) return 'Data não selecionada';
-
-    return new Date(`${selectedMusicDate}T12:00:00`).toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
-  }, [selectedMusicDate]);
   const changeSelectedMusicDate = (date: string) => {
     hasSelectedMusicDate.current = true;
     setSelectedMusicDate(date);
@@ -148,6 +140,18 @@ const HomePage: React.FC = () => {
       <ContainerHome>
         <PageWrapper>
           {warning?.text && <Aviso message={'⚠️ ' + warning.text} duration={20000} />}
+
+          {activeOrganization && (
+            <div className="home-organization" aria-label="Organização atual">
+              <span className="home-organization-name" title={activeOrganization.name}>
+                {activeOrganization.name}
+              </span>
+              <span aria-hidden="true">·</span>
+              <Link to="/organizations" aria-label={`Trocar organização. Atual: ${activeOrganization.name}`}>
+                Trocar
+              </Link>
+            </div>
+          )}
 
           <section className="home-summary-card" aria-labelledby="home-summary-title">
             <div className="home-summary-date" aria-hidden="true">
@@ -240,12 +244,37 @@ const HomePage: React.FC = () => {
               <section className="repertoire-selector-card" aria-labelledby="available-repertoires-title">
                 <div className="available-repertoires">
                   <div className="available-repertoires-heading">
-                    <div>
+                    <div className="available-repertoires-title">
                       <FaMusic aria-hidden="true" />
                       <strong id="available-repertoires-title">Repertórios</strong>
                     </div>
-                    <span>Escolha uma data para abrir</span>
+                  <div className="repertoire-date-actions">
+                    <label className="date-picker-trigger" htmlFor="music-schedule-date">
+                      <FaCalendarAlt aria-hidden="true" />
+                      <span>Trocar data</span>
+                      <input
+                        id="music-schedule-date"
+                        type="date"
+                        value={selectedMusicDate}
+                        aria-label="Escolher outra data do repertório"
+                        onClick={(event) => event.currentTarget.showPicker?.()}
+                        onChange={(event) => changeSelectedMusicDate(event.target.value)}
+                      />
+                    </label>
+                    {canAddMusic && (
+                      <Button
+                        variant="primary"
+                        size="md"
+                        className="add-music-button"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        <FaPlus aria-hidden="true" />
+                        <span>Adicionar música</span>
+                      </Button>
+                    )}
                   </div>
+                  </div>
+                  <p className="repertoire-selector-hint">Escolha uma data para abrir</p>
                   {availableRepertoireDates.length ? (
                     <div className="repertoire-date-options">
                       {availableRepertoireDates.map(({ date, count }) => {
@@ -277,37 +306,6 @@ const HomePage: React.FC = () => {
                   )}
                 </div>
 
-                <div className="repertoire-date-bar">
-                  <div className="repertoire-date-copy">
-                    <span>Repertório exibido</span>
-                    <h3>{selectedRepertoireLabel}</h3>
-                  </div>
-                  <div className="repertoire-date-actions">
-                    <label className="date-picker-trigger" htmlFor="music-schedule-date">
-                      <FaCalendarAlt aria-hidden="true" />
-                      <span>Trocar data</span>
-                      <input
-                        id="music-schedule-date"
-                        type="date"
-                        value={selectedMusicDate}
-                        aria-label="Escolher outra data do repertório"
-                        onClick={(event) => event.currentTarget.showPicker?.()}
-                        onChange={(event) => changeSelectedMusicDate(event.target.value)}
-                      />
-                    </label>
-                    {canAddMusic && (
-                      <Button
-                        variant="primary"
-                        size="md"
-                        className="add-music-button"
-                        onClick={() => setIsModalOpen(true)}
-                      >
-                        <FaPlus aria-hidden="true" />
-                        <span>Adicionar música</span>
-                      </Button>
-                    )}
-                  </div>
-                </div>
               </section>
 
               <div id="home-music-list" className="home-music-list-anchor">

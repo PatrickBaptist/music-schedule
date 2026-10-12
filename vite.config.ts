@@ -14,8 +14,8 @@ export default defineConfig({
       },
       includeAssets: ['logo-192.png', 'logo-512.png', 'logo-1280-720.png', 'logo-720-1280.png' ], // arquivos públicos para cache
       manifest: {
-        name: 'Ministério de louvor Manancial',
-        short_name: 'Min. Manancial',
+        name: 'Agenda musical',
+        short_name: 'Agenda musical',
         description: 'Aplicativo para gerenciar escalas e músicas',
         theme_color: '#00bfff',
         background_color: '#000',
@@ -56,14 +56,8 @@ export default defineConfig({
           },
           {
             urlPattern: /^https?.*/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'offline-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 dias
-              },
-            },
+            // Private API responses must not survive account or tenant changes.
+            handler: 'NetworkOnly',
           },
         ],
       },

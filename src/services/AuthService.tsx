@@ -1,7 +1,15 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState, ReactNode } from "react";
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithCustomToken,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import useUsersContext from "../context/hooks/useUsersContext";
+
 
 export interface RegisterPayload {
   name: string;
@@ -9,7 +17,7 @@ export interface RegisterPayload {
   email: string;
   birthDate: string;
   password: string;
-  roles: string[];
+  roles?: string[];
   phone?: string;
   photoURL?: string;
   joinedAt?: string;
@@ -53,11 +61,20 @@ export interface GoogleAuthResult {
   user?: User;
 }
 
+interface BackendAuthResponse {
+  message?: string;
+  token?: string;
+  firebaseCustomToken?: string;
+  user?: User;
+  status?: string;
+}
+
 export interface AuthContextProps {
   user: User | null;
   token: string | null;
   authSource: AuthSource;
   isAuthReady: boolean;
+  isFirebaseAuthReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<GoogleAuthResult>;
   loginGuest: () => Promise<void>;
@@ -83,10 +100,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [token, setToken] = useState<string | null>(localStorage.getItem("token") || null);
   const [authSource, setAuthSource] = useState<AuthSource>(getStoredAuthSource());
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const { setUserOnlineStatus } = useUsersContext();
+  const [isFirebaseAuthReady, setIsFirebaseAuthReady] = useState(false);
+
 
   const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
   const googleProvider = useMemo(() => new GoogleAuthProvider(), []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, () => {
+      setIsFirebaseAuthReady(true);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const establishFirebaseSession = useCallback(async (firebaseCustomToken?: string) => {
+    if (!firebaseCustomToken) {
+      throw new Error("O servidor não retornou a credencial necessária para carregar as músicas.");
+    }
+
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithCustomToken(auth, firebaseCustomToken);
+  }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
@@ -107,7 +142,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
 
-      const data = await res.json();
+      const data = await res.json() as User & { firebaseCustomToken?: string };
+
+      if (auth.currentUser?.uid !== data.id && data.firebaseCustomToken) {
+        await establishFirebaseSession(data.firebaseCustomToken);
+      }
 
       setUser((current) => ({
         id: data.id,
@@ -122,7 +161,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         status: data.status ?? current?.status,
       }));
     },
-    [API_URL, logout]
+    [API_URL, establishFirebaseSession, logout]
   );
 
   const refreshUser = useCallback(async () => {
@@ -148,22 +187,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     void init();
   }, [refreshUser, token]);
 
-  useEffect(() => {
-    if (!user?.id) return;
-    setUserOnlineStatus(user.id);
-  }, [setUserOnlineStatus, user?.id]);
-
-  useEffect(() => {
-    const onVisibility = () => {
-      if (document.visibilityState === "visible" && user?.id) {
-        setUserOnlineStatus(user.id);
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [setUserOnlineStatus, user?.id]);
-
   const login = async (email: string, password: string) => {
     try {
       await signOut(auth);
@@ -179,7 +202,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(errorMsg);
       }
 
-      const data = await res.json();
+      const data = await res.json() as BackendAuthResponse;
+
+      if (!data.token) {
+        throw new Error("O servidor não retornou uma sessão válida.");
+      }
+
+      await establishFirebaseSession(data.firebaseCustomToken);
 
       localStorage.setItem("token", data.token);
       setToken(data.token);
@@ -194,6 +223,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const loginWithGoogle = async (): Promise<GoogleAuthResult> => {
     try {
+      await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken(true);
 
@@ -204,7 +234,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           body: JSON.stringify({ idToken }),
         });
 
-        const data = await res.json().catch(() => ({}));
+        const data = await res.json().catch(() => ({})) as BackendAuthResponse;
 
         if (!res.ok || !data?.token) {
           throw new Error(data?.message || "Usuario nao pode logar agora");
@@ -213,6 +243,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (isPendingUser(data)) {
           throw new Error("Seu cadastro ainda esta pendente. Aguarde a liberacao para entrar.");
         }
+
+        await establishFirebaseSession(data.firebaseCustomToken);
 
         localStorage.setItem("token", data.token);
         setToken(data.token);
@@ -228,8 +260,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         return { message: data?.message || "Login realizado com sucesso.", token: data.token, user: data.user };
-      } finally {
+      } catch (error) {
         await signOut(auth).catch(() => undefined);
+        throw error;
       }
     } catch (err) {
       console.error("Erro no login com Google:", err);
@@ -310,7 +343,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(errorData?.message || "Erro ao entrar como convidado");
       }
 
-      const data = await res.json();
+      const data = await res.json() as BackendAuthResponse;
+
+      if (!data.token) {
+        throw new Error("O servidor não retornou uma sessão válida.");
+      }
+
+      await establishFirebaseSession(data.firebaseCustomToken);
 
       localStorage.setItem("token", data.token);
       setToken(data.token);
@@ -329,6 +368,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         token,
         authSource,
         isAuthReady,
+        isFirebaseAuthReady,
         login,
         loginWithGoogle,
         logout,

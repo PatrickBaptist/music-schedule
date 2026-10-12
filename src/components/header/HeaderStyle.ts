@@ -5,7 +5,8 @@ export const HeaderContainer = styled.div`
   width: 100%;
   height: 70px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 24px;
   align-items: center;
   padding: 0 40px;
   box-sizing: border-box;
@@ -18,7 +19,7 @@ export const HeaderContainer = styled.div`
   }
 
   @media(max-width: 670px) {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 `;
 
@@ -27,9 +28,23 @@ export const HeaderActions = styled.div`
   align-items: center;
   justify-self: end;
   gap: 15px;
+  min-width: 0;
 
   @media(max-width: 520px) {
     gap: 8px;
+  }
+`;
+
+export const UserGreeting = styled.span`
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-text-strong);
+  font-weight: 600;
+
+  @media(max-width: 1100px) {
+    display: none;
   }
 `;
 
@@ -136,6 +151,11 @@ export const NavHeader = styled.nav`
   display: flex;
   align-items: center;
   gap: 25px;
+  justify-self: center;
+
+  @media(max-width: 1100px) {
+    gap: 14px;
+  }
 
   @media(max-width: 670px) {
     display: none;

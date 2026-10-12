@@ -11,11 +11,20 @@ import MePage from '../../pages/me/me';
 import AuditPage from '../../pages/audit/audit';
 import MySchedulePage from '../../pages/mySchedule/MySchedulePage';
 import { UserRole } from '../../types/UserRole';
+import OrganizationSelectionPage from '../../pages/organizations/OrganizationSelectionPage';
+import InvitationPage from '../../pages/organizations/InvitationPage';
+import OrganizationManagementPage from '../../pages/organizations/OrganizationManagementPage';
 
 const MainRoutes: React.FC = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<RegisterPage />} />
+    <Route path="/invite/:organizationSlug/:token" element={<InvitationPage />} />
+    <Route path="/organization-settings" element={<PrivateRoute allowedRoles={[UserRole.Admin, UserRole.Leader]}><OrganizationManagementPage /></PrivateRoute>} />
+    <Route
+      path="/organizations"
+      element={<PrivateRoute requireOrganization={false}><OrganizationSelectionPage /></PrivateRoute>}
+    />
     <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
     <Route path="/schedule" element={<PrivateRoute><SchedulePage /></PrivateRoute>} />
     <Route path="/listMusic" element={<PrivateRoute><ListMusic /></PrivateRoute>} />
@@ -26,7 +35,7 @@ const MainRoutes: React.FC = () => (
       path="/audit"
       element={<PrivateRoute allowedRoles={[UserRole.Admin, UserRole.Leader]}><AuditPage /></PrivateRoute>}
     />
-    <Route path="*" element={<HomePage />} />
+    <Route path="*" element={<PrivateRoute><HomePage /></PrivateRoute>} />
   </Routes>
 );
 

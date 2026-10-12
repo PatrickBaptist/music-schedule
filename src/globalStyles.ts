@@ -2,6 +2,8 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   :root {
+    --app-header-height: 70px;
+    --app-footer-height: 90px;
     --color-page-bg: #0D1117;
     --color-surface: #161b22;
     --color-surface-muted: #080D13;
@@ -37,6 +39,12 @@ const GlobalStyle = createGlobalStyle`
     --color-modal-bg: #f6f8fb;
     --color-input-bg: #ffffff;
     --color-input-text: #172033;
+  }
+
+  @media (min-width: 671px) {
+    :root {
+      --app-footer-height: 0px;
+    }
   }
 
   body {

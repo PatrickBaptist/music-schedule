@@ -76,7 +76,9 @@ const mapAuditLog = (item: RawAuditLog): AuditLog => {
 export const fetchAuditLogs = async (): Promise<AuditLog[]> => {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`${API_URL}/audit`, {
+  const organizationId = localStorage.getItem("activeOrganizationId");
+  if (!organizationId) return [];
+  const response = await fetch(`${API_URL}/organizations/${encodeURIComponent(organizationId)}/audit`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

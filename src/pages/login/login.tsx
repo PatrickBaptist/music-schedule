@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import {
@@ -21,6 +21,8 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const { login, loginGuest, loginWithGoogle } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as { from?: string } | null)?.from || "/";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ const LoginPage: React.FC = () => {
     try {
       await login(email, password);
       toast.dismiss(toastId);
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
         if (err instanceof Error) {
             toast.error(err.message, { id: toastId });
@@ -43,7 +45,7 @@ const LoginPage: React.FC = () => {
     try {
       await loginGuest();
       toast.dismiss(toastId);
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
         if (err instanceof Error) {
             toast.error(err.message, { id: toastId });
@@ -58,7 +60,7 @@ const LoginPage: React.FC = () => {
     try {
       const result = await loginWithGoogle();
       toast.success(result.message, { id: toastId });
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message, { id: toastId });
@@ -111,7 +113,7 @@ const LoginPage: React.FC = () => {
           </RegisterPrompt>
           <RegisterPrompt>
             Não possui conta?
-            <Link to="/register">Cadastre-se</Link>
+            <Link to="/register" state={{ from: redirectTo }}>Cadastre-se</Link>
           </RegisterPrompt>
         </FormWrapper>
       </Container>

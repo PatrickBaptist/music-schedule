@@ -10,6 +10,7 @@ import {
   ProfileBadge,
   ProfileButton,
   NavHeader,
+  UserGreeting,
   ThemeSwitcher,
 } from './HeaderStyle';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -160,11 +161,11 @@ const Header: React.FC = () => {
           {shouldShowBadge && <ProfileBadge aria-hidden="true" />}
         </ProfileButton>
         {!isGuest && (
-          <span style={{ color: 'var(--color-text-strong)', fontWeight: 600 }}>
+          <UserGreeting>
             Olá, <span style={{ color: 'var(--color-primary)' }}>
               {user?.nickname || user?.name}
             </span>
-          </span>
+          </UserGreeting>
         )}
       </HeaderActions>
     </HeaderContainer>

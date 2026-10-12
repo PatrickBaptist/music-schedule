@@ -1,41 +1,18 @@
 import { useEffect } from "react";
-import { db } from "../../firebaseConfig";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import useAuthContext from "./useAuthContext";
+import useUsersContext from "./useUsersContext";
 
 export const useUserPresence = () => {
   const { user } = useAuthContext();
-
+  const { setUserOnlineStatus } = useUsersContext();
   useEffect(() => {
     if (!user?.id) return;
-
-    const userRef = doc(db, "users", user.id);
-
-    const setOnline = async () => {
-      await updateDoc(userRef, {
-        isOnline: true,
-        lastSeen: serverTimestamp(),
-      });
+    const update = () => {
+      if (document.visibilityState === "visible") void setUserOnlineStatus(user.id).catch(() => undefined);
     };
-
-    const setOffline = async () => {
-      await updateDoc(userRef, {
-        isOnline: false,
-        lastSeen: serverTimestamp(),
-      });
-    };
-
-    setOnline();
-
-    window.addEventListener("beforeunload", setOffline);
-    window.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") setOffline();
-      else setOnline();
-    });
-
-    return () => {
-      setOffline();
-      window.removeEventListener("beforeunload", setOffline);
-    };
-  }, [user]);
+    update();
+    const timer = window.setInterval(update, 120000);
+    document.addEventListener("visibilitychange", update);
+    return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", update); };
+  }, [user?.id, setUserOnlineStatus]);
 };

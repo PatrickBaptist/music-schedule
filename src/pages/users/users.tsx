@@ -63,7 +63,7 @@ const UsersCardsPage: React.FC = () => {
   );
 
   const editableRoleOptions = useMemo(
-    () => roleOptions.filter((role) => role.value !== UserRole.Guest),
+    () => roleOptions.filter((role) => ![UserRole.Guest, UserRole.Admin, UserRole.Leader].includes(role.value)),
     []
   );
 
@@ -227,8 +227,6 @@ const UsersCardsPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       await updateUser(editingUser.id, {
-        name: draftName.trim(),
-        email: draftEmail.trim(),
         roles: draftRoles,
         status: forceStatus ?? draftStatus,
       });
@@ -414,6 +412,7 @@ const UsersCardsPage: React.FC = () => {
                 <FieldLabel htmlFor="user-name">Nome</FieldLabel>
                 <TextInput
                   id="user-name"
+                  readOnly
                   value={draftName}
                   onChange={(event) => setDraftName(event.target.value)}
                   placeholder="Nome do usuario"
@@ -425,6 +424,7 @@ const UsersCardsPage: React.FC = () => {
                 <FieldLabel htmlFor="user-email">E-mail</FieldLabel>
                 <TextInput
                   id="user-email"
+                  readOnly
                   type="email"
                   value={draftEmail}
                   onChange={(event) => setDraftEmail(event.target.value)}
@@ -434,7 +434,7 @@ const UsersCardsPage: React.FC = () => {
               </FormGroup>
 
               <FormGroup>
-                <FieldLabel>Roles</FieldLabel>
+                <FieldLabel>Funções musicais</FieldLabel>
                 <RoleGrid>
                   {editableRoleOptions.map((role) => {
                     const checked = draftRoles.includes(role.value);

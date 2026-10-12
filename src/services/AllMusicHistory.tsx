@@ -1,3 +1,4 @@
+import useOrganizationContext from "../context/hooks/useOrganizationContext";
 import React, {
   useState,
   useCallback,
@@ -59,7 +60,8 @@ export const AllMusicLinksProvider: React.FC<{ children: ReactNode }> = ({
   const [hasPrevPage, setHasPrevPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
+  const { activeOrganizationId } = useOrganizationContext();
+  const API_URL = `${import.meta.env.VITE_API_URL_PRODUTION}/organizations/${activeOrganizationId}`;
 
   const getHeaders = () => {
     const token = localStorage.getItem("token");

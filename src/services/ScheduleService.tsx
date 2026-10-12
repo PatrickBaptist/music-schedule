@@ -1,4 +1,4 @@
-import { doc, onSnapshot } from 'firebase/firestore';
+import useOrganizationContext from '../context/hooks/useOrganizationContext';
 import React, {
   createContext,
   useCallback,
@@ -7,7 +7,7 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import { db } from '../firebaseConfig';
+
 import type { User } from './UsersService';
 
 export interface Musicos {
@@ -352,7 +352,8 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
   const monthlyUnsubscribeRef = useRef<(() => void) | null>(null);
   const nextSundayUnsubscribeRef = useRef<(() => void) | null>(null);
 
-  const API_URL = import.meta.env.VITE_API_URL_PRODUTION;
+  const { activeOrganizationId } = useOrganizationContext();
+  const API_URL = `${import.meta.env.VITE_API_URL_PRODUTION}/organizations/${activeOrganizationId}`;
 
   const getHeaders = () => {
     const token = localStorage.getItem('token');
@@ -362,114 +363,37 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
   };
 
-  const fetchNextSundaySchedule = useCallback(() => {
-    if (nextSundayUnsubscribeRef.current) {
-      nextSundayUnsubscribeRef.current();
-      nextSundayUnsubscribeRef.current = null;
-    }
+  const fetchNextSundaySchedule = useCallback(async () => {
+    if (!activeOrganizationId) { setNextSundaySchedule(null); return; }
+    const res = await fetch(`${API_URL}/schedule/next-sunday`, { headers: getHeaders() });
+    if (res.status === 404) { setNextSundaySchedule(null); return; }
+    if (!res.ok) throw new Error("Erro ao buscar escala");
+    const item = await res.json();
+    setNextSundaySchedule({
+      date: item.date,
+      músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(item)),
+      músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(item)),
+    });
+  }, [API_URL, activeOrganizationId]);
 
-    const today = new Date();
-    const day = today.getDay();
-    const diff = (7 - day) % 7;
-
-    const nextSunday = new Date(today);
-    nextSunday.setDate(today.getDate() + diff);
-    nextSunday.setHours(0, 0, 0, 0);
-
-    const nextSundayISO = nextSunday.toISOString().split('T')[0];
-
-    const month = String(nextSunday.getMonth() + 1).padStart(2, '0');
-    const year = nextSunday.getFullYear();
-    const monthId = `${month}-${year}`;
-
-    const docRef = doc(db, 'schedules', monthId);
-
-    const unsubscribe = onSnapshot(
-      docRef,
-      (snapshot) => {
-        if (!snapshot.exists()) {
-          setNextSundaySchedule(null);
-          return;
-        }
-
-        const data = snapshot.data();
-        const sundays = Array.isArray(data?.sundays) ? data.sundays : [];
-
-        const match = sundays.find((s) => {
-          const firebaseDate = new Date(s.date).toISOString().split('T')[0];
-          return firebaseDate === nextSundayISO;
-        });
-
-        if (!match) {
-          setNextSundaySchedule(null);
-          return;
-        }
-
-        setNextSundaySchedule({
-          date: nextSundayISO,
-          músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(match)),
-          músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(match)),
-        });
-      },
-      (error) => {
-        console.error('Erro ao buscar escala do próximo domingo:', error);
-        setNextSundaySchedule(null);
-      }
-    );
-
-    nextSundayUnsubscribeRef.current = unsubscribe;
-    return unsubscribe;
-  }, []);
+  const getScheduleForMonth = useCallback(async (monthId: string) => {
+    if (!activeOrganizationId) { setMonthlySchedule([]); return; }
+    const res = await fetch(`${API_URL}/schedule/${encodeURIComponent(monthId)}`, { headers: getHeaders() });
+    if (res.status === 404) { setMonthlySchedule([]); return; }
+    if (!res.ok) throw new Error("Erro ao buscar escala mensal");
+    const data = await res.json();
+    setMonthlySchedule((data.sundays || []).map((item: any) => ({
+      ...item,
+      músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(item)),
+      músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(item)),
+    })));
+  }, [API_URL, activeOrganizationId]);
 
   useEffect(() => {
-    const unsub = fetchNextSundaySchedule();
-    return () => unsub && unsub();
-  }, [fetchNextSundaySchedule]);
-
-  const getScheduleForMonth = useCallback((monthId: string) => {
-    if (monthlyUnsubscribeRef.current) {
-      monthlyUnsubscribeRef.current();
-      monthlyUnsubscribeRef.current = null;
-    }
-
-    const docRef = doc(db, 'schedules', monthId);
-
-    const unsubscribe = onSnapshot(
-      docRef,
-      (snapshot) => {
-        if (!snapshot.exists()) {
-          setMonthlySchedule([]);
-          return;
-        }
-
-        const data = snapshot.data();
-        const sundays = Array.isArray(data?.sundays) ? data.sundays : [];
-
-        setMonthlySchedule(
-          sundays.map((item) => ({
-            ...item,
-            músicos: normalizeMusicosDetalhados(getScheduleMusicosSource(item)),
-            músicosIds: normalizeMusicos(getScheduleMusicosIdsSource(item)),
-          }))
-        );
-      },
-      (error) => {
-        console.error('Erro ao buscar escala do mês:', error);
-        setMonthlySchedule([]);
-      }
-    );
-
-    monthlyUnsubscribeRef.current = unsubscribe;
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    const month = new Date().getMonth() + 1;
-    const year = new Date().getFullYear();
-    const formatted = `${String(month).padStart(2, '0')}-${year}`;
-
-    getScheduleForMonth(formatted);
-  }, [getScheduleForMonth]);
+    const monthId = `${String(new Date().getMonth() + 1).padStart(2, '0')}-${new Date().getFullYear()}`;
+    void getScheduleForMonth(monthId).catch(() => setMonthlySchedule([]));
+    void fetchNextSundaySchedule().catch(() => setNextSundaySchedule(null));
+  }, [getScheduleForMonth, fetchNextSundaySchedule]);
 
   const saveOrUpdateSchedule = async (schedule: UpsertScheduleParams) => {
     try {
@@ -480,6 +404,10 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
       });
 
       if (!res.ok) throw new Error('Erro ao salvar escala');
+      await Promise.all([
+        getScheduleForMonth(`${schedule.month}-${schedule.year}`),
+        fetchNextSundaySchedule(),
+      ]);
     } catch (err) {
       console.error(err);
       throw err;
@@ -508,8 +436,9 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const getSpecialSchedules = useCallback(async () => {
+    if (!activeOrganizationId) { setSpecialSchedules([]); return; }
     try {
-      const res = await fetch(`${API_URL}/schedule/special-schedule`);
+      const res = await fetch(`${API_URL}/schedule/special-schedule`, { headers: getHeaders() });
       if (!res.ok) throw new Error('Erro ao buscar escalas especiais');
       const data = await res.json();
       const schedules = Array.isArray(data) ? data : [];
@@ -562,7 +491,7 @@ export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   useEffect(() => {
-    getSpecialSchedules();
+    void getSpecialSchedules().catch(() => undefined);
   }, [getSpecialSchedules]);
 
   useEffect(() => {

@@ -2,12 +2,14 @@ import { useEffect, useCallback } from 'react';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { toast } from 'sonner';
 import useLoginContext from '../../context/hooks/useAuthContext';
+import useOrganizationContext from '../../context/hooks/useOrganizationContext';
 
-const STORAGE_KEY = 'closedNotification';
 
 const Notification = () => {
   const { notification, getNotification } = useNotificationContext();
   const { isAuthenticated } = useLoginContext();
+  const { activeOrganizationId } = useOrganizationContext();
+  const STORAGE_KEY = `closedNotification:${activeOrganizationId}`;
 
   // Função para checar se a notificação fechada ainda está no cooldown
   const isBlocked = useCallback(() => {
@@ -23,13 +25,13 @@ const Notification = () => {
   } catch {
     return false;
   }
-}, [notification?.text]);
+}, [notification?.text, STORAGE_KEY]);
 
   useEffect(() => {
     if (isAuthenticated) {
-      getNotification();
+      void getNotification().catch(() => undefined);
       const interval = setInterval(() => {
-        getNotification();
+        void getNotification().catch(() => undefined);
       }, 120000);
       return () => clearInterval(interval);
     }
@@ -54,6 +56,8 @@ const Notification = () => {
       });
     }
   }, [notification, isBlocked, isAuthenticated]);
+
+  useEffect(() => () => { toast.dismiss('notification-toast'); }, []);
 
   return null;
 };
