@@ -11,8 +11,9 @@ import {
   CalendarOverlay, CalendarWeekday, CloseButton, EmptyCalendarDay, EventBlock, EventLabels,
   EventActions, ModalScheduleContent, OutfitRow, SelectEventButton, TypeBadge,
 } from './ScheduleCalendarStyle';
+import useScheduleRolesContext from '../../context/hooks/useScheduleRolesContext';
+import type { ScheduleRoleDefinition } from '../../services/ScheduleRolesService';
 
-type RoleKey = 'minister' | 'vocal' | 'teclas' | 'violao' | 'batera' | 'bass' | 'guita' | 'sound';
 type Props = {
   schedules: SpecialSchedule[];
   month: number;
@@ -31,24 +32,28 @@ type Props = {
 };
 
 const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-const roles: Array<{ key: RoleKey; label: string }> = [
-  { key: 'minister', label: 'Ministro' }, { key: 'vocal', label: 'Vocal' },
-  { key: 'teclas', label: 'Teclas' }, { key: 'violao', label: 'Violão' },
-  { key: 'batera', label: 'Bateria' }, { key: 'bass', label: 'Baixo' },
-  { key: 'guita', label: 'Guitarra' }, { key: 'sound', label: 'Op. Som' },
-];
-
-const getPeople = (schedule: SpecialSchedule, role: RoleKey): PersonRef[] => {
-  const ids = schedule.músicosIds?.[role] || schedule.musicosIds?.[role] || [];
+const getPeople = (schedule: SpecialSchedule, role: ScheduleRoleDefinition): PersonRef[] => {
+  const assigned = schedule.assignments?.[role.id] || [];
+  if (assigned.length) return assigned;
+  if (!role.legacyKey) return [];
+  const key = role.legacyKey;
+  const idValues = (schedule.músicosIds || schedule.musicosIds) as unknown as Record<string, PersonRef[]> | undefined;
+  const detailValues = (schedule.músicos || schedule.musicos) as unknown as Record<string, PersonRef[]> | undefined;
+  const ids = idValues?.[key] || [];
   if (ids.length) return ids;
-  const details = schedule.músicos?.[role] || schedule.musicos?.[role] || [];
+  const details = detailValues?.[key] || [];
   if (details.length) return details;
-  if (role === 'vocal') return [schedule.vocal1, schedule.vocal2].filter(Boolean) as string[];
-  const legacy = schedule[role];
+  if (role.id === 'vocal') return [schedule.vocal1, schedule.vocal2].filter(Boolean) as string[];
+  const legacy = (schedule as unknown as Record<string, PersonRef | undefined>)[key];
   return legacy ? [legacy] : [];
 };
 
-const getAllPeople = (schedule: SpecialSchedule) => roles.flatMap(({ key }) => getPeople(schedule, key));
+const getScheduleRoles = (schedule: SpecialSchedule, roles: ScheduleRoleDefinition[]) => {
+  const extraRoles = Object.entries(schedule.roleLabels ?? {}).map(([id, name], index) => ({ id, name, active: false, order: 10000 + index }));
+  return [...roles, ...extraRoles.filter(extra => !roles.some(role => role.id === extra.id))];
+};
+
+const getAllPeople = (schedule: SpecialSchedule, roles: ScheduleRoleDefinition[]) => roles.flatMap(role => getPeople(schedule, role));
 
 const EventDetails = ({ schedule, usersById, selectionMode, selected, onToggle, canDelete, onDelete, canEdit, onEdit }: {
   schedule: SpecialSchedule;
@@ -61,6 +66,8 @@ const EventDetails = ({ schedule, usersById, selectionMode, selected, onToggle, 
   canEdit: boolean;
   onEdit?: (schedule: SpecialSchedule) => void;
 }) => {
+  const { roles: catalogRoles } = useScheduleRolesContext();
+  const roles = getScheduleRoles(schedule, catalogRoles);
   const outfit = schedule.outfitColor || schedule.músicosIds?.outfitColor || schedule.musicosIds?.outfitColor || '';
   return (
     <EventBlock $selected={selected}>
@@ -72,7 +79,7 @@ const EventDetails = ({ schedule, usersById, selectionMode, selected, onToggle, 
         </SelectEventButton>
       )}
       <ModalScheduleContent>
-        {roles.map(({ key, label }) => <p key={key}><strong>{label}:</strong><ScheduledPerson people={getPeople(schedule, key)} usersById={usersById} /></p>)}
+        {roles.map(role => ({ role, people: getPeople(schedule, role) })).filter(item => item.people.length > 0).map(({ role, people }) => <p key={role.id}><strong>{role.name}:</strong><ScheduledPerson people={people} usersById={usersById} /></p>)}
         <OutfitRow><strong>Paleta:</strong><span>{outfit || 'Não definida'}</span></OutfitRow>
       </ModalScheduleContent>
       {(canEdit || canDelete) && (
@@ -86,6 +93,7 @@ const EventDetails = ({ schedule, usersById, selectionMode, selected, onToggle, 
 };
 
 const ScheduleCalendar = ({ schedules, month, year, usersById, selectionMode = false, selectedScheduleIds = [], onToggleSchedule, selectedNewDates = [], onToggleNewDate, canDelete = false, onDeleteSchedule, canEdit = false, onEditSchedule, onCreateSchedule }: Props) => {
+  const { roles } = useScheduleRolesContext();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   useBodyScrollLock(Boolean(selectedDate));
@@ -112,7 +120,7 @@ const ScheduleCalendar = ({ schedules, month, year, usersById, selectionMode = f
           if (!day) return <EmptyCalendarDay key={`empty-${index}`} />;
           const key = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           const daySchedules = schedulesByDate[key] || [];
-          const people = daySchedules.flatMap(getAllPeople);
+          const people = daySchedules.flatMap(schedule => getAllPeople(schedule, getScheduleRoles(schedule, roles)));
           const uniquePeople = people.filter((person, personIndex) => {
             const name = getMusicianDisplayName(person, usersById);
             return people.findIndex((candidate) => getMusicianDisplayName(candidate, usersById) === name) === personIndex;

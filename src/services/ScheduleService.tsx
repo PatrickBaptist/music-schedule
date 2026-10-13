@@ -61,6 +61,8 @@ export interface SpecialSchedule {
   musicos?: MusicosDetalhados;
   músicosIds?: Musicos;
   musicosIds?: Musicos;
+  assignments?: Record<string, string[]>;
+  roleLabels?: Record<string, string>;
 }
 
 export interface SpecialSchedulePayload {
@@ -70,6 +72,8 @@ export interface SpecialSchedulePayload {
   startTime?: string | null;
   outfitColor?: string;
   músicosIds: Musicos;
+  assignments: Record<string, string[]>;
+  roleLabels: Record<string, string>;
 }
 
 interface PostSpecialSchedulesPayload {

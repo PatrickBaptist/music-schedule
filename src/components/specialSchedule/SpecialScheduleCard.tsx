@@ -4,6 +4,7 @@ import type { SpecialSchedule } from "../../services/ScheduleService";
 import type { User } from "../../services/UsersService";
 import ScheduledPerson, { type PersonRef } from "../scheduledPerson/ScheduledPerson";
 import { ScheduleCard } from "./SpecialScheduleCardStyle";
+import useScheduleRolesContext from "../../context/hooks/useScheduleRolesContext";
 
 interface SpecialScheduleCardProps {
   schedule: SpecialSchedule;
@@ -32,23 +33,23 @@ const formatScheduleDate = (value: string) => {
 };
 
 const SpecialScheduleCard = ({ schedule, usersById }: SpecialScheduleCardProps) => {
-  const roles = [
-    {
-      label: "Ministro",
-      people: firstAvailablePeople(schedule.músicosIds?.minister, schedule.músicos?.minister, schedule.minister),
-      highlighted: true,
-    },
-    {
-      label: "Vocal",
-      people: firstAvailablePeople(schedule.músicosIds?.vocal, schedule.músicos?.vocal, [schedule.vocal1, schedule.vocal2]),
-    },
-    { label: "Teclas", people: firstAvailablePeople(schedule.músicosIds?.teclas, schedule.músicos?.teclas, schedule.teclas) },
-    { label: "Violão", people: firstAvailablePeople(schedule.músicosIds?.violao, schedule.músicos?.violao, schedule.violao) },
-    { label: "Bateria", people: firstAvailablePeople(schedule.músicosIds?.batera, schedule.músicos?.batera, schedule.batera) },
-    { label: "Baixo", people: firstAvailablePeople(schedule.músicosIds?.bass, schedule.músicos?.bass, schedule.bass) },
-    { label: "Guitarra", people: firstAvailablePeople(schedule.músicosIds?.guita, schedule.músicos?.guita, schedule.guita) },
-    { label: "Operador de som", people: firstAvailablePeople(schedule.músicosIds?.sound, schedule.músicos?.sound, schedule.sound) },
-  ];
+  const { roles: roleDefinitions } = useScheduleRolesContext();
+  const roleIds = [...new Set([...roleDefinitions.map(role => role.id), ...Object.keys(schedule.assignments ?? {})])];
+  const roles = roleIds.map(roleId => {
+    const definition = roleDefinitions.find(role => role.id === roleId);
+    const legacyKey = definition?.legacyKey || undefined;
+    const idValues = schedule.músicosIds as unknown as Record<string, PersonRef[]> | undefined;
+    const detailValues = schedule.músicos as unknown as Record<string, PersonRef[]> | undefined;
+    const legacyPeople = legacyKey ? firstAvailablePeople(
+      idValues?.[legacyKey],
+      detailValues?.[legacyKey],
+    ) : [];
+    return {
+      label: definition?.name || schedule.roleLabels?.[roleId] || roleId,
+      people: firstAvailablePeople(schedule.assignments?.[roleId], legacyPeople),
+      highlighted: roleId === "minister",
+    };
+  }).filter(role => role.people.length > 0);
   const outfitColor = schedule.outfitColor
     || schedule.músicosIds?.outfitColor
     || schedule.musicosIds?.outfitColor

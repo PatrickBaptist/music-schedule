@@ -18,6 +18,7 @@ import { ThemePreferenceProvider } from './context/themeContext';
 import { MyScheduleProvider } from './services/MyScheduleService';
 import { VideoPlayerProvider } from './context/videoPlayerContext';
 import { OrganizationProvider } from './context/organizationContext';
+import { ScheduleRolesProvider } from './services/ScheduleRolesService';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             <WakeUpScreen>
               <AuthProvider>
                 <OrganizationProvider>
+                  <ScheduleRolesProvider>
                   <UsersProvider>
                   <AllMusicLinksProvider>
                     <MusicLinksProvider>
@@ -56,6 +58,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     />
                   </AllMusicLinksProvider>
                 </UsersProvider>
+                </ScheduleRolesProvider>
                 </OrganizationProvider>
               </AuthProvider>
             </WakeUpScreen>

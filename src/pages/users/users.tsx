@@ -43,6 +43,7 @@ import { Timestamp } from "firebase/firestore";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import type { User } from "../../services/UsersService";
 import { UserAvatar } from "./usersStyle";
+import useScheduleRolesContext from "../../context/hooks/useScheduleRolesContext";
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
@@ -54,7 +55,9 @@ const UsersCardsPage: React.FC = () => {
   const [draftRoles, setDraftRoles] = useState<string[]>([]);
   const [draftStatus, setDraftStatus] = useState("enabled");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newRoleName, setNewRoleName] = useState("");
   const { user: loggedUser } = useAuthContext();
+  const { roles, activeRoles, createRole } = useScheduleRolesContext();
 
   const loggedUserId = loggedUser?.id;
   const loggedUserRoles = loggedUser?.roles || [];
@@ -63,8 +66,8 @@ const UsersCardsPage: React.FC = () => {
   );
 
   const editableRoleOptions = useMemo(
-    () => roleOptions.filter((role) => ![UserRole.Guest, UserRole.Admin, UserRole.Leader].includes(role.value)),
-    []
+    () => activeRoles.map(role => ({ label: role.name, value: role.id })),
+    [activeRoles]
   );
 
   const statusOptions = useMemo(
@@ -79,23 +82,14 @@ const UsersCardsPage: React.FC = () => {
   const rolePriority = useMemo(
     () => [
       UserRole.Leader,
-      UserRole.Minister,
-      UserRole.Vocal,
-      UserRole.Keyboard,
-      UserRole.Violao,
-      UserRole.Guitar,
-      UserRole.Bass,
-      UserRole.Drums,
-      UserRole.Sound,
-      UserRole.Midia,
-      UserRole.DataShow,
+      ...activeRoles.map(role => role.id),
       UserRole.Guest,
     ],
-    []
+    [activeRoles]
   );
 
   const getRoleLabel = (role: UserRole) => {
-    return roleOptions.find((r) => r.value === role)?.label || role;
+    return roles.find((item) => item.id === role)?.name || roleOptions.find((r) => r.value === role)?.label || role;
   };
 
   const processedUsers = useMemo(() => {
@@ -210,7 +204,24 @@ const UsersCardsPage: React.FC = () => {
     setDraftEmail("");
     setDraftRoles([]);
     setDraftStatus("enabled");
+    setNewRoleName("");
   }, []);
+
+  const handleCreateRole = async () => {
+    const name = newRoleName.trim();
+    if (!name) return;
+    setIsSubmitting(true);
+    try {
+      const role = await createRole(name);
+      setDraftRoles(current => current.includes(role.id) ? current : [...current, role.id]);
+      setNewRoleName("");
+      toast.success(`Função "${role.name}" criada e selecionada.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao criar função");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const openEditModal = (user: User) => {
     setEditingUser(user);
@@ -456,6 +467,17 @@ const UsersCardsPage: React.FC = () => {
                     );
                   })}
                 </RoleGrid>
+                <div style={{ display: "flex", gap: "8px", marginTop: "12px", alignItems: "center" }}>
+                  <TextInput
+                    value={newRoleName}
+                    onChange={(event) => setNewRoleName(event.target.value)}
+                    placeholder="Ex.: Saxofone"
+                    maxLength={60}
+                  />
+                  <PrimaryActionButton type="button" disabled={isSubmitting || !newRoleName.trim()} onClick={() => void handleCreateRole()}>
+                    Criar função
+                  </PrimaryActionButton>
+                </div>
               </FormGroup>
 
               <FormGroup>

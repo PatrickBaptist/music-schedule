@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createEmptyMusicos, Musicos, normalizeMusicos, SpecialSchedule, SpecialSchedulePayload } from "../../services/ScheduleService";
 import { ContainerForm, DarkForm, DarkInput, DarkLabel, FormGroup } from "./EspecialScheduleInputStyle";
 import useUsersContext from "../../context/hooks/useUsersContext";
-import { UserRole } from "../../types/UserRole";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import { toast } from "sonner";
 import MultiMusicianSelect from "../multiMusicianSelect/MultiMusicianSelect";
 import Button from "../buttons/Buttons";
+import useScheduleRolesContext from "../../context/hooks/useScheduleRolesContext";
+import type { ScheduleRoleDefinition } from "../../services/ScheduleRolesService";
 
 type EspecialScheduleInputProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +24,10 @@ const emptyMeta = {
 };
 
 const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModalOpen, initialSchedule, initialDate = "" }) => {
-  const initialMusicians = initialSchedule ? normalizeMusicos(initialSchedule) : createEmptyMusicos();
+  const initialMusicians = useMemo(
+    () => initialSchedule ? normalizeMusicos(initialSchedule) : createEmptyMusicos(),
+    [initialSchedule]
+  );
   const [specialMeta, setSpecialMeta] = useState(() => initialSchedule ? {
     id: initialSchedule.id,
     evento: initialSchedule.evento || "",
@@ -32,53 +36,35 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     outfitColor: initialSchedule.outfitColor || initialMusicians.outfitColor || "",
   } : { ...emptyMeta, data: initialDate });
   const [musicosIds, setMusicosIds] = useState<Musicos>(initialMusicians);
+  const [assignments, setAssignments] = useState<Record<string, string[]>>(initialSchedule?.assignments ?? {});
+  const [roleLabels, setRoleLabels] = useState<Record<string, string>>(initialSchedule?.roleLabels ?? {});
+  const [newExtraRoleName, setNewExtraRoleName] = useState("");
   const { users } = useUsersContext();
   const { postSpecialSchedules } = useSchedulesContext();
+  const { activeRoles, createRole } = useScheduleRolesContext();
+  const displayedRoles = useMemo<ScheduleRoleDefinition[]>(() => [
+    ...activeRoles,
+    ...Object.entries(roleLabels)
+      .filter(([id]) => !activeRoles.some(role => role.id === id))
+      .map(([id, name], index) => ({ id, name, active: false, order: 10000 + index })),
+  ], [activeRoles, roleLabels]);
 
-  const musiciansBySkill = useMemo(() => {
-    const byRole = (role: UserRole) =>
-      users
-        .filter((u) => u.roles?.includes(role) && u.status === "enabled")
-        .map((u) => ({ value: u.id, label: u.nickname?.trim() || u.name?.trim() || u.id }));
-
-    return {
-      minister: byRole(UserRole.Minister),
-      vocal: byRole(UserRole.Vocal),
-      teclas: byRole(UserRole.Keyboard),
-      violao: byRole(UserRole.Violao),
-      bass: byRole(UserRole.Bass),
-      guita: byRole(UserRole.Guitar),
-      batera: byRole(UserRole.Drums),
-      sound: byRole(UserRole.Sound),
-    };
-  }, [users]);
+  const musiciansBySkill = useMemo(() => Object.fromEntries(activeRoles.map(role => [
+    role.id,
+    users.filter(user => user.roles?.includes(role.id) && user.status === "enabled")
+      .map(user => ({ value: user.id, label: user.nickname?.trim() || user.name?.trim() || user.id })),
+  ])), [activeRoles, users]);
 
   const guestOption = { value: "Convidado", label: "Convidado" };
   const allSingersOption = { value: "Todos cantam", label: "Todos cantam" };
 
-  const labels: Record<string, string> = {
-    minister: "Ministro",
-    teclas: "Teclado",
-    violao: "Violão",
-    batera: "Bateria",
-    bass: "Baixo",
-    guita: "Guitarra",
-    sound: "Op. Som",
-    vocal: "Vocal",
-  };
-
-  const ordemCampos = [
-    "minister",
-    "teclas",
-    "violao",
-    "batera",
-    "bass",
-    "guita",
-    "sound",
-    "vocal",
-  ] as const;
-
-  type Campo = (typeof ordemCampos)[number];
+  useEffect(() => {
+    if (!initialSchedule || Object.keys(initialSchedule.assignments ?? {}).length > 0 || activeRoles.length === 0) return;
+    setAssignments(Object.fromEntries(activeRoles.map(role => [
+      role.id,
+      role.legacyKey ? [...(initialMusicians[role.legacyKey as keyof Musicos] as string[])] : [],
+    ])));
+  }, [activeRoles, initialSchedule, initialMusicians]);
 
   const handleAddSpecialSchedule = async () => {
     if (!specialMeta.data) {
@@ -99,6 +85,8 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
             ...musicosIds,
             outfitColor: specialMeta.outfitColor,
           },
+          assignments,
+          roleLabels,
         },
       ],
     };
@@ -110,6 +98,8 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
       toast.success(initialSchedule ? "Escala atualizada!" : "Escala adicionada!", { id: toastId });
       setSpecialMeta(emptyMeta);
       setMusicosIds(createEmptyMusicos());
+      setAssignments({});
+      setRoleLabels({});
     } catch (err) {
       console.error(err);
       toast.error("Erro ao adicionar escala", { id: toastId });
@@ -162,21 +152,55 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                 />
               </FormGroup>
 
-              {ordemCampos.map((key: Campo) => {
-                const isVocal = key === "vocal";
+              <FormGroup>
+                <DarkLabel>Adicionar função extra para convidado nesta escala (Opcional):</DarkLabel>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <DarkInput
+                    type="text"
+                    value={newExtraRoleName}
+                    maxLength={60}
+                    placeholder="Ex.: Saxofone, Trompete, etc."
+                    onChange={event => setNewExtraRoleName(event.target.value)}
+                  />
+                  {newExtraRoleName.trim() && (
+                    <>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          const name = newExtraRoleName.trim();
+                          const id = `extra-${Date.now().toString(36)}`;
+                          setRoleLabels(current => ({ ...current, [id]: name }));
+                          setAssignments(current => ({ ...current, [id]: [guestOption.value] }));
+                          setNewExtraRoleName("");
+                        }}
+                      >Só nesta escala</Button>
+                      <Button
+                        onClick={() => void createRole(newExtraRoleName.trim()).then(role => {
+                          setAssignments(current => ({ ...current, [role.id]: [guestOption.value] }));
+                          setNewExtraRoleName("");
+                        }).catch(error => toast.error(error instanceof Error ? error.message : "Erro ao criar função"))}
+                      >Salvar no grupo</Button>
+                    </>
+                  )}
+                </div>
+              </FormGroup>
+
+              {displayedRoles.map((role) => {
+                const isVocal = role.id === "vocal";
                 const options = isVocal
-                  ? [...musiciansBySkill.vocal, guestOption, allSingersOption]
-                  : [...musiciansBySkill[key], guestOption];
+                  ? [...(musiciansBySkill[role.id] ?? []), guestOption, allSingersOption]
+                  : [...(musiciansBySkill[role.id] ?? []), guestOption];
 
                 return (
-                  <FormGroup key={key}>
+                  <FormGroup key={role.id}>
                     <MultiMusicianSelect
-                      label={labels[key] || key}
+                      label={role.name}
                       options={options}
-                      selected={musicosIds[key]}
-                      onChange={(selected) =>
-                        setMusicosIds((prev) => ({ ...prev, [key]: selected }))
-                      }
+                      selected={assignments[role.id] ?? []}
+                      onChange={(selected) => {
+                        setAssignments(current => ({ ...current, [role.id]: selected }));
+                        if (role.legacyKey) setMusicosIds(current => ({ ...current, [role.legacyKey!]: selected }));
+                      }}
                       exclusiveValues={isVocal ? [allSingersOption.value] : []}
                     />
                   </FormGroup>
