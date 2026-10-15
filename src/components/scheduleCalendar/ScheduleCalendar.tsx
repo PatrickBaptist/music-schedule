@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FaCheck, FaClock, FaEdit, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa';
 import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import { getMusicianDisplayName, getMusicianPhotoURL, SpecialSchedule } from '../../services/ScheduleService';
 import type { User } from '../../services/UsersService';
 import Button from '../buttons/Buttons';
 import ScheduledPerson, { PersonRef } from '../scheduledPerson/ScheduledPerson';
+import SpecialScheduleCard from '../specialSchedule/SpecialScheduleCard';
 import {
   AvatarPile, CalendarBody, CalendarDay, CalendarGrid, CalendarModal, CalendarModalHeader,
   CalendarOverlay, CalendarWeekday, CloseButton, EmptyCalendarDay, EventBlock, EventLabels,
-  EventActions, ModalScheduleContent, OutfitRow, SelectEventButton, TypeBadge,
+  EventActions, SelectEventButton,
 } from './ScheduleCalendarStyle';
 import useScheduleRolesContext from '../../context/hooks/useScheduleRolesContext';
 import type { ScheduleRoleDefinition } from '../../services/ScheduleRolesService';
@@ -66,22 +67,14 @@ const EventDetails = ({ schedule, usersById, selectionMode, selected, onToggle, 
   canEdit: boolean;
   onEdit?: (schedule: SpecialSchedule) => void;
 }) => {
-  const { roles: catalogRoles } = useScheduleRolesContext();
-  const roles = getScheduleRoles(schedule, catalogRoles);
-  const outfit = schedule.outfitColor || schedule.músicosIds?.outfitColor || schedule.musicosIds?.outfitColor || '';
   return (
     <EventBlock $selected={selected}>
-      <header><TypeBadge>Escala</TypeBadge><h3>{schedule.evento}</h3></header>
-      <p className="event-time"><FaClock aria-hidden="true" /> {schedule.startTime || 'Horário não definido'}</p>
       {selectionMode && (
         <SelectEventButton type="button" $selected={selected} onClick={() => onToggle?.(schedule.id)}>
           {selected && <FaCheck aria-hidden="true" />}{selected ? 'Selecionada para gerar' : 'Selecionar para geração automática'}
         </SelectEventButton>
       )}
-      <ModalScheduleContent>
-        {roles.map(role => ({ role, people: getPeople(schedule, role) })).filter(item => item.people.length > 0).map(({ role, people }) => <p key={role.id}><strong>{role.name}:</strong><ScheduledPerson people={people} usersById={usersById} /></p>)}
-        <OutfitRow><strong>Paleta:</strong><span>{outfit || 'Não definida'}</span></OutfitRow>
-      </ModalScheduleContent>
+      <SpecialScheduleCard schedule={schedule} usersById={usersById} />
       {(canEdit || canDelete) && (
         <EventActions>
           {canEdit && <Button variant="secondary" fullWidth onClick={() => onEdit?.(schedule)}><FaEdit aria-hidden="true" /> Editar escala</Button>}
