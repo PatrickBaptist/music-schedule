@@ -1,4 +1,4 @@
-import { FaCalendarAlt, FaClock, FaPalette } from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaPalette, FaMapMarkerAlt } from "react-icons/fa";
 import { formatDateDDMMYYYY } from "../../helpers/helpers";
 import type { SpecialSchedule } from "../../services/ScheduleService";
 import type { User } from "../../services/UsersService";
@@ -55,6 +55,12 @@ const SpecialScheduleCard = ({ schedule, usersById }: SpecialScheduleCardProps) 
     || schedule.musicosIds?.outfitColor
     || schedule.músicos?.outfitColor
     || schedule.musicos?.outfitColor;
+  const address = schedule.address?.trim();
+  const mapsUrl = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : "";
+  const mapsKey = import.meta.env.VITE_GOOGLE_MAPS_EMBED_KEY;
+  const mapEmbedUrl = address && mapsKey
+    ? `https://www.google.com/maps/embed/v1/search?key=${encodeURIComponent(mapsKey)}&q=${encodeURIComponent(address)}`
+    : "";
 
   return (
     <ScheduleCard>
@@ -93,6 +99,21 @@ const SpecialScheduleCard = ({ schedule, usersById }: SpecialScheduleCardProps) 
           </strong>
         </div>
       </footer>
+
+      {(address || schedule.description?.trim()) && (
+        <section className="schedule-extra-info" aria-label="Informações adicionais da escala">
+          {schedule.description?.trim() && <p className="schedule-description">{schedule.description.trim()}</p>}
+          {address && (
+            <div className="schedule-location">
+              <a href={mapsUrl} target="_blank" rel="noreferrer" className="schedule-address">
+                <FaMapMarkerAlt aria-hidden="true" /> {address}
+              </a>
+              {mapEmbedUrl && <iframe src={mapEmbedUrl} title={`Mapa de ${address}`} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />}
+              <a href={mapsUrl} target="_blank" rel="noreferrer" className="schedule-map-link">Abrir no Google Maps</a>
+            </div>
+          )}
+        </section>
+      )}
     </ScheduleCard>
   );
 };

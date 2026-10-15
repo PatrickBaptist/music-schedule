@@ -138,6 +138,50 @@ export const ScheduleCard = styled.article`
     }
   }
 
+  .schedule-extra-info {
+    padding: 0 12px 12px;
+  }
+
+  .schedule-description {
+    margin: 0 0 10px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .schedule-location {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    .schedule-address,
+    .schedule-map-link {
+      color: var(--color-primary);
+      font-size: 13px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .schedule-address {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      text-decoration: none;
+
+      svg { flex-shrink: 0; margin-top: 2px; }
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 200px;
+      border: 0;
+      border-radius: 9px;
+    }
+  }
+
   @media (max-width: 478px) {
     max-width: 100%;
     border-radius: 14px;

@@ -100,6 +100,51 @@ export const ContainerForm = styled.div`
     padding-bottom: 4px;
     color: var(--color-text-strong);
   }
+
+  .schedule-more-options {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 11px 12px;
+    background: var(--color-surface-muted);
+
+    summary {
+      cursor: pointer;
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .schedule-more-options-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-top: 14px;
+    }
+
+    textarea {
+      ${formControlStyles}
+      min-height: 84px;
+      resize: vertical;
+      font: inherit;
+    }
+  }
+
+  .schedule-roles-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    h3 {
+      margin: 0;
+      color: var(--color-text-strong);
+      font-size: 15px;
+    }
+
+    p {
+      margin: -8px 0 0;
+      color: var(--color-text-muted);
+      font-size: 13px;
+    }
+  }
 `;
 
 export const DarkForm = styled.form`

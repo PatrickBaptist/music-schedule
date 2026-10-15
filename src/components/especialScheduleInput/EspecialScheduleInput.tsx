@@ -21,6 +21,8 @@ const emptyMeta = {
   data: "",
   startTime: "",
   outfitColor: "",
+  address: "",
+  description: "",
 };
 
 const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModalOpen, initialSchedule, initialDate = "" }) => {
@@ -34,6 +36,8 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
     data: initialSchedule.data.slice(0, 10),
     startTime: initialSchedule.startTime || "",
     outfitColor: initialSchedule.outfitColor || initialMusicians.outfitColor || "",
+    address: initialSchedule.address || "",
+    description: initialSchedule.description || "",
   } : { ...emptyMeta, data: initialDate });
   const [musicosIds, setMusicosIds] = useState<Musicos>(initialMusicians);
   const [assignments, setAssignments] = useState<Record<string, string[]>>(initialSchedule?.assignments ?? {});
@@ -81,6 +85,8 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
           data: specialMeta.data,
           startTime: specialMeta.startTime || null,
           outfitColor: specialMeta.outfitColor,
+          address: specialMeta.address,
+          description: specialMeta.description,
           músicosIds: {
             ...musicosIds,
             outfitColor: specialMeta.outfitColor,
@@ -152,6 +158,35 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                 />
               </FormGroup>
 
+              <section className="schedule-roles-section" aria-labelledby="schedule-roles-title">
+                <h3 id="schedule-roles-title">Funções da escala</h3>
+                <p>Escolha as pessoas responsáveis por cada função.</p>
+                {displayedRoles.map((role) => {
+                  const isVocal = role.id === "vocal";
+                  const options = isVocal
+                    ? [...(musiciansBySkill[role.id] ?? []), guestOption, allSingersOption]
+                    : [...(musiciansBySkill[role.id] ?? []), guestOption];
+
+                  return (
+                    <FormGroup key={role.id}>
+                      <MultiMusicianSelect
+                        label={role.name}
+                        options={options}
+                        selected={assignments[role.id] ?? []}
+                        onChange={(selected) => {
+                          setAssignments(current => ({ ...current, [role.id]: selected }));
+                          if (role.legacyKey) setMusicosIds(current => ({ ...current, [role.legacyKey!]: selected }));
+                        }}
+                        exclusiveValues={isVocal ? [allSingersOption.value] : []}
+                      />
+                    </FormGroup>
+                  );
+                })}
+              </section>
+
+              <details className="schedule-more-options">
+                <summary>Mais opções</summary>
+                <div className="schedule-more-options-content">
               <FormGroup>
                 <DarkLabel>Adicionar função extra para convidado nesta escala (Opcional):</DarkLabel>
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -185,28 +220,6 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                 </div>
               </FormGroup>
 
-              {displayedRoles.map((role) => {
-                const isVocal = role.id === "vocal";
-                const options = isVocal
-                  ? [...(musiciansBySkill[role.id] ?? []), guestOption, allSingersOption]
-                  : [...(musiciansBySkill[role.id] ?? []), guestOption];
-
-                return (
-                  <FormGroup key={role.id}>
-                    <MultiMusicianSelect
-                      label={role.name}
-                      options={options}
-                      selected={assignments[role.id] ?? []}
-                      onChange={(selected) => {
-                        setAssignments(current => ({ ...current, [role.id]: selected }));
-                        if (role.legacyKey) setMusicosIds(current => ({ ...current, [role.legacyKey!]: selected }));
-                      }}
-                      exclusiveValues={isVocal ? [allSingersOption.value] : []}
-                    />
-                  </FormGroup>
-                );
-              })}
-
               <FormGroup>
                 <DarkLabel>Cor da Roupa:</DarkLabel>
                 <DarkInput
@@ -218,6 +231,30 @@ const EspecialScheduleInput: React.FC<EspecialScheduleInputProps> = ({ setIsModa
                   placeholder="Ex.: Preto e branco"
                 />
               </FormGroup>
+
+              <FormGroup>
+                <DarkLabel htmlFor="schedule-address">Endereço completo (opcional):</DarkLabel>
+                <DarkInput
+                  id="schedule-address"
+                  type="text"
+                  autoComplete="street-address"
+                  value={specialMeta.address}
+                  onChange={(e) => setSpecialMeta((prev) => ({ ...prev, address: e.target.value }))}
+                  placeholder="Rua, número, bairro, cidade e estado"
+                />
+              </FormGroup>
+              <FormGroup>
+                <DarkLabel htmlFor="schedule-description">Descrição (opcional):</DarkLabel>
+                <textarea
+                  id="schedule-description"
+                  value={specialMeta.description}
+                  maxLength={1000}
+                  onChange={(e) => setSpecialMeta((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Informações importantes sobre esta escala"
+                />
+              </FormGroup>
+                </div>
+              </details>
               <div className="button-container">
                 <Button
                   variant="secondary"

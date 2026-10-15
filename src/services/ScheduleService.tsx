@@ -57,6 +57,8 @@ export interface SpecialSchedule {
   guita?: string;
   sound?: string;
   outfitColor?: string;
+  address?: string;
+  description?: string;
   músicos?: MusicosDetalhados;
   musicos?: MusicosDetalhados;
   músicosIds?: Musicos;
@@ -71,6 +73,8 @@ export interface SpecialSchedulePayload {
   data: string;
   startTime?: string | null;
   outfitColor?: string;
+  address?: string;
+  description?: string;
   músicosIds: Musicos;
   assignments: Record<string, string[]>;
   roleLabels: Record<string, string>;
