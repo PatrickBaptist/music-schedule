@@ -45,6 +45,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     width: 100%;
     max-width: 800px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
@@ -548,6 +549,55 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     padding: 8px 16px;
     align-self: flex-end;
   }
+`;
+
+export const ShareModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(3, 10, 18, 0.78);
+  backdrop-filter: blur(8px);
+`;
+
+export const ShareModal = styled.section`
+  width: min(100%, 500px);
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+
+  > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  h2 { margin: 0; color: var(--color-text-strong); font-size: 1.2rem; }
+  p { color: var(--color-text-muted); font-size: 14px; line-height: 1.5; }
+
+  > header button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-surface-muted);
+    color: var(--color-text-strong);
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .share-modal-actions { display: grid; gap: 12px; }
+  .share-modal-actions > div { display: grid; gap: 5px; }
+  .share-modal-actions span { color: var(--color-text-muted); font-size: 12px; line-height: 1.4; }
+  .share-modal-note { margin-bottom: 0; }
 `;
 
 export const MusicGroup = styled.div<{ $accent?: string; $isOver?: boolean }>`

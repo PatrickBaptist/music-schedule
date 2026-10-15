@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import useMusicLinksContext from "../../context/hooks/useMusicLinksContext";
 import Button, { MotionButton } from "../buttons/Buttons";
 import {
   ListContainer,
   MusicGroup,
   SelectContainer,
+  ShareModal,
+  ShareModalOverlay,
 } from "./MusicLinkListStyle";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,6 +23,9 @@ import {
   FaTimes,
   FaTrashAlt,
   FaYoutube,
+  FaWhatsapp,
+  FaEnvelope,
+  FaShareAlt,
 } from "react-icons/fa";
 import { UserRole } from "../../types/UserRole";
 import { MusicLink } from "../../services/MusicLinksService";
@@ -44,6 +50,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { normalizeWorshipMoment, WORSHIP_MOMENTS } from "../../constants/worshipMoments";
 import useVideoPlayerContext from "../../context/hooks/useVideoPlayerContext";
+import useSchedulesContext from "../../context/hooks/useScheduleContext";
+import useUsersContext from "../../context/hooks/useUsersContext";
 
 type Video = {
   url: string;
@@ -164,9 +172,11 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
     "Bm",
   ];
 
-  const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink } =
+  const { musicLinks, fetchMusicLinks, removeMusicLink, updateMusicLink, shareMusicByEmail } =
     useMusicLinksContext();
   const { openVideo } = useVideoPlayerContext();
+  const { specialSchedules } = useSchedulesContext();
+  const { users } = useUsersContext();
   const visibleMusicLinks = useMemo(
     () => musicLinks.filter((music) =>
       music.scheduleDate === selectedDate || (!music.scheduleDate && selectedDate === legacyDate)
@@ -177,6 +187,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
     {}
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [editIndex, setEditIndex] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -191,6 +203,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
 
   const allowedRoles = [UserRole.Leader, UserRole.Minister, UserRole.Admin];
   const canDeleteMusic = canDelete.some(role => allowedRoles.includes(role as UserRole));
+  const canShareMusic = [UserRole.Leader, UserRole.Minister, UserRole.Admin]
+    .some(role => canDelete.includes(role));
   const reorderRoles = [
     UserRole.Leader,
     UserRole.Minister,
@@ -200,6 +214,77 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
   const canReorder = canDelete.some((role) =>
     reorderRoles.includes(role as UserRole)
   );
+  const getRepertoireMessage = () => {
+    const matchingSchedules = (specialSchedules || []).filter(
+      (schedule) => schedule.data?.slice(0, 10) === selectedDate
+    );
+    const references: unknown[] = matchingSchedules.flatMap((schedule) => [
+      ...Object.values(schedule.assignments ?? {}).flat(),
+      ...Object.values(schedule.músicosIds ?? {}).flat(),
+      ...Object.values(schedule.musicosIds ?? {}).flat(),
+      ...Object.values(schedule.músicos ?? {}).flat(),
+      ...Object.values(schedule.musicos ?? {}).flat(),
+      schedule.minister, schedule.vocal1, schedule.vocal2, schedule.teclas,
+      schedule.violao, schedule.batera, schedule.bass, schedule.guita, schedule.sound,
+    ].filter(Boolean));
+    const assignedUsers = [...new Map(references.flatMap((reference) => {
+      const value = typeof reference === "string" ? reference :
+        reference && typeof reference === "object" ?
+          (reference as { id?: string; name?: string; nickname?: string; label?: string }).id ||
+          (reference as { name?: string }).name ||
+          (reference as { nickname?: string }).nickname ||
+          (reference as { label?: string }).label || "" : "";
+      const match = users.find((candidate) => candidate.id === value || candidate.name === value || candidate.nickname === value);
+      return match ? [[match.id, match] as const] : [];
+    })).values()];
+
+    if (!assignedUsers.length) {
+      toast.error("Não há usuários escalados para esta data.");
+      return null;
+    }
+    if (!visibleMusicLinks.length) {
+      toast.error("Não há músicas no repertório desta data.");
+      return null;
+    }
+
+    const songsByMoment = new Map<string, typeof visibleMusicLinks>();
+    [...visibleMusicLinks]
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .forEach((music) => {
+        const moment = music.worshipMoment || "Momento não informado";
+        songsByMoment.set(moment, [...(songsByMoment.get(moment) || []), music]);
+      });
+    const songs = [...songsByMoment]
+      .map(([moment, momentSongs]) => `*${moment}*\n${momentSongs
+        .map((music) => `• ${music.name} — Tom: ${music.cifra || "A definir"}`)
+        .join("\n")}`)
+      .join("\n\n");
+    const dateLabel = new Date(`${selectedDate}T12:00:00`).toLocaleDateString("pt-BR");
+    const message = `Repertório do dia ${dateLabel}:\n\n${songs}\n\nAcesse o aplicativo para ver links, letras e os demais detalhes.`;
+    return message;
+  };
+
+  const shareRepertoireOnWhatsApp = () => {
+    const message = getRepertoireMessage();
+    if (!message) return;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    setShareModalOpen(false);
+  };
+
+  const emailRepertoireIndividually = async () => {
+    if (!getRepertoireMessage() || isSendingEmail) return;
+    const toastId = toast.loading("Enviando um e-mail para cada pessoa escalada...");
+    setIsSendingEmail(true);
+    try {
+      const result = await shareMusicByEmail(selectedDate);
+      toast.success(result.message, { id: toastId });
+      setShareModalOpen(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível enviar os e-mails.", { id: toastId });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
   const [groupedMusic, setGroupedMusic] = useState<GroupedMusic>(() =>
     buildGroupedMusic([])
   );
@@ -466,10 +551,41 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
               )}
             </Button>
           )}
+          {canShareMusic && (
+            <Button variant="secondary" onClick={() => setShareModalOpen(true)} disabled={isReorderMode || isSavingOrder}>
+              <FaShareAlt aria-hidden="true" /> Compartilhar repertório
+            </Button>
+          )}
         </div>
       )}
       {isReorderMode && (
         <span className="reorder-hint">Segure o ícone ao lado da música e arraste.</span>
+      )}
+      {shareModalOpen && createPortal(
+        <ShareModalOverlay onMouseDown={(event) => event.target === event.currentTarget && setShareModalOpen(false)}>
+          <ShareModal role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+            <header>
+              <h2 id="share-modal-title">Compartilhar repertório</h2>
+              <button type="button" onClick={() => setShareModalOpen(false)} aria-label="Fechar">×</button>
+            </header>
+            <p>Escolha como enviar as músicas aos usuários escalados para {new Date(`${selectedDate}T12:00:00`).toLocaleDateString("pt-BR")}.</p>
+            <div className="share-modal-actions">
+              <div>
+                <Button variant="secondary" fullWidth onClick={() => void emailRepertoireIndividually()} disabled={isSendingEmail}>
+                  <FaEnvelope aria-hidden="true" /> E-mail individual
+                </Button>
+                <span>Cada pessoa escalada que tiver e-mail válido receberá uma mensagem separada.</span>
+              </div>
+              <div>
+                <Button variant="secondary" fullWidth onClick={shareRepertoireOnWhatsApp}>
+                  <FaWhatsapp aria-hidden="true" /> WhatsApp
+                </Button>
+                <span>O WhatsApp abrirá a mensagem pronta. Escolha o grupo e confirme o envio.</span>
+              </div>
+            </div>
+          </ShareModal>
+        </ShareModalOverlay>,
+        document.body
       )}
       <AnimatePresence>
         {visibleMusicLinks.length > 0 ? (

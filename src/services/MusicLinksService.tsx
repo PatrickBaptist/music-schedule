@@ -29,6 +29,7 @@ export interface MusicLink {
 export interface MusicLinksContextProps {
   musicLinks: MusicLink[];
   fetchMusicLinks: () => Promise<void>;
+  shareMusicByEmail: (date: string) => Promise<{ message: string; sent: number; failed: number; skipped: number }>;
   addMusicLink: (musicLink: Omit<MusicLink, "id" | "order">) => Promise<void>;
   removeMusicLink: (id: string) => Promise<void>;
   updateMusicLink: (id: string, updated: MusicLink) => Promise<void>;
@@ -132,6 +133,17 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const shareMusicByEmail = async (date: string) => {
+    const res = await fetch(getOrganizationEndpoint("/share/email"), {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ date }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || "Não foi possível enviar os e-mails.");
+    return result as { message: string; sent: number; failed: number; skipped: number };
+  };
+
   const removeMusicLink = async (id: string) => {
     try {
       const res = await fetch(getOrganizationEndpoint(`/${encodeURIComponent(id)}`), {
@@ -166,6 +178,7 @@ export const MusicLinksProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         musicLinks,
         fetchMusicLinks,
+        shareMusicByEmail,
         addMusicLink,
         removeMusicLink,
         updateMusicLink,
