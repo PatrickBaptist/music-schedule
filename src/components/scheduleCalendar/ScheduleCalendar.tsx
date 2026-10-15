@@ -5,7 +5,7 @@ import useBodyScrollLock from '../../context/hooks/useBodyScrollLock';
 import { getMusicianDisplayName, getMusicianPhotoURL, SpecialSchedule } from '../../services/ScheduleService';
 import type { User } from '../../services/UsersService';
 import Button from '../buttons/Buttons';
-import ScheduledPerson, { PersonRef } from '../scheduledPerson/ScheduledPerson';
+import type { PersonRef } from '../scheduledPerson/ScheduledPerson';
 import SpecialScheduleCard from '../specialSchedule/SpecialScheduleCard';
 import {
   AvatarPile, CalendarBody, CalendarDay, CalendarGrid, CalendarModal, CalendarModalHeader,
