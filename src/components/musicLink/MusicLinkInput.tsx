@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useMusicLinksContext from '../../context/hooks/useMusicLinksContext';
 import Button from '../buttons/Buttons';
-import { InputContainer, SuggestionsList } from './MusicLinkInputStyle';
+import { ChordSheetFields, InputContainer, SuggestionsList } from './MusicLinkInputStyle';
 import { SelectContainer } from '../musicList/MusicLinkListStyle';
 import { toast } from 'sonner';
 import useAuthContext from '../../context/hooks/useAuthContext';
@@ -43,6 +43,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
   const [letter, setLetter] = useState('');
+  const [lyricsChords, setLyricsChords] = useState('');
+  const [chordSourceKey, setChordSourceKey] = useState('');
   const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
   const [description, setDescription] = useState('');
@@ -97,6 +99,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
       link: link.trim() || "",
       worshipMoment: worshipMoment.trim(),
       letter: letter.trim() || "",
+      lyricsChords: lyricsChords.trim() || "",
+      chordSourceKey: chordSourceKey || cifra,
       spotify: spotify.trim() || "",
       cifra: cifra.trim() || "",
       description: description.trim() || "",
@@ -109,6 +113,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
     setWorshipMoment('');
     setLink('');
     setLetter('');
+    setLyricsChords('');
+    setChordSourceKey('');
     setSpotify('');
     setCifra('');
     setDescription('');
@@ -179,6 +185,8 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
         worshipMoment: worshipMoment.trim(),
         link: selectedMusic.link || "",
         letter: selectedMusic.letter || "",
+        lyricsChords: selectedMusic.lyricsChords || "",
+        chordSourceKey: selectedMusic.chordSourceKey || selectedMusic.cifra || "",
         spotify: selectedMusic.spotify || "",
         cifra: selectedMusic.cifra || "",
         description: selectedMusic.description || "",
@@ -302,6 +310,20 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
           ))}
         </select>
       </SelectContainer>
+      <ChordSheetFields aria-labelledby="pasted-chord-key-label">
+        <label id="pasted-chord-key-label" htmlFor="chord-source-key">Tom em que a cifra foi colada</label>
+        <select id="chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
+          {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
+        </select>
+        <label htmlFor="schedule-lyrics-chords">Letra com cifra</label>
+        <textarea
+          id="schedule-lyrics-chords"
+          value={lyricsChords}
+          onChange={(e) => setLyricsChords(e.target.value)}
+          placeholder="Cole a letra com os acordes aqui"
+          rows={14}
+        />
+      </ChordSheetFields>
       
       <div style={{ width: '100%',display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
         <label htmlFor="description" style={{ fontSize: 14, fontWeight: 'bold' }}>Observações sobre a música</label>

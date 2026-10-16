@@ -19,6 +19,7 @@ import { MyScheduleProvider } from './services/MyScheduleService';
 import { VideoPlayerProvider } from './context/videoPlayerContext';
 import { OrganizationProvider } from './context/organizationContext';
 import { ScheduleRolesProvider } from './services/ScheduleRolesService';
+import { ChordSheetsProvider } from './context/chordSheetsContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -39,7 +40,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                             <LayoutWrapper>
                               <ScrollProvider>
                                 <VideoPlayerProvider>
-                                  <App />
+                                  <ChordSheetsProvider>
+                                    <App />
+                                  </ChordSheetsProvider>
                                 </VideoPlayerProvider>
                               </ScrollProvider>
                             </LayoutWrapper>

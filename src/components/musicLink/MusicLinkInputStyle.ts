@@ -9,8 +9,10 @@ export const InputContainer = styled.div`
   margin-bottom: 0;
   position: relative;
   ${formCardSurface}
-  max-height: 100%;
+  width: min(100%, 620px);
+  max-height: calc(100dvh - 32px);
   overflow-y: auto;
+  overflow-x: hidden;
 
   .selected-date-summary {
     width: 100%;
@@ -55,7 +57,29 @@ export const InputContainer = styled.div`
 
   @media (max-width: 720px) {
     padding: 16px;
+    max-height: calc(100dvh - 188px);
   }
+`;
+
+export const ChordSheetFields = styled.section`
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+
+  > label {
+    color: var(--color-text-strong);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  textarea { min-height: 230px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 `;
 
 export const SuggestionsList = styled.ul`

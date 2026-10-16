@@ -22,6 +22,8 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
   const [letter, setLetter] = useState('');
+  const [lyricsChords, setLyricsChords] = useState('');
+  const [chordSourceKey, setChordSourceKey] = useState('');
   const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
   const [, setOrder] = useState(1);
@@ -57,6 +59,8 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
         link: link.trim() || "",
         worshipMoment: "",
         letter: letter.trim() || "",
+        lyricsChords: lyricsChords.trim() || "",
+        chordSourceKey: chordSourceKey || cifra,
         spotify: spotify.trim() || "",
         cifra: cifra.trim() || "",
         minister: isMinister ? user?.name : ministerName
@@ -66,6 +70,8 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
       setName('');
       setLink('');
       setLetter('');
+      setLyricsChords('');
+      setChordSourceKey('');
       setSpotify('');
       setCifra('');
       setOrder(1);
@@ -114,6 +120,8 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
         placeholder="Link da letra"
         onKeyDown={handleKeyPress}
       />
+      <label htmlFor="history-lyrics-chords" style={{ width: '100%', fontSize: 14, fontWeight: 'bold' }}>Letra com cifra</label>
+      <textarea id="history-lyrics-chords" value={lyricsChords} onChange={(e) => setLyricsChords(e.target.value)} placeholder="Cole a letra com os acordes aqui" rows={14} style={{ width: '100%', boxSizing: 'border-box', padding: 10, fontFamily: 'monospace', resize: 'vertical' }} />
       <input
         type="text"
         value={spotify}
@@ -135,6 +143,12 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
               {tom}
             </option>
           ))}
+        </select>
+      </SelectContainer>
+      <SelectContainer>
+        <label htmlFor="history-chord-source-key">Tom em que a cifra foi colada</label>
+        <select id="history-chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
+          {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
         </select>
       </SelectContainer>
       

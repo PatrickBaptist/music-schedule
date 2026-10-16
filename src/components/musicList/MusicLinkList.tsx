@@ -52,6 +52,7 @@ import { normalizeWorshipMoment, WORSHIP_MOMENTS } from "../../constants/worship
 import useVideoPlayerContext from "../../context/hooks/useVideoPlayerContext";
 import useSchedulesContext from "../../context/hooks/useScheduleContext";
 import useUsersContext from "../../context/hooks/useUsersContext";
+import { useChordSheets } from "../../context/chordSheetsContext";
 
 type Video = {
   url: string;
@@ -177,6 +178,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
   const { openVideo } = useVideoPlayerContext();
   const { specialSchedules } = useSchedulesContext();
   const { users } = useUsersContext();
+  const { openChordSheet } = useChordSheets();
   const visibleMusicLinks = useMemo(
     () => musicLinks.filter((music) =>
       music.scheduleDate === selectedDate || (!music.scheduleDate && selectedDate === legacyDate)
@@ -198,6 +200,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
   const [letter, setLetter] = useState("");
   const [spotify, setSpotify] = useState("");
   const [cifra, setCifra] = useState("");
+  const [lyricsChords, setLyricsChords] = useState("");
+  const [chordSourceKey, setChordSourceKey] = useState("");
   const [description, setDescription] = useState("");
   const [order, setOrder] = useState(0);
 
@@ -427,6 +431,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
     setLetter(musicLink.letter || "");
     setSpotify(musicLink.spotify || "");
     setCifra(musicLink.cifra || "");
+    setLyricsChords(musicLink.lyricsChords || "");
+    setChordSourceKey(musicLink.chordSourceKey || musicLink.cifra || "");
     setDescription(musicLink.description || "");
     setOrder(musicLink.order || 0);
     setEditIndex(musicLink.id!);
@@ -482,6 +488,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
         letter,
         spotify,
         cifra,
+        lyricsChords,
+        chordSourceKey,
         description,
         order,
       };
@@ -627,6 +635,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
                         openLinkVideo={openLinkVideo}
                         handleEditClick={handleEditClick}
                         handleDelete={confirmDelete}
+                        openChordSheet={openChordSheet}
                       />
                     ))}
                   </SortableContext>
@@ -678,6 +687,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
                     ))}
                   </select>
                 </SelectContainer>
+
                 <input
                   type="text"
                   value={link}
@@ -733,6 +743,16 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
                     ))}
                   </select>
                 </SelectContainer>
+
+                <SelectContainer>
+                  <label htmlFor="edit-chord-source-key">Tom em que a cifra foi colada</label>
+                  <select id="edit-chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
+                    <option value="">Igual ao tom do card</option>
+                    {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
+                  </select>
+                </SelectContainer>
+                <label htmlFor="edit-lyrics-chords" style={{ width: "100%", fontSize: 14, fontWeight: "bold" }}>Letra com cifra</label>
+                <textarea id="edit-lyrics-chords" value={lyricsChords} onChange={(e) => setLyricsChords(e.target.value)} placeholder="Cole aqui a letra com os acordes" rows={14} style={{ width: "100%", boxSizing: "border-box", padding: 12, fontFamily: "monospace", resize: "vertical" }} />
 
                 <div
                   style={{
@@ -867,6 +887,7 @@ interface SortableMusicCardProps {
   openLinkVideo: (video: Video) => void;
   handleEditClick: (id: string) => void;
   handleDelete: (music: MusicLink) => void;
+  openChordSheet: (music: MusicLink) => void;
 }
 
 const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
@@ -881,6 +902,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
   openLinkVideo,
   handleEditClick,
   handleDelete,
+  openChordSheet,
 }) => {
   const {
     attributes,
@@ -969,6 +991,11 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
               )}
 
               <div className="desktop-music-links" aria-label="Links da música">
+                {musicLink.lyricsChords?.trim() && (
+                  <Button variant="secondary" className="chord-sheet-link" onClick={() => openChordSheet(musicLink)} title="Abrir letra e cifra">
+                    <FaFileAlt aria-hidden="true" /> Letra e cifra
+                  </Button>
+                )}
                 {musicLink.link && (
                   <Button
                     variant="secondary"
@@ -1010,6 +1037,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
+                    {musicLink.lyricsChords?.trim() && <MotionButton variant="unstyled" className="btns letter-btn mobile-link-action" onClick={() => openChordSheet(musicLink)} title="Abrir letra e cifra" aria-label={`Abrir letra e cifra de ${musicLink.name}`}><FaFileAlt size={16} /></MotionButton>}
                     {musicLink.link && (
                       <MotionButton variant="unstyled"
                         className="btns youtube-btn mobile-link-action"

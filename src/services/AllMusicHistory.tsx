@@ -13,6 +13,8 @@ export interface AllMusicLink {
   worshipMoment: string;
   link?: string | null;
   letter?: string | null;
+  lyricsChords?: string | null;
+  chordSourceKey?: string | null;
   spotify?: string | null;
   cifra?: string | null;
   description?: string | null;

@@ -60,6 +60,8 @@ const ListMusic: React.FC = () => {
   const [worshipMoment, setWorshipMoment] = useState('');
   const [link, setLink] = useState('');
   const [letter, setLetter] = useState('');
+  const [lyricsChords, setLyricsChords] = useState('');
+  const [chordSourceKey, setChordSourceKey] = useState('');
   const [spotify, setSpotify] = useState('');
   const [cifra, setCifra] = useState('');
   const [, setDescription] = useState('');
@@ -133,6 +135,8 @@ const ListMusic: React.FC = () => {
         worshipMoment: selectedWorshipMoment.trim(),
         cifra: selectedMusic.cifra || "",
         letter: selectedMusic.letter || "",
+        lyricsChords: selectedMusic.lyricsChords || "",
+        chordSourceKey: selectedMusic.chordSourceKey || selectedMusic.cifra || "",
         spotify: selectedMusic.spotify || "",
         description: selectedMusic.description || "",
         ministeredBy: selectedMusic.minister,
@@ -156,6 +160,8 @@ const ListMusic: React.FC = () => {
       setWorshipMoment(musicLink.worshipMoment);
       setLink(musicLink.link || '');
       setLetter(musicLink.letter || '');
+      setLyricsChords(musicLink.lyricsChords || '');
+      setChordSourceKey(musicLink.chordSourceKey || musicLink.cifra || '');
       setSpotify(musicLink.spotify || '');
       setCifra(musicLink.cifra || '');
       setDescription(musicLink.description || '');
@@ -167,7 +173,7 @@ const ListMusic: React.FC = () => {
   const handleSaveEdit = async () => {
     if (editIndex) {
       setLoadingCards(prev => ({ ...prev, [editIndex]: true }));
-      const updatedLink = { name, link, worshipMoment, letter, spotify, cifra, minister };
+      const updatedLink = { name, link, worshipMoment, letter, lyricsChords, chordSourceKey, spotify, cifra, minister };
       setIsEditing(false);
 
       try {
@@ -302,6 +308,8 @@ const ListMusic: React.FC = () => {
                       placeholder="Link da letra"
                       onKeyDown={handleKeyPress}
                     />
+                    <label htmlFor="history-edit-lyrics-chords" style={{ width: "100%", fontSize: 14, fontWeight: "bold" }}>Letra com cifra</label>
+                    <textarea id="history-edit-lyrics-chords" value={lyricsChords} onChange={(e) => setLyricsChords(e.target.value)} placeholder="Cole a letra com os acordes aqui" rows={14} style={{ width: "100%", boxSizing: "border-box", padding: 10, fontFamily: "monospace", resize: "vertical" }} />
                     <input
                       type="text"
                       value={spotify}
@@ -323,6 +331,12 @@ const ListMusic: React.FC = () => {
                             {tom}
                           </option>
                         ))}
+                      </select>
+                    </SelectContainer>
+                    <SelectContainer>
+                      <label htmlFor="history-edit-chord-source-key">Tom em que a cifra foi colada</label>
+                      <select id="history-edit-chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
+                        {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
                       </select>
                     </SelectContainer>
                       <div style={{ width: "100%", display: "flex", justifyContent: "space-between", gap: "10px" }}>
