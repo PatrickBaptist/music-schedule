@@ -7,7 +7,7 @@ import {
   ContainerLogo,
   Content,
 } from "./wakeUpLoaderStyle";
-import Logo from "../../assets/imgs/logo.png";
+import Logo from "../../assets/imgs/logo-384.png";
 
 const WakeUpScreen: React.FC<{ children: React.ReactNode }> = ({
   children,

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import Logo from '../../assets/imgs/logo.png'
+import Logo from '../../assets/imgs/logo-384.png'
 import {
   ContainerLogo,
   HeaderActions,

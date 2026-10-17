@@ -3,6 +3,26 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('/node_modules/@firebase/') || id.includes('/node_modules/firebase/')) {
+            return 'firebase-vendor';
+          }
+          if (id.includes('/node_modules/react-dom/') || id.includes('/node_modules/react/') || id.includes('/node_modules/scheduler/')) {
+            return 'react-vendor';
+          }
+          if (id.includes('/node_modules/styled-components/') || id.includes('/node_modules/stylis/')) {
+            return 'styles-vendor';
+          }
+          if (id.includes('/node_modules/motion/') || id.includes('/node_modules/framer-motion/')) {
+            return 'motion-vendor';
+          }
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

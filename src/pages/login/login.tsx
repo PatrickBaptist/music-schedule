@@ -12,7 +12,7 @@ import {
   Logo,
   RegisterPrompt,
 } from "./loginStyle";
-import logo from "../../assets/imgs/logo.png";
+import logo from "../../assets/imgs/logo-384.png";
 import PageWrapper from "../../components/pageWrapper/pageWrapper";
 import { FcGoogle } from "react-icons/fc";
 
