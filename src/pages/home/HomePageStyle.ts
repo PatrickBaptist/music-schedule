@@ -772,7 +772,7 @@ export const AddFormOverlay = styled(motion.div)`
   justify-content: center;
   padding: 86px 16px 16px;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
 
   @media (max-width: 720px) {

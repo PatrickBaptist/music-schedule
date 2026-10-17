@@ -17,8 +17,13 @@ export const InputContainer = styled.div`
   .selected-date-summary {
     width: 100%;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
+    min-height: fit-content;
+    flex: 0 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 3px;
     padding: 12px 14px;
     border: 1px solid var(--color-border-soft);
@@ -30,9 +35,21 @@ export const InputContainer = styled.div`
     input[type="date"] {
       display: block;
       width: 100%;
+      inline-size: 100%;
       min-width: 0;
       max-width: 100%;
+      justify-self: stretch;
+      margin: 0;
+      height: 44px;
+      min-height: 44px;
       box-sizing: border-box;
+      padding: 8px 10px;
+      text-align: left;
+
+      &::-webkit-date-and-time-value {
+        min-height: 1.2em;
+        text-align: left;
+      }
     }
 
     label {
