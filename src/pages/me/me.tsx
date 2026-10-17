@@ -16,16 +16,23 @@ import {
   DarkLabel,
   FormGroup,
   ProfileAvatar,
-  ProfileItem,
+  ProfileContent,
+  ProfileCover,
+  ProfileDetail,
+  ProfileDetails,
+  ProfileIdentity,
+  ProfileIdentityText,
   ProfileList,
+  ProfileMembershipBadge,
   ProfileActions,
   ProfilePageContainer,
   ProfileTitle,
+  ProfileRoles,
   LogoutButton,
 } from './meStyle';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { roleOptions, UserRole } from '../../types/UserRole';
-import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaSignOutAlt, FaTag, FaUser, FaTimes, FaUserPlus } from 'react-icons/fa';
+import { FaCogs, FaEdit, FaEnvelope, FaPhoneAlt, FaSave, FaSignOutAlt, FaTag, FaUser, FaTimes, FaUserPlus, FaTrashAlt } from 'react-icons/fa';
 import LoadingScreen from '../../components/loading/LoadingScreen';
 import useNotificationContext from '../../context/hooks/useNotificationContext';
 import { toast } from 'sonner';
@@ -42,13 +49,17 @@ import {
 import { auth } from '../../firebaseConfig';
 import { getPendingProfileFields } from '../../helpers/profileCompletion';
 import { useLocation, useNavigate } from 'react-router-dom';
+import DeleteAccountDialog from './DeleteAccountDialog';
+import useOrganizationContext from '../../context/hooks/useOrganizationContext';
 
 const MePage: React.FC = () => {
-  const { user, logout, updateMyProfile } = useAuthContext();
+  const { user, token, logout, updateMyProfile } = useAuthContext();
+  const { activeOrganization } = useOrganizationContext();
   const [ isLoading, setIsLoading ] = useState(true);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const {
@@ -84,6 +95,7 @@ const MePage: React.FC = () => {
 
   const isGuest = user?.roles?.includes(UserRole.Guest);
   const canManageInvitations = loggedRoles.some(role => role === UserRole.Admin || role === UserRole.Leader);
+  const isOrganizationOwner = activeOrganization?.membership?.managementRole === "owner";
 
   const profileInitials = useMemo(() => {
     const sourceName = user?.nickname || user?.name || user?.email || "";
@@ -154,7 +166,7 @@ const MePage: React.FC = () => {
   const userRoles = useMemo(() => {
     if (!user?.roles) return '';
     return user.roles
-      .filter(r => r !== UserRole.Admin)
+      .filter(r => r !== UserRole.Admin && r !== UserRole.Leader && r !== UserRole.Guest)
       .sort((a, b) => rolePriority.indexOf(a as UserRole) - rolePriority.indexOf(b as UserRole))
       .map(r => getRoleLabel(r as UserRole))
       .join(', ');
@@ -293,83 +305,65 @@ const MePage: React.FC = () => {
           </ProfileTitle>
 
           {user && (
-            <ProfileList>
-              <ProfileAvatar aria-label="Foto do perfil">
-                {user.photoURL ? (
-                  <img src={user.photoURL} alt={user.name || "Foto do usuario"} />
-                ) : (
-                  <span>{profileInitials}</span>
-                )}
-              </ProfileAvatar>
+            <ProfileList initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+              <ProfileCover aria-hidden="true" />
+              <ProfileContent>
+                <ProfileIdentity>
+                  <ProfileAvatar aria-label="Foto do perfil">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt={user.name || "Foto do usuario"} />
+                    ) : (
+                      <span>{profileInitials}</span>
+                    )}
+                  </ProfileAvatar>
+                  <ProfileIdentityText>
+                    <h2>{isGuest ? "Convidado" : user.nickname || user.name || "Meu perfil"}</h2>
+                    <p>{!isGuest && user.nickname && user.name && user.nickname !== user.name
+                      ? user.name
+                      : activeOrganization?.name || "Perfil do Ministério de Louvor"}</p>
+                    <ProfileMembershipBadge>
+                      <FaCogs aria-hidden="true" />
+                      {isGuest ? "Convidado" : ({ owner: "Proprietário", organization_admin: "Administrador da organização", leader: "Líder", guest: "Convidado", member: "Membro" }[activeOrganization?.membership?.managementRole || "member"])}
+                      {activeOrganization && !isGuest ? ` · ${activeOrganization.name}` : ""}
+                    </ProfileMembershipBadge>
+                  </ProfileIdentityText>
+                </ProfileIdentity>
 
-              {!isGuest && (
-                <>
-                  <ProfileItem
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <FaUser style={{ marginRight: "8px", color: "#1e90ff" }} />
-                    <strong>Nome:</strong> {user.name}
-                  </ProfileItem>
+                {!isGuest && <ProfileDetails>
+                  <ProfileDetail><FaUser aria-hidden="true" /><div><small>Nome</small><strong>{user.name || "Não informado"}</strong></div></ProfileDetail>
+                  <ProfileDetail><FaTag aria-hidden="true" /><div><small>Apelido</small><strong>{user.nickname || "Não informado"}</strong></div></ProfileDetail>
+                  <ProfileDetail><FaEnvelope aria-hidden="true" /><div><small>E-mail</small><strong>{user.email || "Não informado"}</strong></div></ProfileDetail>
+                  <ProfileDetail><FaPhoneAlt aria-hidden="true" /><div><small>Telefone</small><strong>{formatPhone(user.phone)}</strong></div></ProfileDetail>
+                </ProfileDetails>}
 
-                  <ProfileItem
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <FaTag style={{ marginRight: "8px", color: "#ff7f50" }} />
-                    <strong>Apelido:</strong> {user.nickname}
-                  </ProfileItem>
+                <ProfileRoles>
+                  <h3>Funções musicais</h3>
+                  {userRoles ? <div>{userRoles.split(", ").map((role, i) => <Badge key={`${role}-${i}`}>{role}</Badge>)}</div> : <p>Nenhuma função musical atribuída.</p>}
+                </ProfileRoles>
 
-                  <ProfileItem
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <FaEnvelope style={{ marginRight: "8px", color: "#32cd32" }} />
-                    <strong>Email:</strong> {user.email}
-                  </ProfileItem>
-
-                  <ProfileItem
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35 }}
-                  >
-                    <FaPhoneAlt style={{ marginRight: "8px", color: "#8b5cf6" }} />
-                    <strong>Telefone:</strong> {formatPhone(user.phone)}
-                  </ProfileItem>
-                </>
-              )}
-
-              <ProfileItem
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <FaCogs style={{ marginRight: "8px", color: "#ffa500" }} />
-                <strong>Funções:</strong>
-                {userRoles?.split(", ").map((role, i) => (
-                  <Badge key={i}>{role}</Badge>
-                ))}
-              </ProfileItem>
-
-              <ProfileActions>
-                {canManageInvitations && (
+                <ProfileActions>
+                {!isGuest && activeOrganization && (
                   <DarkButton type="button" onClick={() => navigate('/organization-settings')}>
                     <FaUserPlus aria-hidden="true" />
-                    Gerenciar convites
+                    {canManageInvitations || isOrganizationOwner ? "Gerenciar organização" : "Pedidos de propriedade"}
                   </DarkButton>
                 )}
                 <DarkButton type="button" onClick={() => setIsEditingProfile((current) => !current)}>
                   <FaEdit aria-hidden="true" />
                   {isEditingProfile ? "Fechar edição" : "Editar meus dados"}
                 </DarkButton>
-                <LogoutButton type="button" onClick={logout}>
+                <DarkButton type="button" onClick={logout}>
                   <FaSignOutAlt aria-hidden="true" />
                   Sair da conta
-                </LogoutButton>
-              </ProfileActions>
+                </DarkButton>
+                {!isGuest && token && (
+                  <LogoutButton type="button" onClick={() => setIsDeleteAccountOpen(true)}>
+                    <FaTrashAlt aria-hidden="true" />
+                    Excluir minha conta
+                  </LogoutButton>
+                )}
+                </ProfileActions>
+              </ProfileContent>
             </ProfileList>
           )}
         </PageWrapper>
@@ -506,6 +500,18 @@ const MePage: React.FC = () => {
             </CompletionBody>
           </ModalContent>
         </ModalOverlay>
+      )}
+
+      {isDeleteAccountOpen && user && token && (
+        <DeleteAccountDialog
+          email={user.email}
+          token={token}
+          onClose={() => setIsDeleteAccountOpen(false)}
+          onDeleted={() => {
+            logout();
+            navigate("/login", { replace: true });
+          }}
+        />
       )}
 
       {isEditingProfile && user && (

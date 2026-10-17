@@ -14,28 +14,126 @@ export const ProfilePageContainer = styled.main`
 `;
 
 export const ProfileTitle = styled(motion.h1)`
-  font-size: 2.2rem;
-  margin-bottom: 25px;
-  text-align: center;
+  width: min(100%, 980px);
+  margin: 0 auto 18px;
+  color: var(--color-text-strong);
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  letter-spacing: -0.03em;
 `;
 
-export const ProfileList = styled.div`
+export const ProfileList = styled(motion.section)`
+  width: min(100%, 980px);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+`;
+
+export const ProfileCover = styled.div`
+  height: 150px;
+  background:
+    radial-gradient(ellipse at 82% 0%, color-mix(in srgb, var(--color-primary) 45%, transparent), transparent 42%),
+    linear-gradient(120deg, color-mix(in srgb, var(--color-primary) 24%, var(--color-surface)), var(--color-surface-muted));
+  border-bottom: 1px solid var(--color-border-soft);
+
+  @media (max-width: 560px) { height: 112px; }
+`;
+
+export const ProfileContent = styled.div`
+  padding: 0 34px 30px;
+
+  @media (max-width: 560px) { padding: 0 18px 22px; }
+`;
+
+export const ProfileIdentity = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
+  gap: 22px;
+  margin-top: -58px;
+
+  @media (max-width: 560px) {
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: -52px;
+    text-align: center;
+  }
+`;
+
+export const ProfileIdentityText = styled.div`
+  min-width: 0;
+  padding-bottom: 13px;
+
+  h2 { margin: 0; color: var(--color-text-strong); font-size: clamp(1.45rem, 3vw, 1.9rem); overflow-wrap: anywhere; }
+  p { margin: 5px 0 0; color: var(--color-text-muted); }
+
+  @media (max-width: 560px) { padding-bottom: 0; }
+`;
+
+export const ProfileMembershipBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  color: var(--color-text-strong);
+  font-size: 0.82rem;
+  font-weight: 650;
+`;
+
+export const ProfileDetails = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 28px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+`;
+
+export const ProfileDetail = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 14px;
+  background: var(--color-surface-muted);
+
+  > svg { flex: 0 0 auto; color: var(--color-primary); }
+  div { min-width: 0; display: grid; gap: 4px; }
+  small { color: var(--color-text-muted); font-size: 0.78rem; }
+  strong { color: var(--color-text-strong); font-size: 0.95rem; overflow-wrap: anywhere; }
+`;
+
+export const ProfileRoles = styled.section`
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-soft);
+
+  h3 { margin: 0 0 12px; color: var(--color-text-strong); font-size: 1rem; }
+  > div { display: flex; flex-wrap: wrap; gap: 8px; }
+  > p { margin: 0; color: var(--color-text-muted); font-size: 0.92rem; }
 `;
 
 export const ProfileAvatar = styled.div`
-  width: 104px;
-  height: 104px;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 116px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 18px auto;
-  border: 3px solid var(--color-primary);
-  background: linear-gradient(135deg, rgba(46, 190, 242, 0.12), rgba(15, 142, 196, 0.22));
+  margin: 0;
+  border: 5px solid var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-border), 0 8px 22px rgba(0, 0, 0, 0.16);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 16%, var(--color-surface)), color-mix(in srgb, var(--color-primary) 30%, var(--color-surface-muted)));
   color: var(--color-primary);
   font-size: 1.9rem;
   font-weight: 800;
@@ -48,35 +146,17 @@ export const ProfileAvatar = styled.div`
   }
 `;
 
-export const ProfileItem = styled(motion.div)`
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-
-  strong {
-    color: var(--color-text);
-    font-weight: 600;
-    margin-right: 6px;
-  }
-`;
-
 export const Badge = styled.span`
-  background-color: #ff7f50;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  margin-left: 6px;
-  margin-top: 4px;
-  font-size: 0.9rem;
-  display: inline-block;
-  transition: all 0.2s;
-
-  &:hover {
-    transform: scale(1.1);
-    background-color: #ff4500;
-  }
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 11px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: 0.84rem;
+  font-weight: 600;
 `;
 
 export const DarkWrapper = styled.div`
@@ -208,19 +288,24 @@ export const DarkSelect = styled.select`
 `;
 
 export const DarkButton = styled(SharedButton).attrs({ variant: "unstyled" })`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   max-width: 400px;
-  background-color: #007BFF;
+  background-color: var(--color-primary);
   color: #fff;
-  font-size: 13px;
+  font-size: 0.9rem;
+  font-weight: 650;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  padding: 10px 10px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 10px 14px;
 
   &:hover {
-    background-color: #2EBEF2;
-    transform: scale(1.05);
+    background-color: color-mix(in srgb, var(--color-primary) 84%, black);
+    box-shadow: 0 6px 15px color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
   &:focus {
@@ -246,15 +331,16 @@ export const BackButton = styled(DarkButton)`
 export const ProfileActions = styled.div`
   width: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 18px;
-  padding-top: 22px;
-  border-top: 1px solid var(--color-border);
-  gap: 12px;
+  justify-content: flex-start;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-soft);
+  gap: 10px;
   flex-wrap: wrap;
 
   button {
-    min-width: 170px;
+    min-height: 42px;
+    min-width: 160px;
   }
 
   @media (max-width: 480px) {
