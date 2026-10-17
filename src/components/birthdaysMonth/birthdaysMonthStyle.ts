@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export const BirthdayCelebration = styled(motion.section)`
   position: relative;
   width: min(calc(100% - 32px), 1320px);
-  margin: 34px auto 12px;
+  margin: 22px auto 12px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, #ec4899 26%, var(--color-border));
   border-radius: 24px;
@@ -13,7 +13,7 @@ export const BirthdayCelebration = styled(motion.section)`
 
   @media (max-width: 600px) {
     width: calc(100% - 16px);
-    margin-top: 24px;
+    margin-top: 18px;
     border-radius: 18px;
   }
 `;

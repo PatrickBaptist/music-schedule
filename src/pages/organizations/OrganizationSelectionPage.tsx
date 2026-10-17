@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import useOrganizationContext from "../../context/hooks/useOrganizationContext";
 import useAuthContext from "../../context/hooks/useAuthContext";
 import LoadingScreen from "../../components/loading/LoadingScreen";
@@ -18,6 +19,18 @@ import {
 const OrganizationSelectionPage: React.FC = () => {
   const navigate = useNavigate();
   const { logout, token } = useAuthContext();
+  const handleLogout = () => {
+    toast("Tem certeza de que deseja sair da sua conta?", {
+      action: {
+        label: "Sair",
+        onClick: () => {
+          logout();
+          navigate("/login", { replace: true });
+        },
+      },
+      cancel: { label: "Cancelar", onClick: () => undefined },
+    });
+  };
   const [name, setName] = useState("");
   const [type, setType] = useState("igreja");
   const [creating, setCreating] = useState(false);
@@ -123,10 +136,7 @@ const OrganizationSelectionPage: React.FC = () => {
 
         <SecondaryButton
           type="button"
-          onClick={() => {
-            logout();
-            navigate("/login", { replace: true });
-          }}
+          onClick={handleLogout}
         >
           Sair da conta
         </SecondaryButton>

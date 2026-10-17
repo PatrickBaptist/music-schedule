@@ -257,7 +257,7 @@ export const ContainerHome = styled.div`
       max-width: 1320px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
       margin: 0 auto;
     }
 
@@ -273,7 +273,7 @@ export const ContainerHome = styled.div`
     @media (min-width: 768px) {
       .desktop-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.9fr);
         align-items: start;
       }
 
@@ -291,7 +291,7 @@ export const ContainerHome = styled.div`
 
     .container-escala {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 0;
       padding: 18px;
       box-sizing: border-box;
       border: 1px solid var(--color-border-soft);
@@ -307,6 +307,11 @@ export const ContainerHome = styled.div`
         display: flex;
         justify-content: center;
         margin: 16px 0 0;
+      }
+
+      .special-tab-panel > div {
+        margin-top: 0;
+        padding-top: 0;
       }
 
       .content-escala {

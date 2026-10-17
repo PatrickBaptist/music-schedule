@@ -62,6 +62,12 @@ const MePage: React.FC = () => {
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const handleLogout = () => {
+    toast("Tem certeza de que deseja sair da sua conta?", {
+      action: { label: "Sair", onClick: logout },
+      cancel: { label: "Cancelar", onClick: () => undefined },
+    });
+  };
   const {
       notification,
       postNotification,
@@ -352,7 +358,7 @@ const MePage: React.FC = () => {
                   <FaEdit aria-hidden="true" />
                   {isEditingProfile ? "Fechar edição" : "Editar meus dados"}
                 </DarkButton>
-                <DarkButton type="button" onClick={logout}>
+                <DarkButton type="button" onClick={handleLogout}>
                   <FaSignOutAlt aria-hidden="true" />
                   Sair da conta
                 </DarkButton>

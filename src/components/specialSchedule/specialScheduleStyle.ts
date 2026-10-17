@@ -27,7 +27,7 @@ export const ContainerEscala = styled.div`
 
   .empty-schedule {
     width: 100%;
-    min-height: 180px;
+    min-height: 148px;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -11,7 +11,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
   .empty-music-list {
     width: min(100%, 800px);
-    min-height: 180px;
+    min-height: 148px;
     display: flex;
     flex-direction: column;
     align-items: center;

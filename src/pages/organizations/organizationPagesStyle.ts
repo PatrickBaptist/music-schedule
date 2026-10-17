@@ -60,6 +60,7 @@ export const OrganizationButton = styled(SharedButton).attrs({ variant: "unstyle
   border-radius: 12px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 14px;
   text-align: left;
   background: ${({ $active }) => $active ? "var(--color-surface-muted)" : "transparent"};
@@ -92,6 +93,7 @@ export const OrganizationLogo = styled.span`
 `;
 
 export const OrganizationInfo = styled.span`
+  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
