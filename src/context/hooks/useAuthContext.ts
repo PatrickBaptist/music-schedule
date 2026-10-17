@@ -12,6 +12,7 @@ const useAuthContext = (): AuthContextProps => {
     const roles = [...(membership?.musicalRoles || [])];
     if (["owner", "organization_admin"].includes(membership?.managementRole || "")) roles.push("admin");
     if (membership?.managementRole === "leader") roles.push("leader");
+    if (membership?.managementRole === "guest") roles.push("guest");
     return { ...context.user, roles };
   }, [context?.user, organization]);
   if (!context) {

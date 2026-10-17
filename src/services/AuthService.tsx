@@ -80,6 +80,8 @@ export interface AuthContextProps {
   loginGuest: () => Promise<void>;
   logout: () => void;
   registerUser: (payload: RegisterPayload) => Promise<RegisterResponse>;
+  verifyEmail: (token: string) => Promise<string>;
+  resendEmailVerification: (email: string) => Promise<string>;
   updateMyProfile: (payload: UpdateMyProfilePayload) => Promise<void>;
   refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
@@ -291,6 +293,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const verifyEmail = useCallback(async (verificationToken: string): Promise<string> => {
+    const res = await fetch(`${API_URL}/auth/verify-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: verificationToken }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || "Não foi possível confirmar seu e-mail.");
+    return data.message || "E-mail confirmado. Seu cadastro foi concluído.";
+  }, [API_URL]);
+
+  const resendEmailVerification = useCallback(async (email: string): Promise<string> => {
+    const res = await fetch(`${API_URL}/auth/resend-verification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || "Não foi possível reenviar o link.");
+    return data.message || "Se houver um cadastro pendente, enviaremos um novo link.";
+  }, [API_URL]);
+
   const updateMyProfile = async (payload: UpdateMyProfilePayload) => {
     if (!token) {
       throw new Error("Sessao expirada");
@@ -373,6 +397,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loginWithGoogle,
         logout,
         registerUser,
+        verifyEmail,
+        resendEmailVerification,
         loginGuest,
         updateMyProfile,
         refreshUser,

@@ -14,13 +14,17 @@ import { UserRole } from '../../types/UserRole';
 import OrganizationSelectionPage from '../../pages/organizations/OrganizationSelectionPage';
 import InvitationPage from '../../pages/organizations/InvitationPage';
 import OrganizationManagementPage from '../../pages/organizations/OrganizationManagementPage';
+import VerifyEmailPage from '../../pages/register/VerifyEmailPage';
+import OwnershipTransferPage from '../../pages/organizations/OwnershipTransferPage';
 
 const MainRoutes: React.FC = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<RegisterPage />} />
+    <Route path="/verify-email" element={<VerifyEmailPage />} />
+    <Route path="/ownership-transfer" element={<OwnershipTransferPage />} />
     <Route path="/invite/:organizationSlug/:token" element={<InvitationPage />} />
-    <Route path="/organization-settings" element={<PrivateRoute allowedRoles={[UserRole.Admin, UserRole.Leader]}><OrganizationManagementPage /></PrivateRoute>} />
+    <Route path="/organization-settings" element={<PrivateRoute><OrganizationManagementPage /></PrivateRoute>} />
     <Route
       path="/organizations"
       element={<PrivateRoute requireOrganization={false}><OrganizationSelectionPage /></PrivateRoute>}

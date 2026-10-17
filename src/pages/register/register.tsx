@@ -178,9 +178,9 @@ const RegisterPage: React.FC = () => {
                 <FaCheck />
               </SuccessIcon>
               <span>Cadastro enviado</span>
-              <h2 id="registration-success-title">Sua conta está pronta</h2>
+              <h2 id="registration-success-title">Confirme seu e-mail</h2>
               <p id="registration-success-description">{registrationMessage}</p>
-              <p>Entre com seu e-mail e sua senha para aceitar o convite ou criar sua organização.</p>
+              <p>Depois de confirmar, você poderá criar um grupo, igreja ou banda, ou aguardar um convite de alguém.</p>
               <Button
                 ref={loginButtonRef}
                 type="button"

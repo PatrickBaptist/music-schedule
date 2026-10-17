@@ -19,7 +19,8 @@ import { FcGoogle } from "react-icons/fc";
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loginGuest, loginWithGoogle } = useAuthContext();
+  const { login, loginWithGoogle, resendEmailVerification } = useAuthContext();
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = (location.state as { from?: string } | null)?.from || "/";
@@ -29,25 +30,12 @@ const LoginPage: React.FC = () => {
     const toastId = toast.loading("Aguarde...");
     try {
       await login(email, password);
+      setNeedsEmailConfirmation(false);
       toast.dismiss(toastId);
       navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
         if (err instanceof Error) {
-            toast.error(err.message, { id: toastId });
-        } else {
-            toast.error("Erro desconhecido ao fazer login", { id: toastId });
-        }
-    }
-  };
-
-  const handleLoginGuest = async () => {
-    const toastId = toast.loading("Aguarde...");
-    try {
-      await loginGuest();
-      toast.dismiss(toastId);
-      navigate(redirectTo, { replace: true });
-    } catch (err: unknown) {
-        if (err instanceof Error) {
+            setNeedsEmailConfirmation(err.message.includes("Confirme seu e-mail"));
             toast.error(err.message, { id: toastId });
         } else {
             toast.error("Erro desconhecido ao fazer login", { id: toastId });
@@ -100,6 +88,18 @@ const LoginPage: React.FC = () => {
             >
             Entrar
           </Button>
+          {needsEmailConfirmation && (
+            <RegisterPrompt>
+              <button type="button" onClick={async () => {
+                try {
+                  const message = await resendEmailVerification(email);
+                  toast.success(message);
+                } catch (err) {
+                  toast.error(err instanceof Error ? err.message : "Não foi possível reenviar o link.");
+                }
+              }}>Reenviar link de confirmação</button>
+            </RegisterPrompt>
+          )}
 
           <Divider>ou</Divider>
 
@@ -108,9 +108,6 @@ const LoginPage: React.FC = () => {
             Entrar com Google
           </GoogleButton>
 
-          <RegisterPrompt onClick={handleLoginGuest} style={{ cursor: "pointer" }}>
-            Continuar como visitante
-          </RegisterPrompt>
           <RegisterPrompt>
             Não possui conta?
             <Link to="/register" state={{ from: redirectTo }}>Cadastre-se</Link>
