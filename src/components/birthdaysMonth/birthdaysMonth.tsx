@@ -7,6 +7,7 @@ import {
   BirthdayCelebration,
   BirthdayDate,
   BirthdayEmptyState,
+  BirthdayLoading,
   BirthdayList,
   BirthdayName,
   CelebrationHeader,
@@ -77,7 +78,21 @@ const BirthdaysThisMonth: React.FC = () => {
     return "Já comemoramos neste mês";
   };
 
-  if (isLoading) return <LoadingScreen />;
+  if (isLoading) {
+    return (
+      <BirthdayCelebration>
+        <CelebrationHeader>
+          <div>
+            <span>É tempo de celebrar</span>
+            <h2>Aniversariantes do mês</h2>
+            <p>Um cantinho especial para comemorar quem faz parte da nossa equipe.</p>
+          </div>
+          <FaBirthdayCake aria-hidden="true" />
+        </CelebrationHeader>
+        <BirthdayLoading><LoadingScreen /></BirthdayLoading>
+      </BirthdayCelebration>
+    );
+  }
 
   if (!featuredBirthday) {
     return (

@@ -124,6 +124,14 @@ export const BirthdayList = styled.div`
   @media (max-width: 600px) { padding: 18px; }
 `;
 
+export const BirthdayLoading = styled.div`
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-muted);
+`;
+
 export const BirthdayCard = styled(motion.div)`
   min-width: 0;
   display: flex;
