@@ -55,9 +55,84 @@ export const InputContainer = styled.div`
     width: 100%;
   }
 
+  &.music-add-form {
+    width: min(100%, 920px);
+    max-height: calc(100dvh - 102px);
+  }
+
+  .music-add-main-fields {
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: 12px;
+
+    > * {
+      min-width: 0;
+      margin-bottom: 0;
+    }
+
+    > input {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .music-add-more-options {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface-muted);
+
+    summary {
+      color: var(--color-primary);
+      cursor: pointer;
+      font-weight: 700;
+    }
+  }
+
+  .music-add-more-options-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 14px;
+  }
+
+  .music-add-description {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      color: var(--color-text-strong);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+  }
+
   @media (max-width: 720px) {
     padding: 16px;
     max-height: calc(100dvh - 188px);
+
+    &.music-add-form {
+      width: min(100%, 620px);
+    }
+
+    .music-add-main-fields {
+      grid-template-columns: minmax(0, 1fr);
+
+      > input {
+        grid-column: auto;
+      }
+    }
   }
 `;
 
@@ -73,13 +148,17 @@ export const ChordSheetFields = styled.section`
   border-radius: 12px;
   background: var(--color-surface-muted);
 
+  select {
+    ${formControlStyles}
+  }
+
   > label {
     color: var(--color-text-strong);
     font-size: 14px;
     font-weight: 700;
   }
 
-  textarea { min-height: 230px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+  textarea { min-height: 320px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 `;
 
 export const SuggestionsList = styled.ul`

@@ -199,7 +199,9 @@ export default function OrganizationManagementPage() {
   return <Page><Card>
     <h1>{canManageOrganization ? "Gerenciar organização" : "Pedidos de propriedade"}</h1>
     <p>{activeOrganization?.name} · {isOwner ? "Você é o proprietário" : "Você é membro desta organização"}</p>
+    <div className="organization-management-grid">
     {canManageOrganization && <>
+    <section className="organization-panel">
     <h2>Convidar pessoas</h2>
     <form onSubmit={event => void create(event)}>
       <label>E-mail da pessoa<input type="email" required value={email} onChange={e => setEmail(e.target.value)} /></label>
@@ -212,9 +214,10 @@ export default function OrganizationManagementPage() {
       <p>A pessoa entrará sem função. Depois da entrada, atribua as funções na tela de usuários.</p>
       <PrimaryButton disabled={busy} type="submit">{busy ? "Aguarde..." : "Criar convite"}</PrimaryButton>
     </form>
-    {invitationLink && <section><p>Compartilhe este link apenas com a pessoa convidada. Ele só aparece agora.</p><input aria-label="Link do convite" readOnly value={invitationLink} onFocus={e => e.target.select()} /><SecondaryButton onClick={() => void navigator.clipboard.writeText(invitationLink).catch(() => setError("Selecione e copie o link."))}>Copiar link</SecondaryButton></section>}
+    {invitationLink && <div className="organization-invitation-link"><p>Compartilhe este link apenas com a pessoa convidada. Ele só aparece agora.</p><input aria-label="Link do convite" readOnly value={invitationLink} onFocus={e => e.target.select()} /><SecondaryButton onClick={() => void navigator.clipboard.writeText(invitationLink).catch(() => setError("Selecione e copie o link."))}>Copiar link</SecondaryButton></div>}
     {error && <ErrorMessage>{error}</ErrorMessage>}
-    {isOwner && <section>
+    </section>
+    {isOwner && <section className="organization-panel">
       <h2>Propriedade da organização</h2>
       <p>Passe a propriedade para outro membro sem excluir sua conta, ou exclua a organização.</p>
       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -222,9 +225,10 @@ export default function OrganizationManagementPage() {
         <SecondaryButton type="button" disabled={busy} onClick={() => void openOwnerActions("manage")}>Excluir organização</SecondaryButton>
       </div>
     </section>}
+    <section className="organization-panel">
     <h2>Funções da escala</h2>
     <p>Crie funções para os membros e desative as que não serão usadas em novas escalas.</p>
-    <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+    <div className="organization-role-form">
       <input value={newRoleName} maxLength={60} placeholder="Ex.: Saxofone" onChange={event => setNewRoleName(event.target.value)} />
       <PrimaryButton type="button" disabled={busy || !newRoleName.trim()} onClick={() => void addRole()}>Adicionar função</PrimaryButton>
     </div>
@@ -234,14 +238,17 @@ export default function OrganizationManagementPage() {
         {role.active ? "Desativar" : "Reativar"}
       </SecondaryButton>
     </InvitationItem>)}
+    </section>
+    <section className="organization-panel">
     <h2>Convites criados</h2>
     {!invitations.length && <p>Nenhum convite criado.</p>}
     {invitations.map(invitation => <InvitationItem key={invitation.id}>
       <strong>{invitation.email}</strong><p>{({ pending: "Pendente", accepted: "Aceito", revoked: "Cancelado", expired: "Expirado" } as Record<string, string>)[invitation.status] || invitation.status} · válido até {new Date(invitation.expiresAt).toLocaleDateString("pt-BR")}</p>
       {invitation.status === "pending" && (!isLeader || invitation.managementRole === "member") && <SecondaryButton disabled={busy} onClick={() => void revoke(invitation.id)}>Cancelar convite</SecondaryButton>}
     </InvitationItem>)}
+    </section>
     </>}
-    {ownershipTransfers.length > 0 ? <section>
+    {ownershipTransfers.length > 0 ? <section className="organization-panel organization-transfer-panel">
       <h2>Pedidos para passar a propriedade</h2>
       {ownershipTransfers.slice(0, 5).map(transfer => {
         const incoming = transfer.targetUserId === user?.id;
@@ -257,10 +264,11 @@ export default function OrganizationManagementPage() {
           </CardActions>}
         </InvitationItem>;
       })}
-    </section> : !canManageOrganization && <section>
+    </section> : !canManageOrganization && <section className="organization-panel organization-transfer-panel">
       <h2>Pedidos para passar a propriedade</h2>
       <p>Não há pedidos aguardando sua resposta nesta organização.</p>
     </section>}
+    </div>
     <CardActions><SecondaryButton type="button" onClick={() => navigate("/profile")}>Voltar ao perfil</SecondaryButton><SecondaryButton type="button" onClick={() => navigate("/organizations")}>Trocar organização</SecondaryButton></CardActions>
   </Card>
   {isOwnerActionOpen && <ModalOverlay onClick={() => !busy && setIsOwnerActionOpen(false)}>

@@ -403,8 +403,18 @@ export const AddFormOverlay = styled(motion.div)`
   overflow-y: auto;
   overscroll-behavior: contain;
 
+  &.music-library-form-overlay {
+    align-items: flex-start;
+    padding: 86px 16px 16px;
+  }
+
   @media (max-width: 720px) {
     align-items: flex-start;
     padding: 82px 12px 106px;
+
+    &.music-library-form-overlay {
+      align-items: flex-start;
+      padding: 82px 12px 106px;
+    }
   }
 `;

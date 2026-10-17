@@ -206,6 +206,10 @@ export const ContainerHome = styled.div`
     .home-music-list-anchor {
       width: 100%;
       scroll-margin-top: 16px;
+
+      > ul {
+        padding: 0;
+      }
     }
 
     @media (max-width: 820px) {
@@ -411,7 +415,7 @@ export const ContainerHome = styled.div`
       box-sizing: border-box;
       border: 1px solid var(--color-border-soft);
       border-radius: 12px;
-      background: var(--color-surface);
+      background: var(--color-surface-muted);
     }
 
     .date-picker-trigger {
@@ -487,7 +491,7 @@ export const ContainerHome = styled.div`
     .available-repertoires {
       width: 100%;
       margin: 0;
-      padding: 14px 16px;
+      padding: 14px 16px 6px;
       box-sizing: border-box;
       border: 0;
       border-radius: 0;
@@ -764,9 +768,9 @@ export const AddFormOverlay = styled(motion.div)`
   z-index: calc(var(--z-modal) + 20);
   background: rgba(8, 15, 24, 0.68);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 16px;
+  padding: 86px 16px 16px;
   box-sizing: border-box;
   overflow-y: auto;
   overscroll-behavior: contain;

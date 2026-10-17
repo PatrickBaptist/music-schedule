@@ -7,13 +7,15 @@ export const Page = styled.main`
   width: 100%;
   padding: 32px 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: var(--color-page-bg);
 `;
 
 export const Card = styled.section`
   ${formCardSurface}
+  width: min(100%, 1280px);
+  max-width: 1280px;
 
   h1 { margin: 0 0 8px; font-size: 1.5rem; line-height: 1.3; }
   h2 { margin: 24px 0 14px; font-size: 1.1rem; }
@@ -30,6 +32,61 @@ export const Card = styled.section`
     input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--color-primary); }
   }
   @media (max-width: 380px) { fieldset { grid-template-columns: 1fr; } }
+
+  .organization-management-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+    margin-top: 22px;
+  }
+
+  .organization-panel {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--color-border-soft);
+    border-radius: 12px;
+    background: var(--color-surface-muted);
+
+    h2 { margin: 0 0 10px; }
+    > p:first-of-type { margin-top: 0; }
+    > :last-child { margin-bottom: 0; }
+  }
+
+  .organization-invitation-link {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border-soft);
+
+    input { margin: 4px 0; }
+  }
+
+  .organization-transfer-panel { grid-column: 1 / -1; }
+
+  .organization-role-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+
+    input { min-width: 0; }
+    button { width: auto; margin: 0; white-space: nowrap; }
+  }
+
+  .organization-panel > h2:first-child { margin-top: 0; }
+
+  @media (max-width: 900px) {
+    .organization-management-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    padding: 20px 12px;
+
+    .organization-panel { padding: 14px; }
+    .organization-role-form { grid-template-columns: minmax(0, 1fr); }
+    .organization-role-form button { width: 100%; }
+  }
 `;
 
 export const CardActions = styled.div`

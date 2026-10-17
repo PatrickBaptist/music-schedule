@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '../buttons/Buttons';
 import { InputContainer, SelectContainer } from './AllMusicLinkInputStyle';
+import { ChordSheetFields } from '../musicLink/MusicLinkInputStyle';
 import { toast } from 'sonner';
 import useAuthContext from '../../context/hooks/useAuthContext';
 import { UserRole } from '../../types/UserRole';
@@ -97,60 +98,76 @@ const AllMusicLinkInput: React.FC<MusicLinkInputProps> = ({ setIsModalOpen }) =>
   const ministerUsers = users.filter((u) => u.roles?.includes(UserRole.Minister) || u.roles?.includes(UserRole.Guest));
 
   return (
-    <InputContainer>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Ex.: Grande é o Senhor"
-        ref={nameInputRef}
-        onKeyDown={handleKeyPress}
-      />
-      <input
-        type="text"
-        value={link}
-        onChange={(e) => setLink(e.target.value)}
-        placeholder="Link do vídeo"
-        onKeyDown={handleKeyPress}
-      />
-      <input
-        type="text"
-        value={letter}
-        onChange={(e) => setLetter(e.target.value)}
-        placeholder="Link da letra"
-        onKeyDown={handleKeyPress}
-      />
-      <label htmlFor="history-lyrics-chords" style={{ width: '100%', fontSize: 14, fontWeight: 'bold' }}>Letra com cifra</label>
-      <textarea id="history-lyrics-chords" value={lyricsChords} onChange={(e) => setLyricsChords(e.target.value)} placeholder="Cole a letra com os acordes aqui" rows={14} style={{ width: '100%', boxSizing: 'border-box', padding: 10, fontFamily: 'monospace', resize: 'vertical' }} />
-      <input
-        type="text"
-        value={spotify}
-        onChange={(e) => setSpotify(e.target.value)}
-        placeholder="Link do Spotify"
-        onKeyDown={handleKeyPress}
-      />
-
-      <SelectContainer>
-        <label htmlFor="cifra">Tom da Música</label>
-        <select
-          id="cifra"
-          value={cifra}
-          onChange={(e) => setCifra(e.target.value)}
-        >
-          <option value="">Selecione o tom</option>
-          {tons.map((tom, index) => (
-            <option key={index} value={tom}>
-              {tom}
-            </option>
-          ))}
-        </select>
-      </SelectContainer>
-      <SelectContainer>
-        <label htmlFor="history-chord-source-key">Tom em que a cifra foi colada</label>
-        <select id="history-chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
-          {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
-        </select>
-      </SelectContainer>
+    <InputContainer className="music-library-form">
+      <div className="music-library-main-fields">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Ex.: Grande é o Senhor"
+          ref={nameInputRef}
+          onKeyDown={handleKeyPress}
+        />
+        <SelectContainer>
+          <label htmlFor="cifra">Tom da Música</label>
+          <select
+            id="cifra"
+            value={cifra}
+            onChange={(e) => setCifra(e.target.value)}
+          >
+            <option value="">Selecione o tom</option>
+            {tons.map((tom, index) => (
+              <option key={index} value={tom}>{tom}</option>
+            ))}
+          </select>
+        </SelectContainer>
+        <input
+          type="text"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="Link do vídeo"
+          onKeyDown={handleKeyPress}
+        />
+      </div>
+      <details className="music-library-more-options">
+        <summary>Mais opções</summary>
+        <div className="music-library-more-options-content">
+          <input
+            type="text"
+            value={letter}
+            onChange={(e) => setLetter(e.target.value)}
+            placeholder="Link da letra"
+            onKeyDown={handleKeyPress}
+          />
+          <input
+            type="text"
+            value={spotify}
+            onChange={(e) => setSpotify(e.target.value)}
+            placeholder="Link do Spotify"
+            onKeyDown={handleKeyPress}
+          />
+          <ChordSheetFields aria-labelledby="history-chord-source-key-label">
+            <label id="history-chord-source-key-label" htmlFor="history-chord-source-key">
+              Tom em que a cifra foi colada
+            </label>
+            <select
+              id="history-chord-source-key"
+              value={chordSourceKey}
+              onChange={(e) => setChordSourceKey(e.target.value)}
+            >
+              {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
+            </select>
+            <label htmlFor="history-lyrics-chords">Letra com cifra</label>
+            <textarea
+              id="history-lyrics-chords"
+              value={lyricsChords}
+              onChange={(e) => setLyricsChords(e.target.value)}
+              placeholder="Cole a letra com os acordes aqui"
+              rows={14}
+            />
+          </ChordSheetFields>
+        </div>
+      </details>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <Button variant="secondary" onClick={() => setIsModalOpen(false)}>

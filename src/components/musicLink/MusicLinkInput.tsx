@@ -209,7 +209,7 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
   };
 
   return (
-    <InputContainer>
+    <InputContainer className="music-add-form">
       <div className="selected-date-summary">
         <label htmlFor="add-music-schedule-date">Data do repertório</label>
         <input
@@ -257,93 +257,90 @@ const MusicLinkInput: React.FC<MusicLinkInputProps> = ({
         </SuggestionsList>
       )}
         
-      <SelectContainer>
-        <label htmlFor="worshipMoment">Momento do Louvor</label>
-        <select
-          id="worshipMoment"
-          value={worshipMoment}
-          onChange={(e) => setWorshipMoment(e.target.value)}
-          onKeyDown={handleKeyPress}
+      <div className="music-add-main-fields">
+        <SelectContainer>
+          <label htmlFor="worshipMoment">Momento do Louvor</label>
+          <select
+            id="worshipMoment"
+            value={worshipMoment}
+            onChange={(e) => setWorshipMoment(e.target.value)}
+            onKeyDown={handleKeyPress}
           >
-          <option value="">Selecione o momento</option>
-          {WORSHIP_MOMENTS.map((moment) => (
-            <option key={moment} value={moment}>
-              {moment}
-            </option>
-          ))}
-        </select>
-      </SelectContainer>
-      <input
-        type="text"
-        value={link}
-        onChange={(e) => setLink(e.target.value)}
-        placeholder="Link do vídeo"
-        onKeyDown={handleKeyPress}
-      />
-      <input
-        type="text"
-        value={letter}
-        onChange={(e) => setLetter(e.target.value)}
-        placeholder="Link da letra"
-        onKeyDown={handleKeyPress}
-      />
-      <input
-        type="text"
-        value={spotify}
-        onChange={(e) => setSpotify(e.target.value)}
-        placeholder="Link do Spotify"
-        onKeyDown={handleKeyPress}
-      />
-
-      <SelectContainer>
-        <label htmlFor="cifra">Tom da Música</label>
-        <select
-          id="cifra"
-          value={cifra}
-          onChange={(e) => setCifra(e.target.value)}
-        >
-          <option value="">Selecione o tom</option>
-          {tons.map((tom, index) => (
-            <option key={index} value={tom}>
-              {tom}
-            </option>
-          ))}
-        </select>
-      </SelectContainer>
-      <ChordSheetFields aria-labelledby="pasted-chord-key-label">
-        <label id="pasted-chord-key-label" htmlFor="chord-source-key">Tom em que a cifra foi colada</label>
-        <select id="chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
-          {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
-        </select>
-        <label htmlFor="schedule-lyrics-chords">Letra com cifra</label>
-        <textarea
-          id="schedule-lyrics-chords"
-          value={lyricsChords}
-          onChange={(e) => setLyricsChords(e.target.value)}
-          placeholder="Cole a letra com os acordes aqui"
-          rows={14}
-        />
-      </ChordSheetFields>
-      
-      <div style={{ width: '100%',display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-        <label htmlFor="description" style={{ fontSize: 14, fontWeight: 'bold' }}>Observações sobre a música</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Observações sobre como será a música"
-          rows={3}
-          style={{
-            width: '95%',
-            height: '150px',
-            marginTop: '8px',
-            marginBottom: '8px',
-            padding: '8px',
-            fontSize: '16px',
-            border: '1px solid #ccc',
-            resize: 'none'
-          }}
+            <option value="">Selecione o momento</option>
+            {WORSHIP_MOMENTS.map((moment) => (
+              <option key={moment} value={moment}>
+                {moment}
+              </option>
+            ))}
+          </select>
+        </SelectContainer>
+        <SelectContainer>
+          <label htmlFor="cifra">Tom da Música</label>
+          <select
+            id="cifra"
+            value={cifra}
+            onChange={(e) => setCifra(e.target.value)}
+          >
+            <option value="">Selecione o tom</option>
+            {tons.map((tom, index) => (
+              <option key={index} value={tom}>
+                {tom}
+              </option>
+            ))}
+          </select>
+        </SelectContainer>
+        <input
+          type="text"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="Link do vídeo"
+          onKeyDown={handleKeyPress}
         />
       </div>
+
+      <details className="music-add-more-options">
+        <summary>Mais opções</summary>
+        <div className="music-add-more-options-content">
+          <input
+            type="text"
+            value={letter}
+            onChange={(e) => setLetter(e.target.value)}
+            placeholder="Link da letra"
+            onKeyDown={handleKeyPress}
+          />
+          <input
+            type="text"
+            value={spotify}
+            onChange={(e) => setSpotify(e.target.value)}
+            placeholder="Link do Spotify"
+            onKeyDown={handleKeyPress}
+          />
+          <ChordSheetFields aria-labelledby="pasted-chord-key-label">
+            <label id="pasted-chord-key-label" htmlFor="chord-source-key">Tom em que a cifra foi colada</label>
+            <select id="chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
+              {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
+            </select>
+            <label htmlFor="schedule-lyrics-chords">Letra com cifra</label>
+            <textarea
+              id="schedule-lyrics-chords"
+              value={lyricsChords}
+              onChange={(e) => setLyricsChords(e.target.value)}
+              placeholder="Cole a letra com os acordes aqui"
+              rows={14}
+            />
+          </ChordSheetFields>
+          <div className="music-add-description">
+            <label htmlFor="description">Observações sobre a música</label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Observações sobre como será a música"
+              rows={3}
+            />
+          </div>
+        </div>
+      </details>
 
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
         <Button variant="secondary" onClick={() => setIsModalOpen(false)}>

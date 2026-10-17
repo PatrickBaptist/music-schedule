@@ -10,15 +10,15 @@ export const ListContainer = styled.ul<{ bg?: string }>`
   box-sizing: border-box;
 
   .empty-music-list {
-    width: min(100%, 800px);
-    min-height: 148px;
+    width: 100%;
+    min-height: 132px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 8px;
     box-sizing: border-box;
-    padding: 28px;
+    padding: 24px;
     border: 1px dashed var(--color-border);
     border-radius: 14px;
     background: var(--color-surface-muted);
@@ -47,15 +47,23 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin: 2px 0 12px;
+    justify-content: flex-start;
+    gap: 10px 16px;
+    margin: 2px 0 10px;
     padding: 0 4px;
     box-sizing: border-box;
 
     @media (max-width: 360px) {
       align-items: stretch;
       flex-direction: column;
+
+      .music-list-title {
+        margin-right: 0;
+      }
+
+      .music-list-actions {
+        width: 100%;
+      }
     }
   }
 
@@ -63,12 +71,32 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     min-width: 0;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-right: auto;
     color: var(--color-text-muted);
 
     strong {
-      font-size: 13px;
+      color: var(--color-text-strong);
+      font-size: 15px;
       line-height: 1.2;
     }
+
+    span {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--color-surface-muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+  }
+
+  .music-list-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
   }
 
   .reorder-mode-btn {
@@ -162,7 +190,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
       padding: 14px 16px;
       border: 1px solid rgba(148, 163, 184, 0.18);
       border-radius: 10px;
-      box-shadow: 0 2px 8px var(--color-shadow);
+      box-shadow: none;
       position: relative;
       gap: 10px;
       touch-action: pan-y;
@@ -170,8 +198,8 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
       @media (hover: hover) and (pointer: fine) {
         &:hover {
-          border-color: rgba(245, 158, 11, 0.45);
-          box-shadow: 0 5px 14px var(--color-shadow);
+          border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+          box-shadow: 0 3px 10px var(--color-shadow);
         }
       }
 
@@ -415,9 +443,9 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     z-index: var(--z-modal);
     background-color: rgba(8, 15, 24, 0.68);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 16px;
+    padding: 86px 16px 16px;
     box-sizing: border-box;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -430,14 +458,16 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
   .edit-content {
     width: 100%;
+    height: calc(100dvh - 102px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-height: calc(100dvh - 32px);
+    max-height: calc(100dvh - 102px);
     overflow: hidden;
 
     @media (max-width: 720px) {
+      height: auto;
       max-height: calc(100dvh - 188px);
     }
   }
@@ -449,7 +479,7 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     gap: 10px;
     margin-bottom: 0;
     width: 100%;
-    max-width: 620px;
+    max-width: 920px;
     max-height: 100%;
     overflow-y: auto;
     box-sizing: border-box;
@@ -461,6 +491,8 @@ export const ListContainer = styled.ul<{ bg?: string }>`
 
     input {
       width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
       min-height: 40px;
       border: 1px solid rgba(0, 0, 0, 0.1);
       box-shadow: rgba(0, 0, 0, 0.2) 0 1px 3px 0;
@@ -477,6 +509,68 @@ export const ListContainer = styled.ul<{ bg?: string }>`
     textarea,
     select {
       width: 100%;
+    }
+
+    .edit-main-fields {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: end;
+      gap: 12px;
+
+      > * {
+        min-width: 0;
+        margin-bottom: 0;
+      }
+
+      > input:nth-child(3) {
+        grid-column: 1 / -1;
+      }
+
+      .edit-order-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+          font-size: 14px;
+          font-weight: 700;
+        }
+      }
+    }
+
+    .music-more-options {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      background: var(--color-surface-muted);
+
+      summary {
+        color: var(--color-primary);
+        cursor: pointer;
+        font-weight: 700;
+      }
+    }
+
+    .music-more-options-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 14px;
+    }
+
+    @media (max-width: 720px) {
+      max-width: 620px;
+
+      .edit-main-fields {
+        grid-template-columns: minmax(0, 1fr);
+
+        > input:nth-child(3) {
+          grid-column: auto;
+        }
+      }
     }
   }
 
@@ -606,13 +700,14 @@ export const MusicGroup = styled.div<{ $accent?: string; $isOver?: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   box-sizing: border-box;
-  padding: 10px 12px 14px;
-  margin-bottom: 16px;
-  border: 1px solid var(--color-border-soft);
-  border-radius: 14px;
-  background: var(--color-surface-muted);
+  padding: 8px 0 12px;
+  margin-bottom: 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  border-radius: 0;
+  background: transparent;
   outline: ${({ $isOver }) =>
     $isOver ? "2px dashed rgba(245, 158, 11, 0.8)" : "2px dashed transparent"};
   transition: outline-color 0.2s ease;
@@ -621,16 +716,16 @@ export const MusicGroup = styled.div<{ $accent?: string; $isOver?: boolean }>`
   .music-group-heading {
     width: 100%;
     display: grid;
-    grid-template-columns: 5px minmax(0, 1fr) auto;
+    grid-template-columns: 4px minmax(0, 1fr) auto;
     align-items: center;
     gap: 10px;
     box-sizing: border-box;
-    padding: 5px 4px 9px;
+    padding: 3px 4px 7px;
   }
 
   .music-group-accent {
-    width: 5px;
-    height: 28px;
+    width: 4px;
+    height: 24px;
     border-radius: 999px;
     background: ${({ $accent }) => $accent || "var(--color-primary)"};
   }
@@ -652,7 +747,7 @@ export const MusicGroup = styled.div<{ $accent?: string; $isOver?: boolean }>`
   }
 
   @media (max-width: 600px) {
-    padding: 8px 8px 12px;
+    padding: 8px 0 10px;
 
     .music-group-heading {
       gap: 8px;

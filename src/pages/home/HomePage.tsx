@@ -305,12 +305,10 @@ const HomePage: React.FC = () => {
                     <p>Nenhum repertório futuro possui músicas.</p>
                   )}
                 </div>
-
+                <div id="home-music-list" className="home-music-list-anchor">
+                  <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
+                </div>
               </section>
-
-              <div id="home-music-list" className="home-music-list-anchor">
-                <MusicLinkList canDelete={loggedRoles} selectedDate={selectedMusicDate} legacyDate={fallbackDate} />
-              </div>
             </div>
 
             <div className="coluna-2">

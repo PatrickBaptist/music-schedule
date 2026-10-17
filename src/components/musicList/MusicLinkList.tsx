@@ -29,6 +29,7 @@ import {
 } from "react-icons/fa";
 import { UserRole } from "../../types/UserRole";
 import { MusicLink } from "../../services/MusicLinksService";
+import { ChordSheetFields } from "../musicLink/MusicLinkInputStyle";
 import {
   DndContext,
   DragEndEvent,
@@ -432,7 +433,7 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
     setSpotify(musicLink.spotify || "");
     setCifra(musicLink.cifra || "");
     setLyricsChords(musicLink.lyricsChords || "");
-    setChordSourceKey(musicLink.chordSourceKey || musicLink.cifra || "");
+    setChordSourceKey(musicLink.chordSourceKey || musicLink.cifra || "C");
     setDescription(musicLink.description || "");
     setOrder(musicLink.order || 0);
     setEditIndex(musicLink.id!);
@@ -537,33 +538,42 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
     setOpenMenuId((prev) => (prev === id ? null : id));
   };
 
+  const repertoireDateLabel = new Date(`${selectedDate}T12:00:00`).toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
   return (
     <ListContainer>
       {visibleMusicLinks.length > 0 && (
         <div className="music-list-toolbar">
           <div className="music-list-title">
-            <strong>{visibleMusicLinks.length} {visibleMusicLinks.length === 1 ? 'música no repertório' : 'músicas no repertório'}</strong>
+            <strong>Repertório de {repertoireDateLabel}</strong>
+            <span>{visibleMusicLinks.length} {visibleMusicLinks.length === 1 ? 'música' : 'músicas'}</span>
           </div>
-          {canReorder && visibleMusicLinks.length > 1 && (
-            <Button
-              variant={isReorderMode ? "secondary" : "unstyled"}
-              className={`reorder-mode-btn${isReorderMode ? " is-active" : ""}`}
-              onClick={() => setIsReorderMode((current) => !current)}
-              disabled={isSavingOrder}
-              aria-pressed={isReorderMode}
-            >
-              {isReorderMode ? (
-                <><FaLock size={14} /> Concluir ajuste</>
-              ) : (
-                <><FaGripVertical size={14} /> Ajustar ordem</>
-              )}
-            </Button>
-          )}
-          {canShareMusic && (
-            <Button variant="secondary" onClick={() => setShareModalOpen(true)} disabled={isReorderMode || isSavingOrder}>
-              <FaShareAlt aria-hidden="true" /> Compartilhar repertório
-            </Button>
-          )}
+          <div className="music-list-actions">
+            {canReorder && visibleMusicLinks.length > 1 && (
+              <Button
+                variant={isReorderMode ? "secondary" : "unstyled"}
+                className={`reorder-mode-btn${isReorderMode ? " is-active" : ""}`}
+                onClick={() => setIsReorderMode((current) => !current)}
+                disabled={isSavingOrder}
+                aria-pressed={isReorderMode}
+              >
+                {isReorderMode ? (
+                  <><FaLock size={14} /> Concluir ajuste</>
+                ) : (
+                  <><FaGripVertical size={14} /> Ajustar ordem</>
+                )}
+              </Button>
+            )}
+            {canShareMusic && (
+              <Button variant="secondary" onClick={() => setShareModalOpen(true)} disabled={isReorderMode || isSavingOrder}>
+                <FaShareAlt aria-hidden="true" /> Compartilhar repertório
+              </Button>
+            )}
+          </div>
         </div>
       )}
       {isReorderMode && (
@@ -660,99 +670,107 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
           >
             <div className="edit-content">
               <div className="input-container">
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Nome da música"
-                  onKeyDown={handleKeyPress}
-                />
-                <SelectContainer>
-                  <label htmlFor="worshipMoment">
-                    Momento do Louvor
+                <div className="edit-main-fields">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nome da música"
+                    onKeyDown={handleKeyPress}
+                  />
+                  <SelectContainer>
+                    <label htmlFor="worshipMoment">
+                      Momento do Louvor
+                    </label>
+                    <select
+                      id="worshipMoment"
+                      value={worshipMoment}
+                      onChange={(e) =>
+                        setWorshipMoment(e.target.value)
+                      }
+                      onKeyDown={handleKeyPress}
+                    >
+                      <option value="">Selecione o momento</option>
+                      {WORSHIP_MOMENTS.map((moment) => (
+                        <option key={moment} value={moment}>
+                          {moment}
+                        </option>
+                      ))}
+                    </select>
+                  </SelectContainer>
+                  <input
+                    type="text"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    placeholder="Link da música"
+                    onKeyDown={handleKeyPress}
+                  />
+                  <div className="edit-order-field">
+                    <label htmlFor="edit-order">Ordem da música</label>
+                    <input
+                      id="edit-order"
+                      type="number"
+                      value={order}
+                      onChange={(e) => setOrder(Number(e.target.value))}
+                      placeholder="Ordem da música"
+                      onKeyDown={handleKeyPress}
+                    />
+                  </div>
+                  <SelectContainer>
+                    <label htmlFor="cifra">Tom da Música</label>
+                    <select
+                      id="cifra"
+                      value={cifra}
+                      onChange={(e) => setCifra(e.target.value)}
+                    >
+                      <option value="">Selecione o tom</option>
+                      {tons.map((tom, index) => (
+                        <option key={index} value={tom}>
+                          {tom}
+                        </option>
+                      ))}
+                    </select>
+                  </SelectContainer>
+                </div>
+
+                <details className="music-more-options">
+                  <summary>Mais opções</summary>
+                  <div className="music-more-options-content">
+                    <input
+                      type="text"
+                      value={letter}
+                      onChange={(e) => setLetter(e.target.value)}
+                      placeholder="Link da letra"
+                      onKeyDown={handleKeyPress}
+                    />
+                    <input
+                      type="text"
+                      value={spotify}
+                      onChange={(e) => setSpotify(e.target.value)}
+                      placeholder="Link do Spotify"
+                      onKeyDown={handleKeyPress}
+                    />
+
+                <ChordSheetFields aria-labelledby="edit-chord-source-key-label">
+                  <label id="edit-chord-source-key-label" htmlFor="edit-chord-source-key">
+                    Tom em que a cifra foi colada
                   </label>
                   <select
-                    id="worshipMoment"
-                    value={worshipMoment}
-                    onChange={(e) =>
-                      setWorshipMoment(e.target.value)
-                    }
-                    onKeyDown={handleKeyPress}
+                    id="edit-chord-source-key"
+                    value={chordSourceKey}
+                    onChange={(e) => setChordSourceKey(e.target.value)}
                   >
-                    <option value="">Selecione o momento</option>
-                    {WORSHIP_MOMENTS.map((moment) => (
-                      <option key={moment} value={moment}>
-                        {moment}
-                      </option>
-                    ))}
-                  </select>
-                </SelectContainer>
-
-                <input
-                  type="text"
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  placeholder="Link da música"
-                  onKeyDown={handleKeyPress}
-                />
-                <input
-                  type="text"
-                  value={letter}
-                  onChange={(e) => setLetter(e.target.value)}
-                  placeholder="Link da letra"
-                  onKeyDown={handleKeyPress}
-                />
-                <input
-                  type="text"
-                  value={spotify}
-                  onChange={(e) => setSpotify(e.target.value)}
-                  placeholder="Link do Spotify"
-                  onKeyDown={handleKeyPress}
-                />
-                <label
-                  htmlFor="cifra"
-                  style={{
-                    width: "100%",
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    textAlign: "left",
-                  }}
-                >
-                  Ordem da música
-                </label>
-                <input
-                  type="text"
-                  value={order}
-                  onChange={(e) => setOrder(Number(e.target.value))}
-                  placeholder="Ordem da música"
-                  onKeyDown={handleKeyPress}
-                />
-
-                <SelectContainer>
-                  <label htmlFor="cifra">Tom da Música</label>
-                  <select
-                    id="cifra"
-                    value={cifra}
-                    onChange={(e) => setCifra(e.target.value)}
-                  >
-                    <option value="">Selecione o tom</option>
-                    {tons.map((tom, index) => (
-                      <option key={index} value={tom}>
-                        {tom}
-                      </option>
-                    ))}
-                  </select>
-                </SelectContainer>
-
-                <SelectContainer>
-                  <label htmlFor="edit-chord-source-key">Tom em que a cifra foi colada</label>
-                  <select id="edit-chord-source-key" value={chordSourceKey} onChange={(e) => setChordSourceKey(e.target.value)}>
-                    <option value="">Igual ao tom do card</option>
                     {tons.map((tom) => <option key={tom} value={tom}>{tom}</option>)}
                   </select>
-                </SelectContainer>
-                <label htmlFor="edit-lyrics-chords" style={{ width: "100%", fontSize: 14, fontWeight: "bold" }}>Letra com cifra</label>
-                <textarea id="edit-lyrics-chords" value={lyricsChords} onChange={(e) => setLyricsChords(e.target.value)} placeholder="Cole aqui a letra com os acordes" rows={14} style={{ width: "100%", boxSizing: "border-box", padding: 12, fontFamily: "monospace", resize: "vertical" }} />
+                  <label htmlFor="edit-lyrics-chords">Letra com cifra</label>
+                  <textarea
+                    id="edit-lyrics-chords"
+                    value={lyricsChords}
+                    onChange={(e) => setLyricsChords(e.target.value)}
+                    placeholder="Cole a letra com os acordes aqui"
+                    rows={14}
+                  />
+                </ChordSheetFields>
 
                 <div
                   style={{
@@ -786,6 +804,8 @@ const MusicLinkList: React.FC<SpecialSchedulesProps> = ({ canDelete, selectedDat
                     }}
                   />
                 </div>
+                  </div>
+                </details>
 
                 <div
                   style={{
@@ -993,7 +1013,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
               <div className="desktop-music-links" aria-label="Links da música">
                 {musicLink.lyricsChords?.trim() && (
                   <Button variant="secondary" className="chord-sheet-link" onClick={() => openChordSheet(musicLink)} title="Abrir letra e cifra">
-                    <FaFileAlt aria-hidden="true" /> Letra e cifra
+                    <FaMusic aria-hidden="true" /> Letra e cifra
                   </Button>
                 )}
                 {musicLink.link && (
@@ -1037,7 +1057,7 @@ const SortableMusicCard: React.FC<SortableMusicCardProps> = ({
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    {musicLink.lyricsChords?.trim() && <MotionButton variant="unstyled" className="btns letter-btn mobile-link-action" onClick={() => openChordSheet(musicLink)} title="Abrir letra e cifra" aria-label={`Abrir letra e cifra de ${musicLink.name}`}><FaFileAlt size={16} /></MotionButton>}
+                    {musicLink.lyricsChords?.trim() && <MotionButton variant="unstyled" className="btns letter-btn mobile-link-action" onClick={() => openChordSheet(musicLink)} title="Abrir letra e cifra" aria-label={`Abrir letra e cifra de ${musicLink.name}`}><FaMusic size={16} /></MotionButton>}
                     {musicLink.link && (
                       <MotionButton variant="unstyled"
                         className="btns youtube-btn mobile-link-action"
