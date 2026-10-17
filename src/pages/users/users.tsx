@@ -44,6 +44,7 @@ import useAuthContext from "../../context/hooks/useAuthContext";
 import type { User } from "../../services/UsersService";
 import { UserAvatar } from "./usersStyle";
 import useScheduleRolesContext from "../../context/hooks/useScheduleRolesContext";
+import useOrganizationContext from "../../context/hooks/useOrganizationContext";
 
 const UsersCardsPage: React.FC = () => {
   const { users, updateUser, fetchUsers, deleteUser } = useUsersContext();
@@ -53,10 +54,12 @@ const UsersCardsPage: React.FC = () => {
   const [draftName, setDraftName] = useState("");
   const [draftEmail, setDraftEmail] = useState("");
   const [draftRoles, setDraftRoles] = useState<string[]>([]);
+  const [draftManagementRole, setDraftManagementRole] = useState<User["managementRole"]>("member");
   const [draftStatus, setDraftStatus] = useState("enabled");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
   const { user: loggedUser } = useAuthContext();
+  const { activeOrganization } = useOrganizationContext();
   const { roles, activeRoles, createRole } = useScheduleRolesContext();
 
   const loggedUserId = loggedUser?.id;
@@ -64,6 +67,8 @@ const UsersCardsPage: React.FC = () => {
   const isAdminOrLeader = loggedUserRoles.some(
     (role) => role === UserRole.Admin || role === UserRole.Leader
   );
+  const actorManagementRole = activeOrganization?.membership?.managementRole;
+  const canChangeManagementRole = actorManagementRole === "owner" || actorManagementRole === "organization_admin";
 
   const editableRoleOptions = useMemo(
     () => activeRoles.map(role => ({ label: role.name, value: role.id })),
@@ -203,6 +208,7 @@ const UsersCardsPage: React.FC = () => {
     setDraftName("");
     setDraftEmail("");
     setDraftRoles([]);
+    setDraftManagementRole("member");
     setDraftStatus("enabled");
     setNewRoleName("");
   }, []);
@@ -228,6 +234,7 @@ const UsersCardsPage: React.FC = () => {
     setDraftName(user.name || "");
     setDraftEmail(user.email || "");
     setDraftRoles(user.roles || []);
+    setDraftManagementRole(user.managementRole || "member");
     setDraftStatus(user.status || "pending");
   };
 
@@ -239,6 +246,7 @@ const UsersCardsPage: React.FC = () => {
     try {
       await updateUser(editingUser.id, {
         roles: draftRoles,
+        managementRole: canChangeManagementRole && editingUser.managementRole !== "owner" ? draftManagementRole : undefined,
         status: forceStatus ?? draftStatus,
       });
       await fetchUsers();
@@ -372,6 +380,10 @@ const UsersCardsPage: React.FC = () => {
                     ? user.roles.map((r) => getRoleLabel(r as UserRole)).join(", ")
                     : "Sem funcao"}
                 </span>
+                <span>
+                  <FaCogs style={{ marginRight: "8px" }} />
+                  Permissão: {{ owner: "Proprietário", organization_admin: "Administrador da organização", leader: "Líder", guest: "Convidado", member: "Membro" }[user.managementRole || "member"]}
+                </span>
                   <span>
                   {user.status === "enabled" ? (
                     <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
@@ -443,6 +455,20 @@ const UsersCardsPage: React.FC = () => {
                   required
                 />
               </FormGroup>
+
+              {canChangeManagementRole && editingUser.managementRole !== "owner" && <FormGroup>
+                <FieldLabel htmlFor="user-management-role">Permissão na organização</FieldLabel>
+                <SelectField
+                  id="user-management-role"
+                  value={draftManagementRole || "member"}
+                  onChange={event => setDraftManagementRole(event.target.value as User["managementRole"])}
+                >
+                  <option value="member">Membro</option>
+                  <option value="leader">Líder</option>
+                  <option value="guest">Convidado</option>
+                  <option value="organization_admin">Administrador da organização</option>
+                </SelectField>
+              </FormGroup>}
 
               <FormGroup>
                 <FieldLabel>Funções musicais</FieldLabel>

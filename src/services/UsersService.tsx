@@ -8,6 +8,7 @@ export interface User {
   nickname?: string;
   email: string;
   roles: string[];
+  managementRole?: "owner" | "organization_admin" | "leader" | "guest" | "member";
   birthDate?: string;
   status?: string;
   isOnline?: boolean;
@@ -33,6 +34,7 @@ const normalizeBackendUser = (user: Partial<User> & { id: string }): User => ({
   nickname: user.nickname || user.name || "Usuario",
   email: user.email || "",
   roles: Array.isArray(user.roles) ? user.roles : [],
+  managementRole: user.managementRole,
   birthDate: user.birthDate,
   status: user.status,
   isOnline: user.isOnline,

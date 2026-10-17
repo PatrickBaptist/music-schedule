@@ -103,7 +103,10 @@ const OrganizationSelectionPage: React.FC = () => {
                 </OrganizationLogo>
                 <OrganizationInfo>
                   <strong>{organization.name}</strong>
-                  <small>{organization.type || "organização"}</small>
+                  <small>
+                    <span>{organization.type || "organização"}</span>
+                    {organization.membership?.managementRole === "owner" && <span className="owner-label"> · Você é o proprietário</span>}
+                  </small>
                 </OrganizationInfo>
               </OrganizationButton>
             );

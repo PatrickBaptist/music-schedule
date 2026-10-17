@@ -105,6 +105,8 @@ export const OrganizationInfo = styled.span`
   small {
     color: var(--color-text-muted);
     text-transform: capitalize;
+
+    .owner-label { text-transform: none; }
   }
 `;
 
