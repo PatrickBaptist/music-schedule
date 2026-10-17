@@ -34,11 +34,11 @@ export const InputContainer = styled.div`
 
     input[type="date"] {
       display: block;
-      width: 100%;
-      inline-size: 100%;
+      width: calc(100% - 14px);
+      inline-size: calc(100% - 14px);
       min-width: 0;
       max-width: 100%;
-      justify-self: stretch;
+      justify-self: start;
       margin: 0;
       height: 44px;
       min-height: 44px;
