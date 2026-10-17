@@ -208,7 +208,7 @@ export const ContainerHome = styled.div`
       scroll-margin-top: 16px;
 
       > ul {
-        padding: 0;
+        padding: 0 12px;
       }
     }
 
@@ -765,7 +765,7 @@ export const ContainerHome = styled.div`
 export const AddFormOverlay = styled(motion.div)`
   position: fixed;
   inset: 0;
-  z-index: calc(var(--z-modal) + 20);
+  z-index: 10020;
   background: rgba(8, 15, 24, 0.68);
   display: flex;
   align-items: flex-start;
@@ -777,6 +777,6 @@ export const AddFormOverlay = styled(motion.div)`
 
   @media (max-width: 720px) {
     align-items: flex-start;
-    padding: 82px 12px 106px;
+    padding: 82px 12px 16px;
   }
 `

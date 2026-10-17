@@ -16,6 +16,7 @@ export const InputContainer = styled.div`
 
   .selected-date-summary {
     width: 100%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -23,7 +24,16 @@ export const InputContainer = styled.div`
     border: 1px solid var(--color-border-soft);
     border-radius: 10px;
     box-sizing: border-box;
+    overflow: hidden;
     background: var(--color-surface-muted);
+
+    input[type="date"] {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
 
     label {
       color: var(--color-text-strong);
@@ -124,6 +134,7 @@ export const InputContainer = styled.div`
 
     &.music-add-form {
       width: min(100%, 620px);
+      max-height: calc(100dvh - 98px);
     }
 
     .music-add-main-fields {
